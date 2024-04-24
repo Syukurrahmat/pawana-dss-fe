@@ -1,3 +1,23 @@
-html, body {
-    font-size: 15px;
+html,
+body {
+    font-size: 14px;
+}
+
+
+.chakra-table td {
+    padding: 1em;
+}
+
+.chakra-table__container.fixTableHead {
+    overflow-y: auto;
+    
+}
+
+.chakra-table__container.fixTableHead thead th {
+    font-size: var(--chakra-fontSizes-sm);
+    box-shadow: var(--chakra-shadows-xs);
+    position: sticky;
+    background:var(--chakra-colors-gray-100);
+    z-index: 1;
+    top: 0;
 }

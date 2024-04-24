@@ -1,6 +1,6 @@
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 import { Button, Flex, HStack, Text, VStack } from '@chakra-ui/react';
-import CardTinyTitle from '../../components/cardWithTinyTitle';
+import CardTinyTitle from '../../../components/cardWithTinyTitle';
 import { IconArrowBarRight, IconDroplet, IconTemperatureSun } from '@tabler/icons-react';
 // import data from '../../data/dummyData';
 

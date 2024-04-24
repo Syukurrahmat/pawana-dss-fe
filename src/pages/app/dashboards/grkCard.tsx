@@ -7,7 +7,7 @@ import {
 } from '@tabler/icons-react';
 
 import TinyChart from './tinyChart';
-import CardTinyTitle from '../../components/cardWithTinyTitle';
+import CardTinyTitle from '../../../components/cardWithTinyTitle';
 
 export default function GRKCard() {
 	return (

@@ -1,4 +1,4 @@
-import { Box, BoxProps, Heading, Text } from '@chakra-ui/react';
+import { Box, BoxProps, Divider, Heading, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -28,6 +28,10 @@ export default function Header({ ...props }: HeaderProps) {
 			'Aktivitas',
 			'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
 		],
+		'/groups': [
+			'Manajemen Grup',
+			'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
+		],
 	};
 
 	let location = useLocation();
@@ -38,8 +42,9 @@ export default function Header({ ...props }: HeaderProps) {
 
 	return (
 		<Box p="5" {...props}>
-			<Heading size="lg" children={headerText[0]} />
+			<Heading fontSize="2xl" children={headerText[0]} />
 			<Text color="gray.500" children={headerText[1]} />
+			<Divider mt='3'/>
 		</Box>
 	);
 }

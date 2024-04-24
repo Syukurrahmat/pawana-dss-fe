@@ -2,7 +2,7 @@ import { Box, Card, CardBody, CardHeader, Center, Container, Flex, HStack, Headi
 import logo from '@/assets/icon.svg';
 import { useState } from 'react';
 import { isEmail } from 'validator';
-import { API_URL } from '@/config/index.config';
+import { API_URL } from '@/config';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 
 export default function LoginPage() {
@@ -27,7 +27,7 @@ export default function LoginPage() {
 
 		setIsloading(true);
 
-		fetch(API_URL + '/login', {
+		fetch(HOST_URL + '/login', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({

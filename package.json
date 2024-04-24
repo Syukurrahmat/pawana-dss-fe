@@ -24,8 +24,12 @@
     "react-gauge-chart": "^0.4.1",
     "react-gauge-component": "^1.2.2",
     "react-leaflet": "^4.2.1",
+    "react-paginate": "^8.2.0",
+    "react-responsive-pagination": "^2.4.3",
     "react-router-dom": "^6.22.3",
+    "react-table": "^7.8.0",
     "recharts": "^2.12.3",
+    "swr": "^2.2.5",
     "validator": "^13.11.0"
   },
   "devDependencies": {
@@ -33,6 +37,7 @@
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-gauge-chart": "^0.4.3",
+    "@types/react-table": "^7.7.20",
     "@types/validator": "^13.11.9",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
