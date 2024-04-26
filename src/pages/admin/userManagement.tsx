@@ -1,29 +1,75 @@
-import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button, Center, HStack, Heading, Input, Select, Spacer, Text, VStack, IconButton, Tag, Avatar, Skeleton} from '@chakra-ui/react'; // prettier-ignore
-import { IconEdit, IconExternalLink, IconPlus, IconTrash, IconUser } from '@tabler/icons-react'; // prettier-ignore
-import ResponsivePagination from 'react-responsive-pagination';
-import { API_URL } from '@/config';
-import { fetcher } from '@/utils/index.utils';
-import { useState } from 'react';
-import useSWR from 'swr';
-import 'react-responsive-pagination/themes/classic.css';
+import useSWR from "swr";
+import { usePagination } from "../../components/DataTable/usePagination";
+import { useSorting } from "../../components/DataTable/useSorting";
+import { API_URL } from "@/config";
+import { fetcher } from "@/utils/index.utils";
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { Table, Thead, Tbody, Tr, Th, Td, chakra, Box, TableContainer, HStack, Text, IconButton, VStack, Center, Heading, Spacer, Input, Button, Select } from "@chakra-ui/react";
+import { IconArrowsSort, IconPlus, IconSortAscending, IconSortAscending2, IconSortDescending, IconSortDescending2, IconUser } from "@tabler/icons-react";
+import { useState } from "react";
+import { Pagination } from "@/components/DataTable/Pagination";
+
+const columnHelper = createColumnHelper<userData>()
+const columns = [
+	columnHelper.accessor('name', {
+		cell: info => info.getValue(),
+		header: "Nama",
+		meta: {
+			sortable: true
+		}
+	}),
+	columnHelper.accessor('email', {
+		cell: info => info.getValue(),
+		header: "Surel"
+	}),
+	columnHelper.accessor('phone', {
+		cell: info => "0" + info.getValue(),
+		header: "Telepon",
+
+	}),
+	columnHelper.accessor('role', {
+		cell: info => info.getValue(),
+		header: "Peran",
+		meta: {
+			sortable: true
+		}
+	}),
+	columnHelper.accessor('createdAt', {
+		cell: info => info.getValue(),
+		header: "Dibuat pada",
+		meta: {
+			sortable: true
+		}
+	}),
+]
+
 
 export default function UserManagement() {
-	const [pageLimit, setPageLimit] = useState(10);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [searchInput, setSearchInput] = useState('');
-	const [sort, setSort] = useState('name');
-	const [order, setOrder] = useState('asc');
+	const [userData, setUserData] = useState<userData[]>([])
 
-	const { data, error, isLoading } = useSWR<usersData>(
-		`${API_URL}/users?page=${currentPage}&limit=${pageLimit}&search=${searchInput}&sort=${sort}&order${order}`,
+
+	const { limit: pageLimit, onPaginationChange, pagination, pageIndex } = usePagination();
+	const { sorting, onSortingChange, field, order } = useSorting();
+
+	const { data, error, isLoading } = useSWR<usersAPIData>(
+		`${API_URL}/users?page=${pageIndex + 1}&limit=${pageLimit}&sort=${field}&order=${order}`,
 		fetcher
 	);
 
-	const totalPages = data ? Math.ceil(data?.totalItems / pageLimit) : 0;
 
-	const onPageChange = (page: number) => {
-		setCurrentPage(page);
-	};
+	const pageCount = data ? Math.ceil(data?.totalItems / pageLimit) : 0;
+
+	const table = useReactTable({
+		data: data ? data.result : [],
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		manualPagination: true,
+		manualSorting: true,
+		onPaginationChange,
+		onSortingChange,
+		state: { pagination, sorting },
+		pageCount,
+	});
 
 	return (
 		<VStack spacing="6">
@@ -37,13 +83,6 @@ export default function UserManagement() {
 					</Heading>
 				</HStack>
 				<Spacer />
-
-				<Select defaultValue="name" w="140px" bg="white" variant="outline">
-					<option value="name">Nama</option>
-					<option value="email">Email</option>
-					<option value="createdAt">Tanggal dibuat</option>
-				</Select>
-
 				<Input type="text" w="200px" bg="white" placeholder="Cari .." />
 				<Button leftIcon={<IconPlus size="20px" />} colorScheme="green">
 					Tambah Pengguna
@@ -57,83 +96,83 @@ export default function UserManagement() {
 				maxHeight="400px"
 				w="full"
 			>
-				<Table whiteSpace="wrap">
+				<Table>
 					<Thead>
-						<Tr>
-							<Th>Nama</Th>
-							<Th>Email</Th>
-							<Th>Telepon</Th>
-							<Th>Peran</Th>
-							<Th>Dibuat</Th>
-							<Th>Aksi</Th>
-						</Tr>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<Tr key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									const meta: any = header.column.columnDef.meta;
+									return (
+										<Th
+											key={header.id}
+											onClick={meta?.sortable ? header.column.getToggleSortingHandler() : () => null}
+											isNumeric={meta?.isNumeric}
+										>
+											<HStack justify='space-between'>
+												<Text>
+													{flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+													)}
+												</Text>
+												<chakra.span boxSize='1.2em'>
+													{
+														meta?.sortable
+															? header.column.getIsSorted() ?
+																header.column.getIsSorted() === "desc" ?
+																	<IconSortDescending2 size='18' aria-label="sorted descending" />
+																	:
+																	<IconSortAscending2 size='18' aria-label="sorted ascending" />
+																:
+																<IconArrowsSort size='18' style={{ opacity: 0.4 }} aria-label="sorting" />
+															: null
+													}
+												</chakra.span>
+											</HStack>
+
+
+
+										</Th>
+									);
+								})}
+							</Tr>
+						))}
 					</Thead>
 					<Tbody>
-						{isLoading &&
-							Array.from({ length: 5 }).map((_, index) => (
-								<Tr key={index}>
-									<Td colSpan={6}>
-										<Skeleton h="2em" w="full" />
-									</Td>
-								</Tr>
-							))}
-						{data &&
-							data?.success &&
-							data?.result.map((row, i) => (
-								<Tr key={i}>
-									<Td>
-										<HStack spacing="4">
-											<Avatar name={row.name} size="sm" />
-											<Text>{row.name}</Text>
-										</HStack>
-									</Td>
-									<Td>{row.email}</Td>
-									<Td>0{row.phone}</Td>
-									<Td>
-										<Tag>{row.role.toUpperCase()}</Tag>
-									</Td>
-									<Td>
-										{new Date(row.createdAt).toLocaleDateString(
-											'id-ID',
-											{
-												year: 'numeric',
-												month: 'short',
-												day: '2-digit',
-											}
-										)}
-									</Td>
-									<Td>
-										<HStack>
-											<IconButton
-												aria-label="Detail"
-												icon={<IconExternalLink size="16" />}
-												colorScheme="blue"
-												size="sm"
-											/>
-											<IconButton
-												aria-label="Sunting"
-												icon={<IconEdit size="16" />}
-												colorScheme="yellow"
-												size="sm"
-											/>
-											<IconButton
-												aria-label="Hapus"
-												icon={<IconTrash size="16" />}
-												colorScheme="red"
-												size="sm"
-											/>
-										</HStack>
-									</Td>
-								</Tr>
-							))}
+						{table.getRowModel().rows.map((row) => (
+							<Tr key={row.id}>
+								{row.getVisibleCells().map((cell) => {
+									// see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
+									const meta: any = cell.column.columnDef.meta;
+									return (
+										<Td key={cell.id} isNumeric={meta?.isNumeric}>
+											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										</Td>
+									);
+								})}
+							</Tr>
+						))}
 					</Tbody>
 				</Table>
 			</TableContainer>
-			<ResponsivePagination
-				total={totalPages}
-				current={currentPage}
-				onPageChange={onPageChange}
-			/>
+			<HStack>
+				<HStack>
+					<Text whiteSpace='nowrap'>Tampilkan per halaman</Text>
+					<Select placeholder='Select option' bg='white'>
+						<option value='10'>10</option>
+						<option value='25'>25</option>
+						<option value='50'>50</option>
+						<option value='75'>75</option>
+						<option value='100'>100</option>
+					</Select>
+				</HStack>
+			</HStack>
+			<Text>
+
+				{`${API_URL}/users?page=${pageIndex + 1}&limit=${pageLimit}&sort=${field}&order=${order}`}
+
+			</Text>
+			<Pagination tableLib={table} sizes={[10, 25, 50, 75, 100]} />
 		</VStack>
 	);
-}
+};
