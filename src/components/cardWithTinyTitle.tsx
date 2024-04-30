@@ -10,9 +10,10 @@ export default function CardTinyTitle({
 	title,
 	bgTitle,
 	children,
+	...rest
 }: CardTinyTitleProps) {
 	return (
-		<Card overflow="hidden" w="min-content">
+		<Card overflow="hidden" w="min-content" {...rest}>
 			<CardHeader
 				py="0.5"
 				px="10"

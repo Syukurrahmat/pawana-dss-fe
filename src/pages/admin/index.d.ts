@@ -1,17 +1,21 @@
-declare type userData = {
+declare type UserData = {
 	userId: number;
 	name: string;
 	phone: string;
 	role: string;
-	profilePicture: string | null;
+	profilePicture: string | undefined | null ;
 	email: string;
 	createdAt: string;
 }
 
-declare type usersAPIData = {
+
+declare type PaginationDataRes = {
 	success: boolean;
 	totalItems: number;
 	currentPage: number;
 	pageSize: number;
-	result: userData[];
-};
+	result : any[]
+}
+declare type usersAPIData = {
+	result: UserData[];
+}  

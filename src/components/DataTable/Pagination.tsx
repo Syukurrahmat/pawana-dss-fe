@@ -1,55 +1,72 @@
-import { Button, HStack, IconButton, Text } from "@chakra-ui/react";
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
-import React from "react";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight} from '@tabler/icons-react'; //prettier-ignore
+import { BoxProps, HStack, IconButton, Select, Text } from '@chakra-ui/react';
+import { Table } from '@tanstack/react-table';
 
-export const Pagination = ({ tableLib, sizes }: any) => (
-    <HStack>
-        <IconButton
-            aria-label="Sebelumnya"
-            icon={<IconChevronsLeft size='20' />}
-            variant='outline'
-            disabled={!tableLib.getCanPreviousPage()}
-            onClick={() => tableLib.setPageIndex(0)}
-        />
-        <IconButton
-            aria-label="Sebelumnya"
-            icon={<IconChevronLeft size='20' />}
-            variant='outline'
-            disabled={!tableLib.getCanPreviousPage()}
-            onClick={tableLib.previousPage}
-        />
+interface IPagination extends BoxProps {
+	table: Table<any>;
+	sizes: number[];
+}
 
-        <Text>
-            Halaman {tableLib.getState().pagination.pageIndex + 1}{" "}
-            dari {tableLib.getPageCount()}
-        </Text>
+export const Pagination = ({ table, sizes, ...rest }: IPagination) => (
+	<HStack {...rest} w="full" justify="space-between">
+		<HStack>
+			<Text>Tampikan</Text>
+			<Select
+				size="sm"
+				w="fit-content"
+				bg="white"
+				value={table.getState().pagination.pageSize}
+				onChange={(e) => table.setPageSize(parseInt(e.target.value, 10))}
+			>
+				{sizes.map((size) => (
+					<option key={size} value={size} children={size} />
+				))}
+			</Select>
+			<Text>item</Text>
+		</HStack>
+		<HStack>
+			<IconButton
+				aria-label="Sebelumnya"
+				icon={<IconChevronsLeft size="20" />}
+				variant="outline"
+				size="sm"
+				colorScheme="green"
+				isDisabled={!table.getCanPreviousPage()}
+				onClick={() => table.setPageIndex(0)}
+			/>
+			<IconButton
+				aria-label="Sebelumnya"
+				icon={<IconChevronLeft size="20" />}
+				variant="outline"
+				size="sm"
+				colorScheme="green"
+				isDisabled={!table.getCanPreviousPage()}
+				onClick={table.previousPage}
+			/>
 
-        <IconButton
-            aria-label="Sebelumnya"
-            icon={<IconChevronRight size='20' />}
-            variant='outline'
-            disabled={!tableLib.getCanNextPage()}
-            onClick={ tableLib.nextPage}
-        />
-        <IconButton
-            aria-label="Sebelumnya"
-            icon={<IconChevronsRight size='20' />}
-            variant='outline'
-            disabled={!tableLib.getCanNextPage()}
-            onClick={()=>tableLib.setPageIndex(tableLib.getPageCount() - 1)}
-        />
-       
-        <span>Show: </span>
-        <select
-            value={tableLib.getState().pageSize}
-            onChange={(e) => tableLib.setPageSize(parseInt(e.target.value, 10))}
-        >
-            {sizes.map((size: any) => (
-                <option key={size} value={size}>
-                    {size}
-                </option>
-            ))}
-        </select>
-        <span> items per page</span>
-    </HStack>
+			<Text>
+				{table.getState().pagination.pageIndex + 1} dari{' '}
+				{table.getPageCount()}
+			</Text>
+
+			<IconButton
+				aria-label="Sebelumnya"
+				icon={<IconChevronRight size="20" />}
+				variant="outline"
+				size="sm"
+				colorScheme="green"
+				isDisabled={!table.getCanNextPage()}
+				onClick={table.nextPage}
+			/>
+			<IconButton
+				aria-label="Sebelumnya"
+				icon={<IconChevronsRight size="20" />}
+				variant="outline"
+				size="sm"
+				colorScheme="green"
+				isDisabled={!table.getCanNextPage()}
+				onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+			/>
+		</HStack>
+	</HStack>
 );

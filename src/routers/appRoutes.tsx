@@ -11,6 +11,9 @@ import ISPUTap from '@/pages/app/analysis/ispu';
 import EmisiGRKTab from '@/pages/app/analysis/emisiGRKTab';
 import IklimMikroTab from '@/pages/app/analysis/iklimMikro';
 import GroupManagement from '@/pages/admin/groupManagement';
+import UserManagement from '@/pages/admin/user/allUsers';
+import CreateUser from '@/pages/admin/user/createUser';
+import DetailUser from '@/pages/admin/user/detailUser';
 
 const appRouter = createBrowserRouter([
 	{
@@ -33,6 +36,9 @@ const appRouter = createBrowserRouter([
 			{ path: '/group/:groupId', element: <GroupDetail /> },
 			{ path: '/user-setting', element: <UserSetting /> },
 			{ path: '/groups', element: <GroupManagement /> },
+			{ path: '/users', element: <UserManagement /> },
+			{ path: '/users/create', element: <CreateUser /> },
+			{ path: '/users/:id', element: <DetailUser /> },
 		],
 	},
 ]);

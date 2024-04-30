@@ -13,6 +13,7 @@ export default function Sidebar({ ...props }: SidebarProps) {
 		{ Icon: IconUsersGroup, label: 'Grup', path: '/group' },
 		{ Icon: IconBuildingFactory, label: 'Activitas', path: '/activity' },
 		{ Icon: IconUsersGroup, label: 'Manajemen Grup', path: '/groups' },
+		{ Icon: IconUser, label: 'Manajemen Pengguna', path: '/users' },
 	];
 
 	return (

@@ -1,7 +1,56 @@
+:root {
+    --header-length: 55px;
+    --sidebar-length: 250px;
+    --font-size: 16px;
+}
+
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
 html,
 body {
     font-size: 14px;
+    background: #F4F5F9 !important;
+    color : #45474B !important; 
 }
+
+body{
+    overflow-y: scroll;
+}
+
+#container {
+    padding:0 0 0 var(--sidebar-length);
+    position: relative;
+}
+
+#container #header {
+    position: sticky;
+    top: 0;
+    left: var(--sidebar-length);
+    height: var(--header-length);
+    z-index: 1100;
+    background: #F4F5F9 !important;
+
+}
+
+#container #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-length);
+    height: 100vh;
+}
+
+
+.chakra-alert{
+    font-size: 16px;
+}
+
+
 
 
 .chakra-table td {
@@ -10,14 +59,19 @@ body {
 
 .chakra-table__container.fixTableHead {
     overflow-y: auto;
-    
+
 }
 
 .chakra-table__container.fixTableHead thead th {
     font-size: var(--chakra-fontSizes-sm);
     box-shadow: var(--chakra-shadows-xs);
     position: sticky;
-    background:var(--chakra-colors-gray-100);
+    background: var(--chakra-colors-gray-100);
     z-index: 1;
     top: 0;
+}
+
+.my-form input, .my-form textarea{
+    background: white;
+    
 }
