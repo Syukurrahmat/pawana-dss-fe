@@ -1,60 +1,58 @@
-import { Box, Card, CardBody, CardHeader, Center, Container, Flex, HStack, Heading, Image, Text, VStack, FormControl, FormLabel, FormHelperText, Input, Button, InputGroup, InputRightElement, IconButton, useToast } from '@chakra-ui/react'; // prettier-ignore
+import { Box, Card, CardBody, CardHeader, Center, Container, Flex, HStack, Heading, Image, Text, VStack, FormControl, FormLabel, FormHelperText, Input, Button, InputGroup, InputRightElement, IconButton, useToast, FormErrorMessage, InputProps } from '@chakra-ui/react'; // prettier-ignore
 import logo from '@/assets/icon.svg';
 import { useState } from 'react';
-import { isEmail } from 'validator';
-import { API_URL } from '@/config';
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { HOST_URL } from '@/config';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import InputPassword from '@/components/form/inputPassword';
+
 
 export default function LoginPage() {
 	const toast = useToast();
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [emailError, setEmailError] = useState('');
-	const [passwordError, setPasswordError] = useState('');
 	const [isLoading, setIsloading] = useState(false);
-	const [showPassword, setShowPassword] = useState(false);
 
-	const submitHandler = (e: any) => {
-		e.preventDefault();
-
-		setEmail((e) => e.trim());
-		setPassword((e) => e.trim());
-
-		setEmailError(isEmail(email) ? '' : 'Alamat surel tidak valid');
-		setPasswordError(password ? '' : 'Kata sandi tidak boleh kosong');
-
-		if (!isEmail(email) || !password) return;
-
-		setIsloading(true);
-
-		fetch(HOST_URL + '/login', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				email: email.toLowerCase(),
-				password: password.toLowerCase(),
+	const { handleChange, errors, values, handleSubmit, setFieldValue } =
+		useFormik({
+			initialValues: {
+				email: '',
+				password: '',
+			},
+			validationSchema: Yup.object().shape({
+				email: Yup.string()
+					.email('Surel Tidak Valid')
+					.required('Wajib diisi'),
+				password: Yup.string().required('Wajib diisi'),
 			}),
-		}).then((res) => {
-			setIsloading(false);
-			const url = new URL(res.url);
+			validateOnChange: false,
+			validateOnBlur: false,
 
-			if (!!url.searchParams.get('failed')) {
-				toast({
-					title: 'Akses ditolak',
-					description: 'Alamat surel atau kata sandi tidak benar',
-					status: 'error',
-					position: 'top',
-					variant: 'left-accent',
-					isClosable: true,
+			onSubmit: (values) => {
+				setIsloading(true);
+				alert(JSON.stringify(values));
+				fetch(HOST_URL + '/auth/login', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(values),
+				}).then((res) => {
+					setIsloading(false);
+					const url = new URL(res.url);
+					if (!!url.searchParams.get('failed')) {
+						toast({
+							title: 'Akses ditolak',
+							description: 'Alamat surel atau kata sandi tidak benar',
+							status: 'error',
+							position: 'top',
+							variant: 'left-accent',
+							isClosable: true,
+						});
+						setFieldValue('password', '');
+						return;
+					}
+
+					window.location.href = res.url;
 				});
-
-				setPassword('');
-				return;
-			}
-
-			window.location.href = res.url;
+			},
 		});
-	};
 
 	return (
 		<Container maxW="full" bg="#378CE7" minH="100vh">
@@ -85,74 +83,45 @@ export default function LoginPage() {
 						<Text>Masukan informasi autentikasi di bawah ini</Text>
 					</CardHeader>
 					<CardBody>
-						<VStack as="form" onSubmit={submitHandler}>
-							<FormControl isInvalid={Boolean(emailError)}>
-								<FormLabel>Alamat Surel</FormLabel>
-								<Input
-									name="email"
-									placeholder="Contoh: suparna@gmail.com"
-									onChange={(e) => {
-										setEmail(e.target.value);
-										setEmailError('');
-									}}
-									value={email}
-								/>
-								<FormHelperText color="red" h="16px">
-									{emailError}
-								</FormHelperText>
-							</FormControl>
-
-							<FormControl isInvalid={Boolean(passwordError)}>
-								<FormLabel>Kata Sandi</FormLabel>
-								<InputGroup>
+						<form onSubmit={handleSubmit}>
+							<VStack spacing="4">
+								<FormControl isInvalid={Boolean(errors.email)}>
+									<FormLabel>Alamat Surel</FormLabel>
 									<Input
-										pr="3.5rem"
-										type={showPassword ? 'text' : 'password'}
-										name="current-password"
-										value={password}
-										placeholder="Masukkan kata sandi"
-										onChange={(e) => {
-											setPassword(e.target.value);
-											setPasswordError('');
-										}}
+										id="email"
+										name="email"
+										autoComplete="email"
+										placeholder="Contoh: suparna@gmail.com"
+										onChange={handleChange}
 									/>
-									<InputRightElement
-										width="3.5rem"
-										onMouseDown={() => setShowPassword(true)}
-										onMouseUp={() => setShowPassword(false)}
-										onMouseLeave={() => setShowPassword(false)}
-									>
-										<IconButton
-											size="sm"
-											variant="ghost"
-											aria-label={
-												showPassword
-													? 'Sembunyikan kata sandi'
-													: 'Lihat kata sandi'
-											}
-											icon={
-												showPassword ? (
-													<IconEyeOff size="20px" />
-												) : (
-													<IconEye size="20px" />
-												)
-											}
-										/>
-									</InputRightElement>
-								</InputGroup>
-								<FormHelperText color="red" h="16px">
-									{passwordError}
-								</FormHelperText>
-							</FormControl>
-							<Button
-								alignSelf="end"
-								colorScheme="blue"
-								type="submit"
-								isLoading={isLoading}
-							>
-								Masuk
-							</Button>
-						</VStack>
+									<FormErrorMessage>{errors.email}</FormErrorMessage>
+								</FormControl>
+
+								<FormControl isInvalid={Boolean(errors.password)}>
+									<FormLabel>Kata Sandi</FormLabel>
+									<InputPassword
+										id="password"
+										name="password"
+										autoComplete="current-password"
+										placeholder="Masukkan kata sandi"
+										onChange={handleChange}
+										value={values.password}
+									/>
+
+									<FormErrorMessage>
+										{errors.password}
+									</FormErrorMessage>
+								</FormControl>
+								<Button
+									alignSelf="end"
+									colorScheme="blue"
+									type="submit"
+									isLoading={isLoading}
+								>
+									Masuk
+								</Button>
+							</VStack>
+						</form>
 					</CardBody>
 				</Card>
 			</Container>

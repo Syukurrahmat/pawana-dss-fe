@@ -1,3 +1,5 @@
+import * as valSchema from '@/utils/validator.utils';
+import * as Yup from 'yup';
 import { API_URL } from '@/config';
 import {
 	Button,
@@ -12,15 +14,21 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import { useState } from 'react';
-import { userValidationSchema } from './userValidationSchema';
+import { trimAllValues } from '@/utils/index.utils';
+import axios from 'axios';
 
 export default function CreateUser() {
-	const [isloading, setIsloading] = useState(false);
-
 	const toast = useToast();
 
-	const { handleChange, values, errors, handleSubmit } = useFormik({
+	const {
+		handleChange,
+		handleBlur,
+		isSubmitting,
+		setSubmitting,
+		touched,
+		errors,
+		handleSubmit,
+	} = useFormik({
 		initialValues: {
 			name: '',
 			email: '',
@@ -29,51 +37,35 @@ export default function CreateUser() {
 			address: '',
 			profilePicture: '',
 		},
-		validationSchema: userValidationSchema(),
-		validateOnChange: false,
-		validateOnBlur: false,
+		validationSchema: Yup.object().shape({
+			name: valSchema.name.required('Wajib diisi'),
+			phone: valSchema.phone.required('Wajib diisi'),
+			address: valSchema.address.required('Wajib diisi'),
+			description: valSchema.description.nullable(),
+			email: valSchema.email.required('Wajib diisi'),
+		}),
 		onSubmit: (values) => {
-			setIsloading(true);
-			fetch(API_URL + '/users', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(values),
-			})
-				.then((e) => e.json())
-				.then((res) => {
-					setIsloading(false);
+			axios
+				.post(API_URL + '/users', trimAllValues(values))
+				.then(({ data }) => {
+					console.log(data);
 
-					if (!res.success) {
-						toast({
-							title: `Gagal`,
-							description: res.message,
-							variant: 'solid',
-							status: 'error',
-							isClosable: true,
-							position: 'top-right',
-							containerStyle: {
-								margin: '30px 20px 0 0',
-							},
-						});
-					} else {
-						toast({
-							title: `Sukses`,
-							description:
-								'Pengguna diminta untuk melakukan verifikasi melalui tautan yang baru saja kami kirimkan melalui surel.',
-							variant: 'solid',
-							status: 'success',
-							isClosable: true,
-							position: 'top-right',
-							containerStyle: {
-								margin: '30px 20px 0 0',
-							},
-						});
-					}
+					setSubmitting(false);
+					data.success
+						? toast({
+								title: `Sukses`,
+								description: data.message,
+								status: 'success',
+						  })
+						: toast({
+								title: `Gagal`,
+								description: data.message,
+								status: 'error',
+						  });
 				});
 		},
 	});
+	
 	return (
 		<>
 			<Heading size="lg">Buat akun Pengguna</Heading>
@@ -84,74 +76,87 @@ export default function CreateUser() {
 				onSubmit={handleSubmit}
 				style={{ marginTop: '1.5em' }}
 				className="my-form"
-			
 			>
 				<VStack mx="auto" spacing="2" maxW="container.sm" mt="4">
-					<FormControl isInvalid={Boolean(errors.name)}>
+					<FormControl isInvalid={Boolean(errors.name) && touched.name}>
 						<FormLabel>Nama</FormLabel>
 						<Input
 							id="name"
 							name="name"
 							placeholder="Misal : Suparna"
 							onChange={handleChange}
+							onBlur={handleBlur}
 						/>
 						<FormErrorMessage>{errors.name}</FormErrorMessage>
 					</FormControl>
-					<FormControl isInvalid={Boolean(errors.email)}>
+					<FormControl isInvalid={Boolean(errors.email) && touched.email}>
 						<FormLabel>Email</FormLabel>
 						<Input
 							id="email"
 							name="email"
 							placeholder="Misal : suparna@gmail.com"
 							onChange={handleChange}
+							onBlur={handleBlur}
 						/>
 						<FormErrorMessage>{errors.email}</FormErrorMessage>
 					</FormControl>
-					<FormControl isInvalid={Boolean(errors.phone)}>
+					<FormControl isInvalid={Boolean(errors.phone) && touched.phone}>
 						<FormLabel>Nomor Telepon</FormLabel>
 						<Input
 							id="phone"
 							name="phone"
 							placeholder="Misal : 087812345678"
 							onChange={handleChange}
+							onBlur={handleBlur}
 						/>
 						<FormErrorMessage>{errors.phone}</FormErrorMessage>
 					</FormControl>
-					<FormControl isInvalid={Boolean(errors.address)}>
+					<FormControl
+						isInvalid={Boolean(errors.address) && touched.address}
+					>
 						<FormLabel>Alamat</FormLabel>
 						<Textarea
 							id="address"
 							name="address"
 							placeholder="Masukkan Alamat Tempat tinggal Pengguna"
 							onChange={handleChange}
+							onBlur={handleBlur}
 						/>
 						<FormErrorMessage>{errors.address}</FormErrorMessage>
 					</FormControl>
-					<FormControl isInvalid={Boolean(errors.description)}>
+					<FormControl
+						isInvalid={Boolean(errors.description) && touched.description}
+					>
 						<FormLabel>Description</FormLabel>
 						<Textarea
 							id="description"
 							name="description"
 							placeholder="Opsional"
 							onChange={handleChange}
+							onBlur={handleBlur}
 						/>
 						<FormErrorMessage>{errors.description}</FormErrorMessage>
 					</FormControl>
 
-					<FormControl isInvalid={Boolean(errors.profilePicture)}>
+					<FormControl
+						isInvalid={
+							Boolean(errors.profilePicture) && touched.profilePicture
+						}
+					>
 						<FormLabel>Foto Profil</FormLabel>
 						<Input
 							type="file"
 							id="profilePicture"
 							name="profilePicture"
 							onChange={handleChange}
+							onBlur={handleBlur}
 							accept="image/*"
 							isDisabled={true}
 						/>
 						<FormErrorMessage>{errors.profilePicture}</FormErrorMessage>
 					</FormControl>
 					<Button
-						isLoading={isloading}
+						isLoading={isSubmitting}
 						w="full"
 						mt="4"
 						colorScheme="green"

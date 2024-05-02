@@ -1,31 +1,9 @@
 import { API_URL } from '@/config';
 import { capitalizeString, fetcher } from '@/utils/index.utils';
-import {
-	Avatar,
-	Box,
-	Container,
-	Divider,
-	HStack,
-	Heading,
-	Tag,
-	Text,
-	Table,
-	Thead,
-	Tbody,
-	Tfoot,
-	Tr,
-	Th,
-	Td,
-	TableCaption,
-	TableContainer,
-	Button,
-	Center,
-	Spacer,
-	useDisclosure,
-	Link,
-} from '@chakra-ui/react';
+import { Avatar, Box, Container, Divider, HStack, Heading, Tag, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Button, Center, Spacer, useDisclosure, Link} from '@chakra-ui/react';
 import {
 	IconAddressBook,
+	IconAlertTriangle,
 	IconAuth2fa,
 	IconEdit,
 	IconLock,
@@ -38,7 +16,10 @@ import {
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import EditUserModal from './editUser';
+import EditUserModal from './editModal.user';
+import EditPasswordModal from './editPassModal.user';
+import SectionTitle from '@/components/common/sectionTitle';
+import {Link as RLink} from 'react-router-dom'
 
 const statusColor: { [key: string]: string } = {
 	approved: 'blue',
@@ -48,16 +29,27 @@ const statusColor: { [key: string]: string } = {
 
 export default function DetailUser() {
 	let { id } = useParams();
-	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const {
-		data: dt,
+		isOpen: editUserIsOpen,
+		onOpen: editUserOnOpen,
+		onClose: editUserOnClose,
+	} = useDisclosure();
+
+	const {
+		isOpen: editPassIsOpen,
+		onOpen: editPassOnOpen,
+		onClose: editPassOnClose,
+	} = useDisclosure();
+
+	const {
+		data: rawData,
 		isLoading,
 		error,
-		mutate
+		mutate,
 	} = useSWR(API_URL + '/users/' + id, fetcher);
 
-	const data = dt?.result;
+	const data = rawData?.result;
 
 	if (!data) return '';
 
@@ -107,7 +99,7 @@ export default function DetailUser() {
 					</Box>
 					<Spacer />
 					<Button
-						onClick={onOpen}
+						onClick={editUserOnOpen}
 						variant="outline"
 						colorScheme="blue"
 						alignSelf="start"
@@ -116,41 +108,23 @@ export default function DetailUser() {
 						children={'Sunting Profil'}
 					/>
 				</HStack>
-				<Box mt="8">
-					<HStack>
-						<IconAddressBook size="18" />
-						<Heading fontSize="lg" fontWeight="600">
-							Alamat
-						</Heading>
-					</HStack>
-					<Divider my="2" borderColor="gray.300" />
-					<Text>{data.address}</Text>
-				</Box>
-				<Box mt="8">
-					<HStack>
-						<IconTextCaption size="18" />
-						<Heading fontSize="lg" fontWeight="600">
-							Deskripsi pengguna
-						</Heading>
-					</HStack>
-					<Divider my="2" borderColor="gray.300" />
-					{data.description ? (
-						<Text>{data.description}</Text>
-					) : (
-						<Text fontStyle="italic" color="gray.500">
-							(Tidak Ada Deskripsi pengguna)
-						</Text>
-					)}
-				</Box>
-				<Box mt="8">
-					<HStack>
-						<IconUsersGroup size="18" />
-						<Heading fontSize="lg" fontWeight="600">
-							Grup yang diikuti
-						</Heading>
-					</HStack>
-					<Divider my="2" borderColor="gray.300" />
-				</Box>
+				<SectionTitle IconEl={IconAddressBook}>Alamat</SectionTitle>
+				<Text>{data.address}</Text>
+
+				<SectionTitle IconEl={IconTextCaption}>
+					Deskripsi pengguna
+				</SectionTitle>
+				{data.description ? (
+					<Text>{data.description}</Text>
+				) : (
+					<Text fontStyle="italic" color="gray.500">
+						(Tidak Ada Deskripsi pengguna)
+					</Text>
+				)}
+				<SectionTitle IconEl={IconUsersGroup}>
+					Grup yang diikuti
+				</SectionTitle>
+
 				<TableContainer shadow="xs" rounded="md" mt="4">
 					<Table variant="striped" size="md">
 						<Thead>
@@ -193,9 +167,12 @@ export default function DetailUser() {
 												Hapus
 											</Button>
 											{e.requestStatus == 'approved' && (
+												<RLink to={'../groups/'+ id}>
+
 												<Button size="xs" colorScheme="blue">
 													Lihat Grup
 												</Button>
+												</RLink>
 											)}
 										</HStack>
 									</Td>
@@ -204,18 +181,28 @@ export default function DetailUser() {
 						</Tbody>
 					</Table>
 				</TableContainer>
-				<Box mt="8">
-					<HStack>
-						<IconLock size="18" />
-						<Heading fontSize="lg" fontWeight="600">
-							Autentikasi
-						</Heading>
-					</HStack>
-					<Divider my="2" borderColor="gray.300" />
-					<Button colorScheme="red">Ganti Kata Sandi</Button>
-				</Box>
+				<SectionTitle IconEl={IconLock}>Autentikasi</SectionTitle>
+
+				<HStack justify="space-between">
+					<Button colorScheme="yellow" size="sm" onClick={editPassOnOpen}>
+						Ganti Kata Sandi
+					</Button>
+					<Button colorScheme="red" size="sm" onClick={editPassOnOpen}>
+						Hapus Akun
+					</Button>
+				</HStack>
 			</Container>
-			<EditUserModal mutate={mutate} data={data} onClose={onClose} isOpen={isOpen} />
+			<EditUserModal
+				mutate={mutate}
+				data={data}
+				onClose={editUserOnClose}
+				isOpen={editUserIsOpen}
+			/>
+			<EditPasswordModal
+				data={data}
+				onClose={editPassOnClose}
+				isOpen={editPassIsOpen}
+			/>
 		</>
 	);
 }

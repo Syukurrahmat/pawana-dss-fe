@@ -1,11 +1,12 @@
 import { BoxProps, Button, Divider, HStack, Heading, Image, Spacer, VStack} from '@chakra-ui/react'; // prettier-ignore
-import { IconAnalyze, IconBuildingFactory, IconDashboard, IconDatabase, IconLogout, IconStatusChange, IconUser, IconUsersGroup} from '@tabler/icons-react'; // prettier-ignore
+import { IconAnalyze, IconBuildingFactory, IconCircleDot, IconDashboard, IconDatabase, IconLogout, IconStatusChange, IconUser, IconUsersGroup} from '@tabler/icons-react'; // prettier-ignore
 import { NavLink } from 'react-router-dom';
 import logo from '../assets/icon.svg';
 
 interface SidebarProps extends BoxProps {}
 
 export default function Sidebar({ ...props }: SidebarProps) {
+	
 	const navDetailList = [
 		{ Icon: IconDashboard, label: 'Dashboard', path: '/' },
 		{ Icon: IconAnalyze, label: 'Analisis', path: '/analysis' },
@@ -14,6 +15,7 @@ export default function Sidebar({ ...props }: SidebarProps) {
 		{ Icon: IconBuildingFactory, label: 'Activitas', path: '/activity' },
 		{ Icon: IconUsersGroup, label: 'Manajemen Grup', path: '/groups' },
 		{ Icon: IconUser, label: 'Manajemen Pengguna', path: '/users' },
+		{ Icon: IconCircleDot, label: 'Manajemen Node', path: '/nodes' },
 	];
 
 	return (

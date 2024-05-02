@@ -1,20 +1,21 @@
+import * as valSchema from '@/utils/validator.utils';
+import * as Yup from 'yup';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, VStack, FormControl, FormLabel, Input, FormErrorMessage, Textarea, useToast} from '@chakra-ui/react'; //prettier-ignore
-import { userValidationSchema } from './userValidationSchema';
 import { useFormik } from 'formik';
-import { compareObjects } from '@/utils/index.utils';
+import { compareObjects, trimAllValues } from '@/utils/index.utils';
 import { useState } from 'react';
 import { API_URL } from '@/config';
 import { KeyedMutator } from 'swr';
+import axios from 'axios';
 
 interface IEUModal {
 	isOpen: boolean;
 	onClose: () => void;
 	data: { [key: string]: string };
-	mutate : KeyedMutator<any>
-
+	mutate: KeyedMutator<any>;
 }
 
-export default function EditUserModal({
+export default function EditGroupModal({
 	isOpen,
 	onClose,
 	data,
@@ -22,72 +23,61 @@ export default function EditUserModal({
 	...rest
 }: IEUModal) {
 	const toast = useToast();
-	const [isLoading, setIsLoading] = useState(false);
-	const { name, phone, description, address, profilePicture } = data;
-	const initialValues = { name, phone, description, address, profilePicture };
+	const { name, description, address } = data;
+	const initialValues = { name, description, address };
 
-	const { handleChange, values, errors, handleSubmit, resetForm } = useFormik({
+	const {
+		handleChange,
+		values,
+		errors,
+		handleSubmit,
+		handleBlur,
+		resetForm,
+		touched,
+		isSubmitting,
+		setSubmitting,
+	} = useFormik({
 		initialValues,
-		validationSchema: userValidationSchema(false),
-		validateOnChange: false,
-		validateOnBlur: false,
+		validationSchema: Yup.object().shape({
+			name: valSchema.name.required('Wajib diisi'),
+			address: valSchema.address.required('Wajib diisi'),
+			description: valSchema.description.required('Wajib diisi'),
+		}),
 
 		onSubmit: (values) => {
-			const filteredData = compareObjects(
-				{ name, phone, description, address, profilePicture },
-				values
-			);
+			trimAllValues(values);
+
+			const filteredData = compareObjects(initialValues, values);
 
 			if (Object.keys(filteredData).length === 0) {
 				toast({
 					title: `Opss !!!`,
 					description: 'Belum ada yang disunting',
-					variant: 'left-accent',
 					status: 'warning',
-					isClosable: true,
-					position: 'top-right',
-					containerStyle: {
-						margin: '30px 30px 0 0',
-					},
 				});
+				setSubmitting(false);
 				return;
 			}
-			setIsLoading(true);
 
-			fetch(API_URL + '/users/', {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ ...filteredData, userId: data.userId }),
-			})
-				.then((e) => e.json())
-				.then((res) => {
-					setIsLoading(false);
+			axios
+				.put(API_URL + '/groups/', {
+					...filteredData,
+					groupId: data.groupId,
+				})
+				.then(({ data }) => {
+					setSubmitting(false);
 
-					if (!res.success) {
+					if (!data.success) {
 						toast({
 							title: `Gagal`,
-							description: res.message,
-							variant: 'solid',
+							description: data.message,
 							status: 'error',
-							isClosable: true,
-							position: 'top-right',
-							containerStyle: {
-								margin: '30px 30px 0 0',
-							},
 						});
 					} else {
 						toast({
 							title: `Sukses`,
-							description: res.message,
-							variant: 'solid',
+							description: data.message,
 							status: 'success',
-							isClosable: true,
-							position: 'top-right',
-							containerStyle: {
-								margin: '30px 30px 0 0',
-							},
 						});
 						mutate();
 						onClose();
@@ -99,11 +89,12 @@ export default function EditUserModal({
 	return (
 		<Modal
 			size="lg"
+			autoFocus={false}
 			isOpen={isOpen}
 			onClose={onClose}
 			onCloseComplete={resetForm}
-			{...rest}
 			closeOnOverlayClick={false}
+			{...rest}
 		>
 			<ModalOverlay />
 			<ModalContent>
@@ -111,66 +102,51 @@ export default function EditUserModal({
 					<ModalHeader>Sunting Profil</ModalHeader>
 					<ModalBody>
 						<VStack mx="auto" spacing="2" maxW="container.sm">
-							<FormControl isInvalid={Boolean(errors.name)}>
+							<FormControl
+								isInvalid={Boolean(errors.name) && touched.name}
+							>
 								<FormLabel>Nama</FormLabel>
 								<Input
 									id="name"
 									name="name"
 									placeholder="Misal : Suparna"
 									onChange={handleChange}
+									onBlur={handleBlur}
 									value={values.name}
 								/>
 								<FormErrorMessage>{errors.name}</FormErrorMessage>
 							</FormControl>
 
-							<FormControl isInvalid={Boolean(errors.phone)}>
-								<FormLabel>Nomor Telepon</FormLabel>
-								<Input
-									id="phone"
-									name="phone"
-									placeholder="Misal : 087812345678"
-									onChange={handleChange}
-									value={values.phone}
-								/>
-								<FormErrorMessage>{errors.phone}</FormErrorMessage>
-							</FormControl>
-							<FormControl isInvalid={Boolean(errors.address)}>
+							<FormControl
+								isInvalid={Boolean(errors.address) && touched.address}
+							>
 								<FormLabel>Alamat</FormLabel>
 								<Textarea
 									id="address"
 									name="address"
 									placeholder="Masukkan Alamat Tempat tinggal Pengguna"
 									onChange={handleChange}
+									onBlur={handleBlur}
 									value={values.address}
 								/>
 								<FormErrorMessage>{errors.address}</FormErrorMessage>
 							</FormControl>
-							<FormControl isInvalid={Boolean(errors.description)}>
+							<FormControl
+								isInvalid={
+									Boolean(errors.description) && touched.description
+								}
+							>
 								<FormLabel>Description</FormLabel>
 								<Textarea
 									id="description"
 									name="description"
 									placeholder="Opsional"
 									onChange={handleChange}
+									onBlur={handleBlur}
 									value={values.description}
 								/>
 								<FormErrorMessage>
 									{errors.description}
-								</FormErrorMessage>
-							</FormControl>
-
-							<FormControl isInvalid={Boolean(errors.profilePicture)}>
-								<FormLabel>Foto Profil</FormLabel>
-								<Input
-									type="file"
-									id="profilePicture"
-									name="profilePicture"
-									onChange={handleChange}
-									accept="image/*"
-									isDisabled={true}
-								/>
-								<FormErrorMessage>
-									{errors.profilePicture}
 								</FormErrorMessage>
 							</FormControl>
 						</VStack>
@@ -181,7 +157,7 @@ export default function EditUserModal({
 							Batal
 						</Button>
 						<Button
-							isLoading={isLoading}
+							isLoading={isSubmitting}
 							type="submit"
 							colorScheme="blue"
 							ml={3}

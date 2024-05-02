@@ -7,7 +7,7 @@ import { API_URL } from '@/config';
 import { useNavigate, Link as RLink } from 'react-router-dom';
 
 const columnHelper = createColumnHelper<UserData>();
-const columns = [
+export const userscolumns = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
 		cell: (info) => (
@@ -50,7 +50,6 @@ const columns = [
 				</RLink>
 			</HStack>
 		),
-		meta: { sortable: true },
 	}),
 ];
 
@@ -87,7 +86,7 @@ export default function UserManagement() {
 			<DataTable
 				flexGrow="1"
 				apiUrl={API_URL + '/users'}
-				columns={columns}
+				columns={userscolumns}
 			/>
 		</Flex>
 	);

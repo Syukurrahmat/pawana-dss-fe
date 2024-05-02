@@ -56,10 +56,12 @@ body{
 .chakra-table td {
     padding: 1em;
 }
+.chakra-table th {
+    white-space: wrap;
+}
 
 .chakra-table__container.fixTableHead {
     overflow-y: auto;
-
 }
 
 .chakra-table__container.fixTableHead thead th {

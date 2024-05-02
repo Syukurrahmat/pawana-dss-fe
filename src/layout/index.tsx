@@ -11,7 +11,7 @@ export default function App() {
 		>
 			<Sidebar id='sidebar' />
 			<Header id='header' />
-			<Box id='content' px='5' pt='3' pb='20'>
+			<Box id='content' px='5' pt='3' pb='2000px'>
 				<Outlet />
 			</Box>
 		</Container>

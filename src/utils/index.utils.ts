@@ -6,6 +6,7 @@ export const fetcher = async (...args: Parameters<typeof fetch>) => {
 
 export const buildQueriesURL = (baseURL: string, queryParams: Record<string, string | number>) => {
     const params = new URLSearchParams();
+    const hasQuery = new URL(baseURL).search.length > 0 
 
     for (const key in queryParams) {
         if (Object.prototype.hasOwnProperty.call(queryParams, key)) {
@@ -13,7 +14,7 @@ export const buildQueriesURL = (baseURL: string, queryParams: Record<string, str
         }
     }
 
-    const url = `${baseURL}?${params.toString()}`;
+    const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
 
     return url;
 };
@@ -44,3 +45,21 @@ export const compareObjects = (obj1: AnyObject, obj2: AnyObject) => {
 
     return uniqueValues;
 }
+
+
+export const trimAllValues = (obj: AnyObject) => {
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            obj[key] = obj[key].trim();
+        } else if (typeof obj[key] === 'object') {
+            obj[key] = trimAllValues(obj[key] as AnyObject); // Rekursif untuk objek dalam objek
+        }
+    }
+    return obj;
+}
+
+
+export const buildMapURL = (latitude: number, longitude: number): string => {
+    return `https://www.google.com/maps?q=${latitude},${longitude}`;
+};
+

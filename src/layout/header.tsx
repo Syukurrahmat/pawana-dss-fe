@@ -4,34 +4,14 @@ import { useLocation } from 'react-router-dom';
 
 interface HeaderProps extends BoxProps {}
 const headerTextList: any = {
-	'/': [
-		'Dashboard',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
-	'/analysis': [
-		'Analysis',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
-	'/data': [
-		'Data',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
-	'/group': [
-		'Grup',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
-	'/activity': [
-		'Aktivitas',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
-	'/groups': [
-		'Manajemen Grup',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
-	'/users': [
-		'Manajemen Pengguna',
-		'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat, reprehenderit.',
-	],
+	'/': ['Dashboard'],
+	'/analysis': ['Analysis'],
+	'/data': ['Data'],
+	'/group': ['Grup'],
+	'/activity': ['Aktivitas'],
+	'/users': ['Manajemen Pengguna'],
+	'/groups': ['Manajemen Grup'],
+	'/nodes': ['Manajemen Node'],
 };
 export default function Header({ ...props }: HeaderProps) {
 	const [headerText, setHeaderText] = useState<String[]>(['', '']);
@@ -44,10 +24,10 @@ export default function Header({ ...props }: HeaderProps) {
 	return (
 		<Box
 			p="5"
-			borderBottom='1px solid var(--chakra-colors-gray-200)'
+			borderBottom="1px solid var(--chakra-colors-gray-200)"
 			{...props}
 		>
-			<Heading color='gray.600' size="md" children={headerText[0]} />
+			<Heading color="gray.600" size="md" children={headerText[0]} />
 		</Box>
 	);
 }
