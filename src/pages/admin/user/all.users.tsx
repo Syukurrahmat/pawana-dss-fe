@@ -1,10 +1,11 @@
 import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
-import { HStack, Center, Heading, Spacer, Input, Button, Tag, Avatar, Text, IconButton, Flex, Link} from '@chakra-ui/react'; //prettier-ignore
-import { IconEdit, IconExternalLink, IconPlus, IconTrash, IconUser} from '@tabler/icons-react'; //prettier-ignore
-import moment from 'moment';
+import { HStack, Spacer, Input, Button, Avatar, Text, Flex, Link} from '@chakra-ui/react'; //prettier-ignore
+import { IconExternalLink, IconPlus, IconUser} from '@tabler/icons-react'; //prettier-ignore
 import DataTable from '@/components/DataTable';
 import { API_URL } from '@/config';
 import { useNavigate, Link as RLink } from 'react-router-dom';
+import HeadingWithIcon from '@/components/common/headingWithIcon';
+import { toFormatedDate } from '@/utils/index.utils';
 
 const columnHelper = createColumnHelper<UserData>();
 export const userscolumns = [
@@ -32,7 +33,7 @@ export const userscolumns = [
 	}),
 	columnHelper.accessor('createdAt', {
 		header: 'Dibuat pada',
-		cell: (info) => moment(info.getValue()).format('DD MMM YYYY'),
+		cell: (info) => toFormatedDate(info.getValue()),
 		meta: { sortable: true },
 	}),
 	columnHelper.accessor('userId', {
@@ -59,20 +60,8 @@ export default function UserManagement() {
 	return (
 		<Flex gap="4" flexDir="column">
 			<HStack w="full" spacing="4" align="start">
-				<HStack spacing="3">
-					<Center
-						boxSize="30px"
-						boxShadow="xs"
-						bg="gray.100"
-						rounded="md"
-						p="1"
-					>
-						<IconUser />
-					</Center>
-					<Heading fontSize="xl" fontWeight="600">
-						Daftar Pengguna
-					</Heading>
-				</HStack>
+				<HeadingWithIcon Icon={<IconUser />} text="Daftar Pengguna" />
+
 				<Spacer />
 				<Input type="text" w="200px" bg="white" placeholder="Cari .." />
 				<Button

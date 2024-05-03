@@ -15,8 +15,8 @@ export default function SectionTitle({ IconEl, ...rest }: ISectionTitle) {
 			borderBottom="1px solid"
 			borderColor="gray.300"
 		>
-			{IconEl && <Icon as={IconEl} boxSize="18px" />}
-			<Heading fontSize="lg" fontWeight="600" {...rest} />
+			{IconEl && <Icon as={IconEl} boxSize="20px" />}
+			<Heading fontSize="xl" fontWeight="600" {...rest} />
 		</HStack>
 	);
 }

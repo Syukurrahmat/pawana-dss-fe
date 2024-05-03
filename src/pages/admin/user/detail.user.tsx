@@ -1,11 +1,36 @@
 import { API_URL } from '@/config';
 import { capitalizeString, fetcher } from '@/utils/index.utils';
-import { Avatar, Box, Container, Divider, HStack, Heading, Tag, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Button, Center, Spacer, useDisclosure, Link} from '@chakra-ui/react';
+import {
+	Avatar,
+	Box,
+	Container,
+	Divider,
+	HStack,
+	Heading,
+	Tag,
+	Text,
+	Table,
+	Thead,
+	Tbody,
+	Tfoot,
+	Tr,
+	Th,
+	Td,
+	TableCaption,
+	TableContainer,
+	Button,
+	Center,
+	Spacer,
+	useDisclosure,
+	Link,
+} from '@chakra-ui/react';
 import {
 	IconAddressBook,
 	IconAlertTriangle,
 	IconAuth2fa,
+	IconCirclePlus,
 	IconEdit,
+	IconExternalLink,
 	IconLock,
 	IconMail,
 	IconPhone,
@@ -19,13 +44,66 @@ import useSWR from 'swr';
 import EditUserModal from './editModal.user';
 import EditPasswordModal from './editPassModal.user';
 import SectionTitle from '@/components/common/sectionTitle';
-import {Link as RLink} from 'react-router-dom'
+import { Link as RLink } from 'react-router-dom';
+import HeadingWithIcon from '@/components/common/headingWithIcon';
+import InputSearch from '@/components/form/inputSearch';
+import DataTable from '@/components/DataTable';
+import { createColumnHelper } from '@tanstack/react-table';
+import AddGroupModal from './addGroupModal.user';
 
 const statusColor: { [key: string]: string } = {
 	approved: 'blue',
 	pending: 'orange',
 	rejected: 'red',
 };
+
+const columnHelper = createColumnHelper<groupOfUserData>();
+
+const column = [
+	columnHelper.accessor('name', {
+		header: 'Nama',
+		cell: (info) => info.getValue(),
+		meta: { sortable: true },
+	}),
+	columnHelper.accessor('GroupPermissions.permission', {
+		header: 'Peran',
+		cell: (info) => (
+			<Tag colorScheme={info.getValue() == 'manager' ? 'blue' : 'green'}>
+				{info.getValue()}
+			</Tag>
+		),
+	}),
+
+	columnHelper.accessor('GroupPermissions.requestStatus', {
+		header: 'Status',
+		cell: (info) => (
+			<Tag colorScheme={statusColor[info.getValue()] || 'red'}>
+				{info.getValue()}
+			</Tag>
+		),
+	}),
+	columnHelper.accessor('GroupPermissions.joinedAt', {
+		header: 'bergabung pada',
+		cell: (info) => info.getValue() ? moment(info.getValue()).format('DD MMM YYYY') : "",
+	}),
+
+	columnHelper.accessor('groupId', {
+		header: 'Aksi',
+		cell: (info) => (
+			<HStack>
+				<RLink to={'../groups/' + info.getValue()}>
+					<Button
+						colorScheme="blue"
+						size="xs"
+						leftIcon={<IconExternalLink size="16" />}
+					>
+						Detail
+					</Button>
+				</RLink>
+			</HStack>
+		),
+	}),
+];
 
 export default function DetailUser() {
 	let { id } = useParams();
@@ -43,6 +121,12 @@ export default function DetailUser() {
 	} = useDisclosure();
 
 	const {
+		isOpen: addGroupIsOpen,
+		onOpen: addGroupOnOpen,
+		onClose: addGroupOnClose,
+	} = useDisclosure();
+
+	const {
 		data: rawData,
 		isLoading,
 		error,
@@ -55,22 +139,7 @@ export default function DetailUser() {
 
 	return (
 		<>
-			<HStack w="full" spacing="4" align="start">
-				<HStack spacing="3">
-					<Center
-						boxSize="30px"
-						boxShadow="xs"
-						bg="gray.100"
-						rounded="md"
-						p="1"
-					>
-						<IconUserBolt />
-					</Center>
-					<Heading fontSize="xl" fontWeight="600">
-						Detail Akun
-					</Heading>
-				</HStack>
-			</HStack>
+			<HeadingWithIcon Icon={<IconUserBolt />} text="Detail Akun" />
 			<Container mt="8" maxW="container.md">
 				<HStack spacing="6">
 					<Avatar rounded="md" size="2xl" name={data.name} />
@@ -124,63 +193,39 @@ export default function DetailUser() {
 				<SectionTitle IconEl={IconUsersGroup}>
 					Grup yang diikuti
 				</SectionTitle>
-
-				<TableContainer shadow="xs" rounded="md" mt="4">
-					<Table variant="striped" size="md">
-						<Thead>
-							<Tr>
-								<Th>Nama Group</Th>
-								<Th>Peran</Th>
-								<Th>Status</Th>
-								<Th>Bergabung pada</Th>
-								<Th>Aksi</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							{data.groups.map((e: any, i: any) => (
-								<Tr key={i}>
-									<Td>{e.name}</Td>
-									<Td>
-										<Tag
-											colorScheme={
-												e.permission == 'member' ? 'green' : 'blue'
-											}
-											children={capitalizeString(e.permission)}
-										/>
-									</Td>
-									<Td>
-										<Tag
-											colorScheme={
-												statusColor[e.requestStatus] || 'red'
-											}
-											children={capitalizeString(e.requestStatus)}
-										/>
-									</Td>
-									<Td>
-										{e.requestStatus == 'approved'
-											? moment(e.joinedAt).format('DD MMM YYYY')
-											: ''}
-									</Td>
-									<Td>
-										<HStack>
-											<Button size="xs" colorScheme="red">
-												Hapus
-											</Button>
-											{e.requestStatus == 'approved' && (
-												<RLink to={'../groups/'+ id}>
-
-												<Button size="xs" colorScheme="blue">
-													Lihat Grup
-												</Button>
-												</RLink>
-											)}
-										</HStack>
-									</Td>
-								</Tr>
-							))}
-						</Tbody>
-					</Table>
-				</TableContainer>
+				<SectionTitle IconEl={IconUsersGroup}>
+					Daftar Pelanggan
+					<Tag colorScheme="blue" ml="2">
+						{data.membersCount | 0}
+					</Tag>
+				</SectionTitle>
+				<HStack mt="4" justify="space-between">
+					<Button
+						size="sm"
+						colorScheme="blue"
+						variant="outline"
+						leftIcon={<IconCirclePlus size="18" />}
+						onClick={addGroupOnOpen}
+					>
+						Tambahkan grup
+					</Button>
+					<InputSearch
+						rounded="md"
+						size="sm"
+						bg="white"
+						placeholder="Cari Grup"
+					/>
+				</HStack>
+				<DataTable
+					maxH="400px"
+					mt="4"
+					apiUrl={API_URL + '/users/' + id + '/groups'}
+					columns={column}
+					emptyMsg={[
+						'Belum ada Group',
+						'Tambahkan Group sekarang',
+					]}
+				/>
 				<SectionTitle IconEl={IconLock}>Autentikasi</SectionTitle>
 
 				<HStack justify="space-between">
@@ -203,6 +248,12 @@ export default function DetailUser() {
 				onClose={editPassOnClose}
 				isOpen={editPassIsOpen}
 			/>
+			<AddGroupModal
+				data={data}
+				onClose={addGroupOnClose}
+				isOpen={addGroupIsOpen}
+			/>
+
 		</>
 	);
 }

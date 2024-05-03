@@ -1,11 +1,9 @@
 import { API_URL } from '@/config';
-import { buildMapURL, fetcher } from '@/utils/index.utils';
+import { buildMapURL, fetcher, toFormatedDate } from '@/utils/index.utils';
 import { Avatar, Box, Container, HStack, Heading, Tag, Text, Button, Center, useDisclosure, Link, TagLeftIcon, TagLabel, Skeleton} from '@chakra-ui/react'; //prettier-ignore
 import { IconAddressBook, IconBrandGoogleMaps, IconCircleDot, IconCirclePlus, IconEdit, IconExternalLink, IconTextCaption, IconUser, IconUserHeart, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
-import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import EditGroupModal from './editModal.node';
 import SectionTitle from '@/components/common/sectionTitle';
 import InputSearch from '@/components/form/inputSearch';
 import DataTable from '@/components/DataTable';
@@ -15,8 +13,8 @@ import MyMap from '@/components/maps/index.maps';
 import { useState } from 'react';
 import EditNodeModal from './editModal.node';
 
-const usersColumnHelper = createColumnHelper<userBelongToGroup>();
-const nodesColumnHelper = createColumnHelper<nodeBelongToGroup>();
+const usersColumnHelper = createColumnHelper<userOfGroupData>();
+const nodesColumnHelper = createColumnHelper<nodeOfGroupData>();
 
 const nodesColumns = [
 	nodesColumnHelper.accessor('name', {
@@ -95,7 +93,7 @@ const usersColumns = [
 	}),
 	usersColumnHelper.accessor('GroupPermissions.joinedAt', {
 		header: 'Bergabung pada',
-		cell: (info) => moment(info.getValue()).format('DD MMM YYYY'),
+		cell: (info) => toFormatedDate(info.getValue()),
 		meta: { sortable: true },
 	}),
 	usersColumnHelper.accessor('userId', {
@@ -165,7 +163,7 @@ export default function DetailNode() {
 						<HStack mt="2">
 							<Tag size="md" variant="subtle" colorScheme="green">
 								<TagLeftIcon boxSize="16px" as={IconUser} />
-								<TagLabel>{data.memberCount | 0} Pelanggan</TagLabel>
+								<TagLabel>{data.membersCount | 0} Pelanggan</TagLabel>
 							</Tag>
 							<Tag size="md" variant="subtle" colorScheme="blue">
 								<TagLeftIcon boxSize="16px" as={IconCircleDot} />
@@ -235,7 +233,7 @@ export default function DetailNode() {
 				<SectionTitle IconEl={IconUsersGroup}>
 					Daftar Pelanggan
 					<Tag colorScheme="blue" ml="2">
-						{data.memberCount | 0}
+						{data.membersCount | 0}
 					</Tag>
 				</SectionTitle>
 				<HStack mt="4" justify="space-between">

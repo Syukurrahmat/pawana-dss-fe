@@ -135,8 +135,8 @@ export default function DataTable({
 						{!isLoading && !data.length && (
 							<Tr>
 								<Td colSpan={9999}>
-									<VStack spacing="4" color="gray.500">
-										<Text fontSize="3xl" fontWeight="500">
+									<VStack py='2' color="gray.500">
+										<Text fontSize="2xl" fontWeight="500">
 											{emptyMsg ? emptyMsg[0] : 'Tidak ada data'}
 										</Text>
 										<Text>{emptyMsg ? emptyMsg[1] : ''}</Text>

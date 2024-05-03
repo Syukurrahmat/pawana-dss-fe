@@ -1,79 +1,60 @@
+import { HStack, Center, Spacer, Input, Button, Tag, Avatar, Text, Flex, Box, Link} from '@chakra-ui/react'; //prettier-ignore
+import { IconBrandGoogleMaps, IconCircleDot, IconExternalLink, IconPlus} from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
-import { HStack, Center, Heading, Spacer, Input, Button, Tag, Avatar, Text, Flex, Box} from '@chakra-ui/react'; //prettier-ignore
-import { IconCircleDot, IconCircleDotFilled, IconCircleDotted, IconExternalLink, IconPlus, IconUser} from '@tabler/icons-react'; //prettier-ignore
-import moment from 'moment';
+import HeadingWithIcon from '@/components/common/headingWithIcon';
+import { useNavigate, Link as RLink } from 'react-router-dom';
 import DataTable from '@/components/DataTable';
 import { API_URL } from '@/config';
-import { useNavigate, Link as RLink } from 'react-router-dom';
-import HeadingWithIcon from '@/components/common/headingWithIcon';
 import { useState } from 'react';
+import moment from 'moment';
+import { buildMapURL } from '@/utils/index.utils';
 
-const columnHelper = createColumnHelper<GroupData>();
+const columnHelper = createColumnHelper<NodeData>();
+
 const columns = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
 		cell: (info) => info.getValue(),
 		meta: { sortable: true },
 	}),
+	columnHelper.accessor('status', {
+		header: 'Status',
+		cell: (info) => <Tag>{info.getValue()}</Tag>,
+	}),
 
-	columnHelper.accessor('address', {
-		header: 'Alamat',
+	columnHelper.accessor('environment', {
+		header: 'Lokasi',
 		cell: (info) => (
-			<Text noOfLines={2} whiteSpace="wrap">
+			<Tag colorScheme={info.getValue() == 'indoor' ? 'blue' : 'green'}>
 				{info.getValue()}
-			</Text>
+			</Tag>
 		),
 	}),
-	columnHelper.accessor('memberCount', {
-		header: 'Pelanggan',
+
+	columnHelper.accessor((row) => [row.latitude, row.longitude], {
+		header: 'Koordinat',
 		cell: (info) => (
-			<Tag colorScheme="green">{info.getValue() + ' Pelanggan'}</Tag>
+			<Link
+				href={buildMapURL(info.getValue()[0], info.getValue()[1])}
+				target={'_blank'}
+			>
+				<Button
+					size="xs"
+					colorScheme="blue"
+					variant="outline"
+					leftIcon={<IconBrandGoogleMaps size="18" />}
+				>
+					Google map
+				</Button>
+			</Link>
 		),
 	}),
-	columnHelper.accessor('nodeCount', {
-		header: 'Node',
-		cell: (info) => <Tag colorScheme="blue">{info.getValue() + ' Node'}</Tag>,
-	}),
-	columnHelper.accessor('manager', {
-		header: 'Manager',
-		cell: (info) =>
-			info.getValue().name ? (
-				<RLink to={'../users/' + info.getValue().userId}>
-					<Button
-						size="sm"
-						py="5"
-						variant="outline"
-						w="full"
-						justifyContent="left"
-						leftIcon={<Avatar size="sm" name={info.getValue().name} />}
-						children={info.getValue().name}
-					/>
-				</RLink>
-			) : (
-				<Center
-					border="1px"
-					borderColor="gray.200"
-					fontWeight="500"
-					fontSize="sm"
-					rounded="md"
-					p="2.5"
-				>
-					Belum Diatur
-				</Center>
-			),
-	}),
 
-	columnHelper.accessor('createdAt', {
-		header: 'Dibuat pada',
-		cell: (info) => moment(info.getValue()).format('DD MMM YYYY'),
-		meta: { sortable: true },
-	}),
-
-	columnHelper.accessor('groupId', {
+	columnHelper.accessor('nodeId', {
 		header: 'Aksi',
 		cell: (info) => (
 			<HStack>
-				<RLink to={'/groups/' + info.getValue()}>
+				<RLink to={'/users/' + info.getValue()}>
 					<Button
 						colorScheme="blue"
 						size="xs"
@@ -102,21 +83,13 @@ export default function NodeManagement() {
 					leftIcon={<IconPlus size="20px" />}
 					colorScheme="green"
 				>
-					Tambah Pengguna
+					Tambah Node
 				</Button>
 			</HStack>
 
-			<Box rounded='md' shadow='xs'>
-				
-			</Box>
-
-
-
-
-
 			<DataTable
 				flexGrow="1"
-				apiUrl={API_URL + '/groups'}
+				apiUrl={API_URL + '/nodes'}
 				columns={columns}
 			/>
 		</Flex>

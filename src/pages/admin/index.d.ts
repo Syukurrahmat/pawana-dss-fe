@@ -15,12 +15,27 @@ declare type GroupData = {
 	name: string;
 	address: string;
 	createdAt: string;
-	memberCount: number;
+	membersCount: number;
+	memberRequestsCount: number;
 	nodeCount: number;
 	manager: {
 		userId: number;
 		name: string;
 	}
+}
+
+declare type NodeData = {
+	nodeId: number;
+	name: string;
+	longitude: number;
+	latitude: number;
+	status: string;
+	environment: 'indoor' | 'outdoor';
+	group: {
+		groupId: number
+		name: string,
+	},
+	lastUpdateAt: string | null,
 }
 
 declare type PaginationDataRes = {
@@ -31,12 +46,7 @@ declare type PaginationDataRes = {
 	result: any[]
 }
 
-declare type usersAPIData = {
-	result: UserData[];
-}
-
-
-declare type userBelongToGroup = {
+declare type userOfGroupData = {
 	userId: number;
 	name: string;
 	profilePicture: string;
@@ -44,10 +54,20 @@ declare type userBelongToGroup = {
 		permission: 'member' | 'manager';
 		joinedAt: string;
 		requestStatus: 'approved' | 'pending' | 'rejected';
+		requestJoinAt: string,
+	}
+}
+declare type groupOfUserData = {
+	groupId: number
+	name: string
+	GroupPermissions: {
+		permission: string,
+		joinedAt: string
+		requestStatus: string
 	}
 }
 
-declare type nodeBelongToGroup = {
+declare type nodeOfGroupData = {
 	nodeId: number,
 	name: string,
 	longitude: number,
@@ -56,11 +76,22 @@ declare type nodeBelongToGroup = {
 	environment: 'indoor' | 'outdoor',
 }
 
-declare type nodeDataMap = {
-	nodeId: number;
-	name: string;
-	longitude: number;
-	latitude: number;
-	status: string;
-	environment: 'indoor' | 'outdoor';
-};
+
+declare type detailOfGroupData = {
+	groupId: number,
+	name: string,
+	description: string,
+	address: string,
+	createdAt: string,
+	updatedAt: string,
+	membersCount: number,
+	nodeCount: number,
+	memberRequestsCount: number,
+	manager: {
+		userId: number,
+		name: string,
+		phone: string,
+		profilePicture: string,
+		email: string,
+	}
+}

@@ -13,9 +13,9 @@ export default function Sidebar({ ...props }: SidebarProps) {
 		{ Icon: IconDatabase, label: 'Data', path: '/data' },
 		{ Icon: IconUsersGroup, label: 'Grup', path: '/group' },
 		{ Icon: IconBuildingFactory, label: 'Activitas', path: '/activity' },
-		{ Icon: IconUsersGroup, label: 'Manajemen Grup', path: '/groups' },
-		{ Icon: IconUser, label: 'Manajemen Pengguna', path: '/users' },
-		{ Icon: IconCircleDot, label: 'Manajemen Node', path: '/nodes' },
+		{ Icon: IconUser, label: 'Kelola Pengguna', path: '/users' },
+		{ Icon: IconUsersGroup, label: 'Kelola Grup', path: '/groups' },
+		{ Icon: IconCircleDot, label: 'Kelola Node', path: '/nodes' },
 	];
 
 	return (

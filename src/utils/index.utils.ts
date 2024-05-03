@@ -1,3 +1,6 @@
+import moment from "moment";
+import { string } from "yup";
+
 export const fetcher = async (...args: Parameters<typeof fetch>) => {
     const res = await fetch(...args);
     return await res.json();
@@ -63,3 +66,5 @@ export const buildMapURL = (latitude: number, longitude: number): string => {
     return `https://www.google.com/maps?q=${latitude},${longitude}`;
 };
 
+
+export const toFormatedDate = (str : string) => str ? moment(str).format('DD MMM YYYY') : ""

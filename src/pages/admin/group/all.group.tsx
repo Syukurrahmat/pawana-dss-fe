@@ -1,10 +1,11 @@
 import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
-import { HStack, Center, Heading, Spacer, Input, Button, Tag, Avatar, Text, Flex} from '@chakra-ui/react'; //prettier-ignore
-import { IconExternalLink, IconPlus, IconUser} from '@tabler/icons-react'; //prettier-ignore
-import moment from 'moment';
+import { HStack, Center, Spacer, Input, Button, Tag, Avatar, Text, Flex, VStack} from '@chakra-ui/react'; //prettier-ignore
+import { IconExternalLink, IconPlus, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
 import DataTable from '@/components/DataTable';
 import { API_URL } from '@/config';
 import { useNavigate, Link as RLink } from 'react-router-dom';
+import HeadingWithIcon from '@/components/common/headingWithIcon';
+import { toFormatedDate } from '@/utils/index.utils';
 
 const columnHelper = createColumnHelper<GroupData>();
 const columns = [
@@ -22,13 +23,22 @@ const columns = [
 			</Text>
 		),
 	}),
-	columnHelper.accessor('memberCount', {
+	columnHelper.accessor((row) => [row.membersCount, row.memberRequestsCount], {
 		header: 'Pelanggan',
-		cell: (info) => <Tag colorScheme="green">{info.getValue() + " Pelanggan"}</Tag>,
+		cell: (info) => (
+			<VStack>
+				<Tag colorScheme="green">{info.getValue()[0] + ' Pelanggan'}</Tag>
+				{Boolean(info.getValue()[1]) && (
+					<Tag colorScheme="orange">
+						{info.getValue()[1] + ' Permintaan'}
+					</Tag>
+				)}
+			</VStack>
+		),
 	}),
 	columnHelper.accessor('nodeCount', {
 		header: 'Node',
-		cell: (info) => <Tag colorScheme="blue">{info.getValue() +  " Node"}</Tag>,
+		cell: (info) => <Tag colorScheme="blue">{info.getValue() + ' Node'}</Tag>,
 	}),
 	columnHelper.accessor('manager', {
 		header: 'Manager',
@@ -61,7 +71,7 @@ const columns = [
 
 	columnHelper.accessor('createdAt', {
 		header: 'Dibuat pada',
-		cell: (info) => moment(info.getValue()).format('DD MMM YYYY'),
+		cell: (info) => toFormatedDate(info.getValue()),
 		meta: { sortable: true },
 	}),
 
@@ -89,20 +99,7 @@ export default function UserManagement() {
 	return (
 		<Flex gap="4" flexDir="column">
 			<HStack w="full" spacing="4" align="start">
-				<HStack spacing="3">
-					<Center
-						boxSize="30px"
-						boxShadow="xs"
-						bg="gray.100"
-						rounded="md"
-						p="1"
-					>
-						<IconUser />
-					</Center>
-					<Heading fontSize="xl" fontWeight="600">
-						Daftar Pengguna
-					</Heading>
-				</HStack>
+				<HeadingWithIcon Icon={<IconUsersGroup />} text="Daftar Grup" />
 				<Spacer />
 				<Input type="text" w="200px" bg="white" placeholder="Cari .." />
 				<Button
@@ -110,7 +107,7 @@ export default function UserManagement() {
 					leftIcon={<IconPlus size="20px" />}
 					colorScheme="green"
 				>
-					Tambah Pengguna
+					Tambah Grup
 				</Button>
 			</HStack>
 			<DataTable

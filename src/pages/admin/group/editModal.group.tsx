@@ -11,7 +11,7 @@ import axios from 'axios';
 interface IEUModal {
 	isOpen: boolean;
 	onClose: () => void;
-	data: { [key: string]: string };
+	data: { [key: string]: string | any };
 	mutate: KeyedMutator<any>;
 }
 
@@ -24,7 +24,11 @@ export default function EditGroupModal({
 }: IEUModal) {
 	const toast = useToast();
 	const { name, description, address } = data;
-	const initialValues = { name, description, address };
+	const initialValues = {
+		name: name as string,
+		description: description as string,
+		address: address as string,
+	};
 
 	const {
 		handleChange,

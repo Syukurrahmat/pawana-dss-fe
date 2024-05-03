@@ -8,10 +8,6 @@ import Supercluster from 'supercluster';
 import { Box } from '@chakra-ui/react';
 import markerIcon from '@/assets/mapMarker.svg';
 
-interface IShowNodes {
-	data: nodeDataMap[];
-}
-
 const icons: { [key: number]: DivIcon } = {};
 
 const fetchIcon = (count: number, size: number) => {
@@ -31,7 +27,7 @@ const cuffs = new L.Icon({
 	iconSize: [32, 32],
 });
 
-export default function ShowNodes({ data }: IShowNodes) {
+export default function ShowNodes({ data }: { data: locationObj[] }) {
 	const maxZoom = 22;
 	const [bounds, setBounds] = useState<number[]>();
 	const [zoom, setZoom] = useState(12);
@@ -64,7 +60,7 @@ export default function ShowNodes({ data }: IShowNodes) {
 	}, [map, onMove]);
 
 	const { clusters, supercluster } = useSupercluster<
-		nodeDataMap & ClusterProperties
+		locationObj & ClusterProperties
 	>({
 		// @ts-ignore
 		points: data.map((point) => ({
@@ -75,7 +71,10 @@ export default function ShowNodes({ data }: IShowNodes) {
 			},
 			geometry: {
 				type: 'Point',
-				coordinates: [point.longitude, point.latitude],
+				coordinates: [
+					parseFloat(point.longitude),
+					parseFloat(point.latitude),
+				],
 			},
 		})),
 		bounds: bounds as any,
@@ -85,7 +84,7 @@ export default function ShowNodes({ data }: IShowNodes) {
 
 	return (
 		<>
-			{clusters.map(({ properties, geometry, ...cluster }, i) => {
+			{clusters.map(({ properties, geometry }, i) => {
 				const [longitude, latitude] = geometry.coordinates;
 				const {
 					cluster: isCluster,
@@ -100,7 +99,7 @@ export default function ShowNodes({ data }: IShowNodes) {
 							position={[latitude, longitude]}
 							icon={fetchIcon(
 								pointCount,
-								30 + (pointCount / data.length) * 40
+								20 + (pointCount / data.length) * 40
 							)}
 							eventHandlers={{
 								click: () => {
