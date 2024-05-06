@@ -1,7 +1,7 @@
 import { Box, Card, CardBody, CardHeader, Center, Container, Flex, HStack, Heading, Image, Text, VStack, FormControl, FormLabel, FormHelperText, Input, Button, InputGroup, InputRightElement, IconButton, useToast, FormErrorMessage, InputProps } from '@chakra-ui/react'; // prettier-ignore
 import logo from '@/assets/icon.svg';
 import { useState } from 'react';
-import { HOST_URL } from '@/config';
+import { HOST_URL } from '@/constants/config';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import InputPassword from '@/components/form/inputPassword';

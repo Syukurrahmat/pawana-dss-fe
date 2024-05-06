@@ -33,3 +33,11 @@ export const confirmPassword = Yup.string()
     .trim()
     .oneOf([Yup.ref('newPassword')], 'Kata sandi tidak sama')
 
+export const nodeStatus = Yup.string()
+    .trim()
+    .oneOf(['normal', 'maintenance', 'nonactive'], 'Tidak valid')
+
+export const environment = Yup.string()
+    .trim()
+    .oneOf(['indoor', 'outdoor'], 'Tidak valid')
+

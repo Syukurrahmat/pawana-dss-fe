@@ -4,10 +4,10 @@ import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
 import HeadingWithIcon from '@/components/common/headingWithIcon';
 import { useNavigate, Link as RLink } from 'react-router-dom';
 import DataTable from '@/components/DataTable';
-import { API_URL } from '@/config';
+import { API_URL } from '@/constants/config';
 import { useState } from 'react';
 import moment from 'moment';
-import { buildMapURL } from '@/utils/index.utils';
+import { buildMapURL, toFormatedDate } from '@/utils/index.utils';
 
 const columnHelper = createColumnHelper<NodeData>();
 
@@ -49,12 +49,17 @@ const columns = [
 			</Link>
 		),
 	}),
+	columnHelper.accessor('lastDataSent', {
+		header: 'Terakhir data dikirim',
+		cell: (info) =>
+			info.getValue() ? toFormatedDate(info.getValue() || "") : 'Belum mengirim data'
+	}),
 
 	columnHelper.accessor('nodeId', {
 		header: 'Aksi',
 		cell: (info) => (
 			<HStack>
-				<RLink to={'/users/' + info.getValue()}>
+				<RLink to={'/nodes/' + info.getValue()}>
 					<Button
 						colorScheme="blue"
 						size="xs"
@@ -70,7 +75,6 @@ const columns = [
 
 export default function NodeManagement() {
 	const navigate = useNavigate();
-	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
 
 	return (
 		<Flex gap="4" flexDir="column">

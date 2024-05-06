@@ -1,6 +1,6 @@
 import * as valSchema from '@/utils/validator.utils';
 import * as Yup from 'yup';
-import { API_URL } from '@/config';
+import { API_URL } from '@/constants/config';
 import {
 	Button,
 	FormControl,
@@ -43,8 +43,6 @@ export default function CreateGroup() {
 			axios
 				.post(API_URL + '/groups', trimAllValues(values))
 				.then(({ data }) => {
-					console.log(data);
-
 					setSubmitting(false);
 					data.success
 						? toast({

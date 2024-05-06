@@ -6,6 +6,7 @@ import {
 	Marker,
 	TileLayer,
 	Tooltip,
+	useMapEvents,
 } from 'react-leaflet';
 import ShowNodes from './showNodes';
 
@@ -21,7 +22,7 @@ export default function MyMap({ data }: IMyMap) {
 				height: '250px',
 				flex: '1 0 60%',
 			}}
-			boundsOptions={{ padding: [50, 50] }}
+			boundsOptions={{ padding: [10, 10] }}
 			zoom={13}
 		>
 			<TileLayer
@@ -51,4 +52,14 @@ export function getBonds(nodes: locationObj[]) {
 	}
 
 	return latLngBounds([x_min, y_max], [x_max, y_min]);
+}
+
+export function CoordinateGetter({ onDragend }: { onDragend: any }) {
+	const map = useMapEvents({
+		dragend: () => {
+			const { lat, lng } = map.getCenter();
+			onDragend({ lat, lng });
+		},
+	});
+	return null;
 }

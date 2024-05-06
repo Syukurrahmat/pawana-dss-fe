@@ -35,7 +35,7 @@ declare type NodeData = {
 		groupId: number
 		name: string,
 	},
-	lastUpdateAt: string | null,
+	lastDataSent: string | null,
 }
 
 declare type PaginationDataRes = {
@@ -64,6 +64,7 @@ declare type groupOfUserData = {
 		permission: string,
 		joinedAt: string
 		requestStatus: string
+		requestJoinAt:string
 	}
 }
 
@@ -95,3 +96,23 @@ declare type detailOfGroupData = {
 		email: string,
 	}
 }
+
+
+
+
+declare type searchUserWithSubsResult = {
+	userId: number
+	profilePicture: string
+	name: string
+	isInGroup: boolean
+}
+
+declare type searchGroupWithSubsResult = {
+	groupId: number
+	name: string
+	status: 'approved' | 'pending' | 'rejected' | 'dismissed'
+}
+
+
+
+

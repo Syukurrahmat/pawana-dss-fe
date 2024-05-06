@@ -6,26 +6,11 @@ import { Marker, Tooltip, useMap } from 'react-leaflet';
 import supercluster, { ClusterProperties, PointFeature } from 'supercluster';
 import Supercluster from 'supercluster';
 import { Box } from '@chakra-ui/react';
-import markerIcon from '@/assets/mapMarker.svg';
+import redMarkerIconSvg from '@/assets/mapMarker-red.svg';
+import yellowMarkerIconSvg from '@/assets/mapMarker-yellow.svg';
+import { fetchIcon, redMarkerIcon, yellowMarkerIcon } from './customMarker';
 
-const icons: { [key: number]: DivIcon } = {};
 
-const fetchIcon = (count: number, size: number) => {
-	if (!icons[count]) {
-		icons[count] = L.divIcon({
-			html: `<div class="cluster-marker" style="width: ${size}px; height: ${size}px;">${count}</div>`,
-			iconAnchor: [size / 2, size / 2],
-		});
-	}
-
-	return icons[count];
-};
-
-const cuffs = new L.Icon({
-	iconUrl: markerIcon,
-	iconAnchor: [16, 29],
-	iconSize: [32, 32],
-});
 
 export default function ShowNodes({ data }: { data: locationObj[] }) {
 	const maxZoom = 22;
@@ -118,7 +103,15 @@ export default function ShowNodes({ data }: { data: locationObj[] }) {
 				}
 
 				return (
-					<Marker key={i} position={[latitude, longitude]} icon={cuffs}>
+					<Marker
+						key={i}
+						position={[latitude, longitude]}
+						icon={
+							properties.environment == 'indoor'
+								? yellowMarkerIcon
+								: redMarkerIcon
+						}
+					>
 						<Tooltip>
 							ekekeke
 							<br />

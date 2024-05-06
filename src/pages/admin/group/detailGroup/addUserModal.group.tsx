@@ -6,10 +6,8 @@ import InputSearch from '@/components/form/inputSearch';
 import { RowSelectionState, createColumnHelper } from '@tanstack/react-table';
 import DataTable from '@/components/DataTable';
 import { useParams } from 'react-router-dom';
-import { mutate } from 'swr';
 
-const columnHelper = createColumnHelper<searchGroupWithSubsResult>();
-
+const columnHelper = createColumnHelper<searchUserWithSubsResult>();
 const columns = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
@@ -22,37 +20,20 @@ const columns = [
 	}),
 	columnHelper.display({
 		header: 'Pilih',
-		cell: ({ row }) => {
-			switch (row.original.status) {
-				case 'approved':
-					return (
-						<Text
-							fontSize="sm"
-							fontStyle="italic"
-							children="Sudah terdaftar"
-						/>
-					);
-
-				case 'pending':
-					return (
-						<Text
-							fontSize="sm"
-							fontStyle="italic"
-							children="Menunggu persetujuan"
-						/>
-					);
-				default:
-					return (
-						<Checkbox
-							size="lg"
-							bg='white'
-							isChecked={row.getIsSelected()}
-							isDisabled={!row.getCanSelect()}
-							onChange={row.getToggleSelectedHandler()}
-						/>
-					);
-			}
-		},
+		cell: ({ row }) =>
+			row.original.isInGroup ? (
+				<Text fontSize="sm" fontStyle="italic">
+					Sudah terdaftar
+				</Text>
+			) : (
+				<Checkbox
+					size="lg"
+					bg="white"
+					isChecked={row.getIsSelected()}
+					isDisabled={!row.getCanSelect()}
+					onChange={row.getToggleSelectedHandler()}
+				/>
+			),
 	}),
 ];
 
@@ -61,21 +42,22 @@ interface IAddGroupModal {
 	onClose: () => void;
 }
 
-export default function AddGroupModal({
+export default function AddUserModal({
 	isOpen,
 	onClose,
 	...rest
 }: IAddGroupModal) {
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 	const [searchValue, setSearchValue] = useState('');
+	const [searchResult, setSearchResult] = useState(null);
 	const [isSubmiting, setIsSubmiting] = useState(false);
-	const { id: userId } = useParams();
+	const { id: groupId } = useParams();
 	const toast = useToast();
 
 	const arrayOfrowSelection = Object.keys(rowSelection).map((e) => {
 		let xx = e.split('-');
-		let groupId = xx.shift();
-		return { id: e, groupId, name: xx.join('-') };
+		let userId = xx.shift();
+		return { id: e, userId, name: xx.join('-') };
 	});
 
 	const submitHandler = async () => {
@@ -90,9 +72,9 @@ export default function AddGroupModal({
 			return;
 		}
 		axios
-			.post(`${API_URL}/users/${userId}/groups`, {
-				groupIds: arrayOfrowSelection.map((e) =>
-					parseInt(e.groupId as string)
+			.post(`${API_URL}/groups/${groupId}/users`, {
+				userIds: arrayOfrowSelection.map((e) =>
+					parseInt(e.userId as string)
 				),
 			})
 			.then(({ data }) => {
@@ -110,7 +92,6 @@ export default function AddGroupModal({
 						status: 'success',
 					});
 					onClose();
-					mutate(key=> Array.isArray(key)  && key[0] ==  API_URL + '/users/' + userId + '/groups?not-approved=true')
 				}
 			});
 	};
@@ -130,19 +111,19 @@ export default function AddGroupModal({
 		>
 			<ModalOverlay />
 			<ModalContent>
-				<ModalHeader>Tambah Grup</ModalHeader>
+				<ModalHeader>Tambah Pelanggan</ModalHeader>
 				<ModalBody>
 					<InputSearch
-						placeholder="Cari Nama Grup"
+						placeholder="Cari Pengguna"
 						name="search"
 						w="100%"
 						_onSubmit={setSearchValue}
 					/>
-					<Box my="2" py="1" px='3' rounded="md" shadow="xs">
+					<Box my="2" py="1" px="3" rounded="md" shadow="xs">
 						<Box>
 							{arrayOfrowSelection.length ? (
 								arrayOfrowSelection.map((e) => (
-									<Tag mx="1" my="1" size="md" key={e.groupId}>
+									<Tag mx="1" my="1" size="md" key={e.userId}>
 										<TagLabel>{e.name}</TagLabel>
 										<TagCloseButton
 											onClick={() =>
@@ -156,19 +137,20 @@ export default function AddGroupModal({
 									</Tag>
 								))
 							) : (
-								<Text h='28px'>Belum ada grup yang dipilih</Text>
+								<Text h="28px">Belum ada grup yang dipilih</Text>
 							)}
 						</Box>
 					</Box>
 					{Boolean(searchValue) && (
 						<DataTable
 							mt="2"
-							apiUrl={`${API_URL}/search/groups?is-has-user=${userId}`}
+							apiUrl={`${API_URL}/users?is-in-group=${groupId}`}
 							searchQuery={searchValue}
 							columns={columns}
 							rowSelection={rowSelection}
 							setRowSelection={setRowSelection}
-							getRowId={(e: any) => `${e.groupId}-${e.name}`}
+							setDataContext={setSearchResult}
+							getRowId={(e: any) => `${e.userId}-${e.name}`}
 							emptyMsg={['Pengguna tidak ditemukan']}
 							maxH="250px"
 							withHeader={false}

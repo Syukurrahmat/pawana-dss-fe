@@ -4,7 +4,7 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody,
 import { useFormik } from 'formik';
 import { compareObjects, trimAllValues } from '@/utils/index.utils';
 import { useState } from 'react';
-import { API_URL } from '@/config';
+import { API_URL } from '@/constants/config';
 import { KeyedMutator } from 'swr';
 import axios from 'axios';
 
@@ -83,7 +83,7 @@ export default function EditGroupModal({
 							description: data.message,
 							status: 'success',
 						});
-						mutate();
+						mutate(null,{revalidate: true});
 						onClose();
 					}
 				});

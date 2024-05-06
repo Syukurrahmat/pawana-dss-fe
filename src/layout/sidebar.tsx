@@ -11,11 +11,10 @@ export default function Sidebar({ ...props }: SidebarProps) {
 		{ Icon: IconDashboard, label: 'Dashboard', path: '/' },
 		{ Icon: IconAnalyze, label: 'Analisis', path: '/analysis' },
 		{ Icon: IconDatabase, label: 'Data', path: '/data' },
-		{ Icon: IconUsersGroup, label: 'Grup', path: '/group' },
 		{ Icon: IconBuildingFactory, label: 'Activitas', path: '/activity' },
-		{ Icon: IconUser, label: 'Kelola Pengguna', path: '/users' },
-		{ Icon: IconUsersGroup, label: 'Kelola Grup', path: '/groups' },
+		{ Icon: IconUsersGroup, label: 'Grup', path: '/groups' },
 		{ Icon: IconCircleDot, label: 'Kelola Node', path: '/nodes' },
+		{ Icon: IconUser, label: 'Kelola Pengguna', path: '/users' },
 	];
 
 	return (

@@ -24,49 +24,53 @@ export const Pagination = ({ table, sizes, ...rest }: IPagination) => (
 			</Select>
 			<Text>item</Text>
 		</HStack>
-		<HStack>
-			<IconButton
-				aria-label="Sebelumnya"
-				icon={<IconChevronsLeft size="20" />}
-				variant="outline"
-				size="sm"
-				colorScheme="green"
-				isDisabled={!table.getCanPreviousPage()}
-				onClick={() => table.setPageIndex(0)}
-			/>
-			<IconButton
-				aria-label="Sebelumnya"
-				icon={<IconChevronLeft size="20" />}
-				variant="outline"
-				size="sm"
-				colorScheme="green"
-				isDisabled={!table.getCanPreviousPage()}
-				onClick={table.previousPage}
-			/>
+		{!(
+			table.getState().pagination.pageIndex == 0 && table.getPageCount() <= 1
+		) && (
+			<HStack>
+				<IconButton
+					aria-label="Sebelumnya"
+					icon={<IconChevronsLeft size="20" />}
+					variant="outline"
+					size="sm"
+					colorScheme="green"
+					isDisabled={!table.getCanPreviousPage()}
+					onClick={() => table.setPageIndex(0)}
+				/>
+				<IconButton
+					aria-label="Sebelumnya"
+					icon={<IconChevronLeft size="20" />}
+					variant="outline"
+					size="sm"
+					colorScheme="green"
+					isDisabled={!table.getCanPreviousPage()}
+					onClick={table.previousPage}
+				/>
 
-			<Text>
-				{table.getState().pagination.pageIndex + 1} dari{' '}
-				{table.getPageCount()}
-			</Text>
+				<Text>
+					{table.getState().pagination.pageIndex + 1} dari{' '}
+					{table.getPageCount()}
+				</Text>
 
-			<IconButton
-				aria-label="Sebelumnya"
-				icon={<IconChevronRight size="20" />}
-				variant="outline"
-				size="sm"
-				colorScheme="green"
-				isDisabled={!table.getCanNextPage()}
-				onClick={table.nextPage}
-			/>
-			<IconButton
-				aria-label="Sebelumnya"
-				icon={<IconChevronsRight size="20" />}
-				variant="outline"
-				size="sm"
-				colorScheme="green"
-				isDisabled={!table.getCanNextPage()}
-				onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-			/>
-		</HStack>
+				<IconButton
+					aria-label="Sebelumnya"
+					icon={<IconChevronRight size="20" />}
+					variant="outline"
+					size="sm"
+					colorScheme="green"
+					isDisabled={!table.getCanNextPage()}
+					onClick={table.nextPage}
+				/>
+				<IconButton
+					aria-label="Sebelumnya"
+					icon={<IconChevronsRight size="20" />}
+					variant="outline"
+					size="sm"
+					colorScheme="green"
+					isDisabled={!table.getCanNextPage()}
+					onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+				/>
+			</HStack>
+		)}
 	</HStack>
 );

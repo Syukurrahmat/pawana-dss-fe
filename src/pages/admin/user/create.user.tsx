@@ -1,6 +1,6 @@
 import * as valSchema from '@/utils/validator.utils';
 import * as Yup from 'yup';
-import { API_URL } from '@/config';
+import { API_URL } from '@/constants/config';
 import {
 	Button,
 	FormControl,

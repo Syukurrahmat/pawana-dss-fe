@@ -2,7 +2,7 @@ import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
 import { HStack, Spacer, Input, Button, Avatar, Text, Flex, Link} from '@chakra-ui/react'; //prettier-ignore
 import { IconExternalLink, IconPlus, IconUser} from '@tabler/icons-react'; //prettier-ignore
 import DataTable from '@/components/DataTable';
-import { API_URL } from '@/config';
+import { API_URL } from '@/constants/config';
 import { useNavigate, Link as RLink } from 'react-router-dom';
 import HeadingWithIcon from '@/components/common/headingWithIcon';
 import { toFormatedDate } from '@/utils/index.utils';
