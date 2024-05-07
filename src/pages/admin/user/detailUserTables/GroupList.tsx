@@ -1,16 +1,16 @@
 import { toFormatedDate } from '@/utils/index.utils';
-import { HStack, Tag, Button, useDisclosure} from '@chakra-ui/react'; //prettier-ignore
+import { HStack, Tag, Button} from '@chakra-ui/react'; //prettier-ignore
 import { IconCirclePlus, IconExternalLink } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import { Link as RLink } from 'react-router-dom';
 import InputSearch from '@/components/form/inputSearch';
 import DataTable from '@/components/DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
-import AddGroupModal from '../addGroupModal.user';
-import { useAlertDialog } from '@/layout';
-import { useMemo } from 'react';
+import AddGroupButton from './AddUserGroup';
+import { useAlertDialog } from '@/components/common/myAlert';
+import { useMemo, useState } from 'react';
 import { API_URL } from '@/constants/config';
-import { useSWRConfig } from 'swr';
+import axios from 'axios';
 
 const statusColor: { [key: string]: string } = {
 	approved: 'blue',
@@ -19,16 +19,11 @@ const statusColor: { [key: string]: string } = {
 };
 const columnHelper = createColumnHelper<groupOfUserData>();
 
-export default function GroupListDetailUser() {
+export default function GroupListDetailUser({ data }: { data: any }) {
 	const { id } = useParams();
 	const alertDialog = useAlertDialog();
-
-	const {
-		isOpen: addGroupIsOpen,
-		onOpen: addGroupOnOpen,
-		onClose: addGroupOnClose,
-	} = useDisclosure();
-
+	// const [data, setData] = useState<any>(null);
+	const [search, setSearch] = useState('');
 
 	const column = useMemo(
 		() => [
@@ -68,7 +63,9 @@ export default function GroupListDetailUser() {
 									confirmButtonColor: 'red',
 									confirmText: 'Keluar',
 									onConfirm: () => {
-										alert('xixixi');
+										axios.delete(`${API_URL}/users/${id}/groups`, {
+											data: { groupId: info.row.original.groupId },
+										});
 									},
 								});
 							}}
@@ -92,20 +89,20 @@ export default function GroupListDetailUser() {
 	return (
 		<>
 			<HStack mt="4" justify="space-between">
-				<Button
+				<AddGroupButton
 					size="md"
+					data={data}
 					colorScheme="blue"
 					leftIcon={<IconCirclePlus size="18" />}
-					onClick={addGroupOnOpen}
 				>
 					Tambahkan grup
-				</Button>
+				</AddGroupButton>
 				<InputSearch
 					rounded="md"
 					size="md"
 					bg="white"
 					placeholder="Cari Grup"
-					_onSubmit={null}
+					_onSubmit={setSearch}
 				/>
 			</HStack>
 			<DataTable
@@ -114,8 +111,8 @@ export default function GroupListDetailUser() {
 				apiUrl={API_URL + '/users/' + id + '/groups'}
 				columns={column}
 				emptyMsg={['Belum ada Group', 'Tambahkan Group sekarang']}
+				searchQuery={search}
 			/>
-			<AddGroupModal onClose={addGroupOnClose} isOpen={addGroupIsOpen} />
 		</>
 	);
 }

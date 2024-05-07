@@ -1,30 +1,22 @@
+import { TagLeftIcon, TagLabel, BoxProps, Box, Container, HStack, Heading, Tag, Text, Button, useDisclosure,} from '@chakra-ui/react'; //prettier-ignore
+import {IconUser,  IconAddressBook, IconCircleDot, IconEdit, IconTextCaption, IconUserHeart, IconUserQuestion, IconUsersGroup,} from '@tabler/icons-react'; //prettier-ignore
 import { API_URL } from '@/constants/config';
 import { fetcher } from '@/utils/index.utils';
-import { Box, Container, HStack, Heading, Tag, Text, Button, useDisclosure, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, AlertDialogCloseButton,} from '@chakra-ui/react'; //prettier-ignore
-import { IconAddressBook, IconCircleDot, IconEdit, IconTextCaption, IconUserHeart, IconUserQuestion, IconUsersGroup,} from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import EditGroupModal from '../editModal.group';
+import EditGroupButton from './EditGroup';
 import SectionTitle from '@/components/common/sectionTitle';
 import HeadingWithIcon from '@/components/common/headingWithIcon';
-import ManagerCard from './managerCard';
-import GroupStats from './groupStats';
-import NodeMapsAndNodesTable from './datatables/nodesDetail';
-import MembersDetail from './datatables/membersDetail';
-import RequestMembersDetail from './datatables/requestMembersDetail';
+import ManagerCard from '../../../components/managerCard';
+import NodeMapsAndNodesList from './detailGroupTables/NodesList';
+import MembersList from './detailGroupTables/MembersList';
+import RequestingMembersList from './detailGroupTables/RequestingMembersList';
 
 export default function DetailGroup() {
-	const {
-		isOpen: editGroupIsOpen,
-		onOpen: editGroupOnOpen,
-		onClose: editGroupOnClose,
-	} = useDisclosure();
-
 	const { id } = useParams();
-
 	const { data: rawData, isLoading, error, mutate } = useSWR(API_URL + '/groups/' + id, fetcher); //prettier-ignore
+	
 	const data: detailOfGroupData = rawData?.result;
-
 	if (!data) return '';
 
 	return (
@@ -39,9 +31,9 @@ export default function DetailGroup() {
 						<ManagerCard mt="3" data={data} />
 					</Box>
 
-					<Button
-						onClick={editGroupOnOpen}
-						
+					<EditGroupButton
+						data={data}
+						mutate={mutate}
 						colorScheme="blue"
 						alignSelf="start"
 						size="md"
@@ -64,7 +56,7 @@ export default function DetailGroup() {
 						{data.nodeCount | 0}
 					</Tag>
 				</SectionTitle>
-				<NodeMapsAndNodesTable />
+				<NodeMapsAndNodesList />
 
 				<SectionTitle IconEl={IconUsersGroup}>
 					Daftar Pelanggan
@@ -73,7 +65,7 @@ export default function DetailGroup() {
 					</Tag>
 				</SectionTitle>
 
-				<MembersDetail />
+				<MembersList />
 
 				{!!data.memberRequestsCount && (
 					<>
@@ -83,17 +75,35 @@ export default function DetailGroup() {
 								{data.memberRequestsCount | 0}
 							</Tag>
 						</SectionTitle>
-						<RequestMembersDetail />
+						<RequestingMembersList />
 					</>
 				)}
 			</Container>
-
-			<EditGroupModal
-				mutate={mutate}
-				data={data}
-				onClose={editGroupOnClose}
-				isOpen={editGroupIsOpen}
-			/>
 		</>
+	);
+}
+
+interface IGroupStats extends BoxProps {
+	data: detailOfGroupData;
+}
+
+function GroupStats({ data, ...rest }: IGroupStats) {
+	return (
+		<HStack {...rest}>
+			<Tag size="md" variant="subtle" colorScheme="green">
+				<TagLeftIcon boxSize="16px" as={IconUser} />
+				<TagLabel>{data.membersCount | 0} Pelanggan</TagLabel>
+			</Tag>
+			{Boolean(data.memberRequestsCount) && (
+				<Tag size="md" variant="subtle" colorScheme="orange">
+					<TagLeftIcon boxSize="16px" as={IconUserQuestion} />
+					<TagLabel>{data.memberRequestsCount} Permintaan</TagLabel>
+				</Tag>
+			)}
+			<Tag size="md" variant="subtle" colorScheme="blue">
+				<TagLeftIcon boxSize="16px" as={IconCircleDot} />
+				<TagLabel>{data.nodeCount | 0} Node</TagLabel>
+			</Tag>
+		</HStack>
 	);
 }

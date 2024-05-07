@@ -6,6 +6,7 @@ import { API_URL } from '@/constants/config';
 import { useNavigate, Link as RLink } from 'react-router-dom';
 import HeadingWithIcon from '@/components/common/headingWithIcon';
 import { toFormatedDate } from '@/utils/index.utils';
+import InputSearch from '@/components/form/inputSearch';
 
 const columnHelper = createColumnHelper<GroupData>();
 const columns = [
@@ -18,9 +19,7 @@ const columns = [
 	columnHelper.accessor('address', {
 		header: 'Alamat',
 		cell: (info) => (
-			<Text noOfLines={2} whiteSpace="wrap">
-				{info.getValue()}
-			</Text>
+			<Text noOfLines={2} whiteSpace="wrap" children={info.getValue()} />
 		),
 	}),
 	columnHelper.accessor((row) => [row.membersCount, row.memberRequestsCount], {
@@ -63,9 +62,8 @@ const columns = [
 					fontSize="sm"
 					rounded="md"
 					p="2.5"
-				>
-					Belum Diatur
-				</Center>
+					children={'Belum Diatur'}
+				/>
 			),
 	}),
 
@@ -78,38 +76,41 @@ const columns = [
 	columnHelper.accessor('groupId', {
 		header: 'Aksi',
 		cell: (info) => (
-			<HStack>
-				<RLink to={'/groups/' + info.getValue()}>
-					<Button
-						colorScheme="blue"
-						size="xs"
-						leftIcon={<IconExternalLink size="16" />}
-					>
-						Detail
-					</Button>
-				</RLink>
-			</HStack>
+			<RLink to={'/groups/' + info.getValue()}>
+				<Button
+					colorScheme="blue"
+					size="xs"
+					leftIcon={<IconExternalLink size="16" />}
+				>
+					Detail
+				</Button>
+			</RLink>
 		),
 	}),
 ];
 
-export default function UserManagement() {
-	const navigate = useNavigate();
-
+export default function GroupsManagement() {
 	return (
 		<Flex gap="4" flexDir="column">
 			<HStack w="full" spacing="4" align="start">
 				<HeadingWithIcon Icon={<IconUsersGroup />} text="Daftar Grup" />
 				<Spacer />
-				<Input type="text" w="200px" bg="white" placeholder="Cari .." />
-				<Button
-					onClick={() => navigate('create')}
-					leftIcon={<IconPlus size="20px" />}
-					colorScheme="green"
-				>
-					Tambah Grup
-				</Button>
+
+				<InputSearch
+					_onSubmit={null}
+					w="200px"
+					bg="white"
+					placeholder="Cari .."
+				/>
+				<RLink to="./create">
+					<Button
+						leftIcon={<IconPlus size="20px" />}
+						colorScheme="green"
+						children="Tambah Grup"
+					/>
+				</RLink>
 			</HStack>
+
 			<DataTable
 				flexGrow="1"
 				apiUrl={API_URL + '/groups'}

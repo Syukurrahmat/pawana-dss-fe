@@ -7,8 +7,9 @@ import { Link as RLink } from 'react-router-dom';
 import InputSearch from '@/components/form/inputSearch';
 import DataTable from '@/components/DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
-import AddGroupModal from '../addGroupModal.user';
-import { useAlertDialog } from '@/layout';
+import AddGroupButton from './AddUserGroup';
+import { useAlertDialog } from '@/components/common/myAlert';
+
 import { useMemo } from 'react';
 
 const statusColor: { [key: string]: string } = {
@@ -18,17 +19,12 @@ const statusColor: { [key: string]: string } = {
 };
 const columnHelper = createColumnHelper<groupOfUserData>();
 
-export default function RequestGroupListDetailUser() {
+export default function UserRequestedGroupList() {
 	const { id } = useParams();
 	const alertDialog = useAlertDialog();
 	
 	const apiUrl = API_URL + '/users/' + id + '/groups?not-approved=true';
 
-	const {
-		isOpen: addGroupIsOpen,
-		onOpen: addGroupOnOpen,
-		onClose: addGroupOnClose,
-	} = useDisclosure();
 
 	const column = useMemo(
 		() => [
@@ -87,7 +83,6 @@ export default function RequestGroupListDetailUser() {
 					colorScheme="red"
 					variant="outline"
 					leftIcon={<IconTrash size="18" />}
-					// onClick={addGroupOnOpen}
 				>
 					Batalkan Semua
 				</Button>
@@ -105,7 +100,6 @@ export default function RequestGroupListDetailUser() {
 				columns={column}
 				emptyMsg={['Belum ada Group', 'Tambahkan Group sekarang']}
 			/>
-			<AddGroupModal onClose={addGroupOnClose} isOpen={addGroupIsOpen} />
 		</>
 	);
 }

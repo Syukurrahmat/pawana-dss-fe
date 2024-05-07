@@ -1,19 +1,5 @@
-import {
-	Avatar,
-	Box,
-	BoxProps,
-	Button,
-	HStack,
-	Spacer,
-	Text,
-	VStack,
-} from '@chakra-ui/react';
-import {
-	IconInputAi,
-	IconInputCheck,
-	IconPhone,
-	IconUserX,
-} from '@tabler/icons-react';
+import { Avatar, Box, BoxProps, Button, HStack, Text } from '@chakra-ui/react';
+import { IconInputCheck, IconPhone } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 
 interface IManagerCard extends BoxProps {

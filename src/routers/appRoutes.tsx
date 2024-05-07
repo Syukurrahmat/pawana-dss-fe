@@ -10,15 +10,15 @@ import Activity from '@/pages/app/activity';
 import ISPUTap from '@/pages/app/analysis/ispu';
 import EmisiGRKTab from '@/pages/app/analysis/emisiGRKTab';
 import IklimMikroTab from '@/pages/app/analysis/iklimMikro';
-import GroupManagement from '@/pages/admin/group/all.group';
-import UserManagement from '@/pages/admin/user/all.users';
-import CreateUser from '@/pages/admin/user/create.user';
-import DetailUser from '@/pages/admin/user/detail.user/detail.user';
-import DetailGroup from '@/pages/admin/group/detailGroup/detail.group';
-import CreateGroup from '@/pages/admin/group/create.group';
-import NodeManagement from '@/pages/admin/node/all.node';
-import CreateNode from '@/pages/admin/node/create.node';
-import DetailNode from '@/pages/admin/node/detail.node';
+import GroupManagement from '@/pages/admin/group/Groups';
+import UserManagement from '@/pages/admin/user/Users';
+import CreateUser from '@/pages/admin/user/CreateUser';
+import DetailGroup from '@/pages/admin/group/DetailGroup';
+import CreateGroup from '@/pages/admin/group/CreateGroup';
+import NodeManagement from '@/pages/admin/node/Nodes';
+import CreateNode from '@/pages/admin/node/CreateNode';
+import DetailNode from '@/pages/admin/node/DetailNode';
+import DetailUser from '@/pages/admin/user/DetailUser';
 
 const appRouter = createBrowserRouter([
 	{

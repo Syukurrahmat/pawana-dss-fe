@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 interface IDataTable extends BoxProps {
 	apiUrl: string;
 	columns: any[];
+	enableMultiRowSelection?:boolean;
 	emptyMsg?: string[];
 	setDataContext?: React.Dispatch<any>;
 	getRowId?: any;
@@ -29,6 +30,7 @@ export default function DataTable({
 	rowSelection,
 	setRowSelection,
 	searchQuery,
+	enableMultiRowSelection = true,
 	withHeader = true,
 	...rest
 }: IDataTable) {
@@ -60,6 +62,7 @@ export default function DataTable({
 		columns,
 		onPaginationChange,
 		onSortingChange,
+		enableMultiRowSelection,
 		getRowId,
 		getCoreRowModel: getCoreRowModel(),
 		manualPagination: true,

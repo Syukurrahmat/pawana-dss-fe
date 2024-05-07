@@ -10,7 +10,7 @@ export const fetcher = async (...args: Parameters<typeof fetch>) => {
 }
 
 
-export const fetcherWithQueries = async (baseURL:string, queries : Record<string, string | number | undefined>) => {
+export const fetcherWithQueries = async (baseURL: string, queries: Record<string, string | number | undefined>) => {
     const params = new URLSearchParams();
 
     for (const key in queries) {
@@ -25,7 +25,7 @@ export const fetcherWithQueries = async (baseURL:string, queries : Record<string
     const hasQuery = new URL(baseURL).search.length > 0
     const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
 
-    
+
     const res = await fetch(url);
     return await res.json();
 }
@@ -84,4 +84,4 @@ export const buildMapURL = (latitude: number, longitude: number): string => {
 };
 
 
-export const toFormatedDate = (str: string) => str ? moment(str).format('DD MMM YYYY') : ""
+export const toFormatedDate = (str: string | undefined|null) => str ? moment(str).format('DD MMM YYYY') : ""

@@ -6,20 +6,22 @@ import { compareObjects, trimAllValues } from '@/utils/index.utils';
 import { API_URL } from '@/constants/config';
 import { KeyedMutator } from 'swr';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { IconEdit } from '@tabler/icons-react';
 
 interface IEUModal extends ButtonProps {
-	data: { [key: string]: string };
+	data: { [key: string]: string | any };
 	mutate: KeyedMutator<any>;
 }
 
-export default function EditUserButton({ data, mutate, ...rest }: IEUModal) {
-	const { id } = useParams();
+export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
 	const toast = useToast();
-	const { name, phone, description, address, profilePicture } = data;
-	const initialValues = { name, phone, description, address, profilePicture };
-	const { isOpen, onOpen, onClose } = useDisclosure(); // prettier-ignore
+	const { name, description, address } = data;
+	const initialValues = {
+		name: name as string,
+		description: description as string,
+		address: address as string,
+	};
 
 	const {
 		handleChange,
@@ -35,9 +37,8 @@ export default function EditUserButton({ data, mutate, ...rest }: IEUModal) {
 		initialValues,
 		validationSchema: Yup.object().shape({
 			name: valSchema.name.required('Wajib diisi'),
-			phone: valSchema.phone.required('Wajib diisi'),
 			address: valSchema.address.required('Wajib diisi'),
-			description: valSchema.description.nullable(),
+			description: valSchema.description.required('Wajib diisi'),
 		}),
 
 		onSubmit: (values) => {
@@ -56,8 +57,9 @@ export default function EditUserButton({ data, mutate, ...rest }: IEUModal) {
 			}
 
 			axios
-				.put(`${API_URL}/users/${id}/`, {
+				.put(API_URL + '/groups/', {
 					...filteredData,
+					groupId: data.groupId,
 				})
 				.then(({ data }) => {
 					setSubmitting(false);
@@ -84,7 +86,6 @@ export default function EditUserButton({ data, mutate, ...rest }: IEUModal) {
 	return (
 		<>
 			<Button onClick={onOpen} {...rest} />
-
 			<Modal
 				size="lg"
 				autoFocus={false}
@@ -114,20 +115,6 @@ export default function EditUserButton({ data, mutate, ...rest }: IEUModal) {
 									<FormErrorMessage>{errors.name}</FormErrorMessage>
 								</FormControl>
 
-								<FormControl
-									isInvalid={Boolean(errors.phone) && touched.phone}
-								>
-									<FormLabel>Nomor Telepon</FormLabel>
-									<Input
-										id="phone"
-										name="phone"
-										placeholder="Misal : 087812345678"
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.phone}
-									/>
-									<FormErrorMessage>{errors.phone}</FormErrorMessage>
-								</FormControl>
 								<FormControl
 									isInvalid={
 										Boolean(errors.address) && touched.address
@@ -160,27 +147,6 @@ export default function EditUserButton({ data, mutate, ...rest }: IEUModal) {
 									/>
 									<FormErrorMessage>
 										{errors.description}
-									</FormErrorMessage>
-								</FormControl>
-
-								<FormControl
-									isInvalid={
-										Boolean(errors.profilePicture) &&
-										touched.profilePicture
-									}
-								>
-									<FormLabel>Foto Profil</FormLabel>
-									<Input
-										type="file"
-										id="profilePicture"
-										name="profilePicture"
-										onChange={handleChange}
-										onBlur={handleBlur}
-										accept="image/*"
-										isDisabled={true}
-									/>
-									<FormErrorMessage>
-										{errors.profilePicture}
 									</FormErrorMessage>
 								</FormControl>
 							</VStack>

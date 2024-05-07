@@ -1,34 +1,21 @@
-import * as valSchema from '@/utils/validator.utils';
-import * as Yup from 'yup';
-import {
-	Box,
-	Button,
-	FormControl,
-	FormErrorMessage,
-	FormHelperText,
-	FormLabel,
-	HStack,
-	Heading,
-	Input,
-	Radio,
-	RadioGroup,
-	Stack,
-	Text,
-	Textarea,
-	VStack,
-	useToast,
-} from '@chakra-ui/react';
+import { Box, Button, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Radio, RadioGroup, Stack, Text, Textarea, VStack, useToast } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import axios from 'axios';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { CoordinateGetter } from '@/components/maps/index.maps';
 import { API_URL } from '@/constants/config';
 import { trimAllValues } from '@/utils/index.utils';
-import { IconChevronDown } from '@tabler/icons-react';
-import SelectGroupInput from './selectGroup.node';
-import { CoordinateGetter } from '@/components/maps/index.maps';
+import { IconBuildingFactory2 } from '@tabler/icons-react';
+import axios from 'axios';
+import * as valSchema from '@/utils/validator.utils';
+import * as Yup from 'yup';
+import SelectGroup from '@/components/common/SelectGroupInput';
+import { useState } from 'react';
+import { RowSelectionState } from '@tanstack/react-table';
 
 export default function CreateNode() {
 	const toast = useToast();
+
+	const [x,setX] = useState<RowSelectionState>({})
 
 	const {
 		handleChange,
@@ -66,7 +53,6 @@ export default function CreateNode() {
 			),
 		}),
 		onSubmit: (values) => {
-			alert(JSON.stringify(values, null, 4));
 			axios
 				.post(API_URL + '/nodes', trimAllValues(values))
 				.then(({ data }) => {
@@ -104,11 +90,16 @@ export default function CreateNode() {
 					mt="4"
 					pb="1000px"
 				>
-					<FormControl
-					>
+					<FormControl>
 						<FormLabel>Pilih Grup</FormLabel>
-						<SelectGroupInput
+						<SelectGroup
+							placeholder="Pilih Grup"
+							Icon={IconBuildingFactory2}
+							itemName="grup"
+							itemIdKey="groupId"
+							apiUrl={`${API_URL}/search/groups`}
 							onChange={(e) => setFieldValue('groupId', e.groupId)}
+							externalState={[x,setX]}
 						/>
 						<FormErrorMessage>{errors.groupId}</FormErrorMessage>
 					</FormControl>
@@ -233,4 +224,3 @@ export default function CreateNode() {
 		</>
 	);
 }
-

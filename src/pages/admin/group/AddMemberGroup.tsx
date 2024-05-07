@@ -6,33 +6,34 @@ import InputSearch from '@/components/form/inputSearch';
 import { RowSelectionState, createColumnHelper } from '@tanstack/react-table';
 import DataTable from '@/components/DataTable';
 import { useParams } from 'react-router-dom';
+import NameWithAvatar from '@/components/common/NamewithAvatar';
 
 const columnHelper = createColumnHelper<searchUserWithSubsResult>();
 const columns = [
-	columnHelper.accessor('name', {
-		header: 'Nama',
-		cell: (info) => (
-			<HStack spacing="4">
-				<Avatar name={info.getValue()} size="sm" />
-				<Text>{info.getValue()}</Text>
-			</HStack>
-		),
-	}),
 	columnHelper.display({
 		header: 'Pilih',
 		cell: ({ row }) =>
 			row.original.isInGroup ? (
-				<Text fontSize="sm" fontStyle="italic">
-					Sudah terdaftar
-				</Text>
+				<HStack px='2' justifyContent='space-between'>
+					<NameWithAvatar name={row.original.name} />
+
+					<Text fontSize="sm" fontStyle="italic">
+						Sudah terdaftar
+					</Text>
+				</HStack>
 			) : (
 				<Checkbox
+					flexDir="row-reverse"
+					w="full"
+					justifyContent="space-between"
+					pr="40px"
 					size="lg"
-					bg="white"
 					isChecked={row.getIsSelected()}
 					isDisabled={!row.getCanSelect()}
 					onChange={row.getToggleSelectedHandler()}
-				/>
+				>
+					<NameWithAvatar name={row.original.name} />
+				</Checkbox>
 			),
 	}),
 ];
@@ -42,7 +43,7 @@ interface IAddGroupModal {
 	onClose: () => void;
 }
 
-export default function AddUserModal({
+export default function AddMemberGroup({
 	isOpen,
 	onClose,
 	...rest
@@ -141,21 +142,19 @@ export default function AddUserModal({
 							)}
 						</Box>
 					</Box>
-					{Boolean(searchValue) && (
-						<DataTable
-							mt="2"
-							apiUrl={`${API_URL}/users?is-in-group=${groupId}`}
-							searchQuery={searchValue}
-							columns={columns}
-							rowSelection={rowSelection}
-							setRowSelection={setRowSelection}
-							setDataContext={setSearchResult}
-							getRowId={(e: any) => `${e.userId}-${e.name}`}
-							emptyMsg={['Pengguna tidak ditemukan']}
-							maxH="250px"
-							withHeader={false}
-						/>
-					)}
+					<DataTable
+						mt="2"
+						apiUrl={`${API_URL}/search/users?is-in-group=${groupId}`}
+						searchQuery={searchValue}
+						columns={columns}
+						rowSelection={rowSelection}
+						setRowSelection={setRowSelection}
+						setDataContext={setSearchResult}
+						getRowId={(e: any) => `${e.userId}-${e.name}`}
+						emptyMsg={['Pengguna tidak ditemukan']}
+						maxH="250px"
+						withHeader={false}
+					/>
 				</ModalBody>
 				<ModalFooter>
 					<Button variant="ghost" onClick={onClose}>

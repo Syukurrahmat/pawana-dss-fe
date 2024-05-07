@@ -1,20 +1,14 @@
-import {
-	buildMapURL,
-	compareObjects,
-	trimAllValues,
-} from '@/utils/index.utils';
+import { buildMapURL, compareObjects, trimAllValues } from '@/utils/index.utils';
 import { Box, HStack, Button, Link, Text, useToast} from '@chakra-ui/react'; //prettier-ignore
 import { IconBrandGoogleMaps, IconDeviceFloppy, IconEdit} from '@tabler/icons-react'; //prettier-ignore
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
-import {
-	redMarkerIcon,
-	yellowMarkerIcon,
-} from '@/components/maps/customMarker';
+import { redMarkerIcon, yellowMarkerIcon } from '@/components/maps/customMarker';
 import { useState } from 'react';
 import { CoordinateGetter } from '@/components/maps/index.maps';
 import { API_URL } from '@/constants/config';
 import { KeyedMutator } from 'swr';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 interface INodePosisionInMap {
 	mutate: KeyedMutator<any>;
@@ -25,13 +19,13 @@ export default function NodePosisionInMap({
 	data,
 	mutate,
 }: INodePosisionInMap) {
-	
 	const { latitude, longitude } = data;
 	const [newLatLong, setNewLatLng] = useState({ latitude, longitude });
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const toast = useToast();
-
+	const {id : nodeId} = useParams()
+	
 	return (
 		<>
 			<HStack justify="space-between">
@@ -79,7 +73,7 @@ export default function NodePosisionInMap({
 							}
 
 							axios
-								.put(`${API_URL}/nodes/`, {
+								.put(`${API_URL}/nodes/${nodeId}`, {
 									...filteredData,
 									nodeId: data.nodeId,
 								})

@@ -1,5 +1,6 @@
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button} from '@chakra-ui/react'; //prettier-ignore
 import { useRef } from 'react';
+import { useOutletContext } from 'react-router-dom';
 
 interface IMyAlert {
 	messageContext: [
@@ -51,4 +52,10 @@ export default function MyAlert({ messageContext }: IMyAlert) {
 			</AlertDialogOverlay>
 		</AlertDialog>
 	);
+}
+
+export type AlertDialogType = React.Dispatch<React.SetStateAction<alertMessageType>>;
+
+export function useAlertDialog() {
+	return useOutletContext<AlertDialogType>();
 }

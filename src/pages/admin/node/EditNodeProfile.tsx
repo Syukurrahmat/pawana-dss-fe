@@ -6,17 +6,19 @@ import { compareObjects, trimAllValues } from '@/utils/index.utils';
 import { API_URL } from '@/constants/config';
 import { KeyedMutator } from 'swr';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 interface IEUModal extends ButtonProps {
 	data: { [key: string]: string };
 	mutate: KeyedMutator<any>;
 }
 
-export default function EditNodeButton({ data, mutate, ...rest }: IEUModal) {
+export default function EditNodeProfileButton({ data, mutate, ...rest }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const toast = useToast();
 	const { name, description } = data;
 	const initialValues = { name, description };
+	const {id: nodeId} = useParams()
 
 	const {
 		handleChange,
@@ -51,7 +53,7 @@ export default function EditNodeButton({ data, mutate, ...rest }: IEUModal) {
 			}
 
 			axios
-				.put(API_URL + '/nodes/', {
+				.put(`${API_URL}/nodes/${nodeId}` , {
 					...filteredData,
 					nodeId: data.nodeId,
 				})

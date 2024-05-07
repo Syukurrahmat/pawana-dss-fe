@@ -6,13 +6,14 @@ import InputSearch from '@/components/form/inputSearch';
 import DataTable from '@/components/DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Link as RLink, useParams } from 'react-router-dom';
-import AddUserModal from '../addUserModal.group';
+import AddMemberGroup from '../AddMemberGroup';
 import { useMemo } from 'react';
-import { useAlertDialog } from '@/layout';
+import { useAlertDialog } from '@/components/common/myAlert';
+
 
 const columnHelper = createColumnHelper<userOfGroupData>();
 
-export default function MembersDetail() {
+export default function MembersList() {
 	const alertDialog = useAlertDialog();
 
 	let { id } = useParams();
@@ -97,7 +98,7 @@ export default function MembersDetail() {
 				columns={columns}
 				emptyMsg={['Belum ada Pelanggan', 'Tambahkan Pelanggan sekarang']}
 			/>
-			<AddUserModal onClose={addUserOnClose} isOpen={addUserIsOpen} />
+			<AddMemberGroup onClose={addUserOnClose} isOpen={addUserIsOpen} />
 		</>
 	);
 }

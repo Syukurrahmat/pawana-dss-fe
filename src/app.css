@@ -91,4 +91,16 @@ body {
     left: calc(50% - 20px);
     top: calc(50% - 34px);
     transition: all 0.4s ease;
-  }
+}
+
+
+.date-picker{
+    width: 100%;
+}
+.date-picker .rdrMonth{
+    width: 100%;
+}
+
+.chakra-checkbox__control{
+    background-color: white;
+}

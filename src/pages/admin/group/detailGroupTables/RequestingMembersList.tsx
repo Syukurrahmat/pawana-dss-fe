@@ -8,11 +8,12 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Link as RLink, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import axios from 'axios';
-import { useAlertDialog } from '@/layout';
+import { useAlertDialog } from '@/components/common/myAlert';
+
 
 const columnHelper = createColumnHelper<userOfGroupData>();
 
-export default function RequestMembersDetail() {
+export default function RequestingMembersList() {
 	const alertDialog = useAlertDialog();
 	
 	const [isSubmiting, setIsSubmiting] = useState(false);

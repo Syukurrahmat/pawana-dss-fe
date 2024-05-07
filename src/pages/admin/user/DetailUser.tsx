@@ -4,12 +4,12 @@ import { Avatar, Box, Container, HStack, Heading, Tag, Text, Button, Spacer, use
 import { IconAddressBook, IconEdit, IconLock, IconMail, IconPennant, IconPhone, IconTextCaption, IconUserBolt, IconUserQuestion, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import EditUserButton from '../editModal.user';
-import EditPasswordButton from '../editPassModal.user';
+import EditUserProfileButton from './EditUserProfile';
+import EditPasswordButton from './EditUserPass';
 import SectionTitle from '@/components/common/sectionTitle';
 import HeadingWithIcon from '@/components/common/headingWithIcon';
-import GroupListDetailUser from './groupList.detail.user';
-import RequestGroupListDetailUser from './requestedGroupList.detail.user';
+import GroupListDetailUser from './detailUserTables/GroupList';
+import UserRequestedGroupList from './detailUserTables/RequestedGroupList';
 
 export default function DetailUser() {
 	let { id } = useParams();
@@ -45,7 +45,7 @@ export default function DetailUser() {
 						</HStack>
 					</Box>
 					<Spacer />
-					<EditUserButton
+					<EditUserProfileButton
 						colorScheme="blue"
 						alignSelf="start"
 						leftIcon={<IconEdit size="16" />}
@@ -75,7 +75,7 @@ export default function DetailUser() {
 					</Tag>
 				</SectionTitle>
 
-				<GroupListDetailUser />
+				<GroupListDetailUser data={data} />
 				{Boolean(data.requestGroupCount) && (
 					<>
 						<SectionTitle IconEl={IconPennant}>
@@ -85,7 +85,7 @@ export default function DetailUser() {
 							</Tag>
 						</SectionTitle>
 
-						<RequestGroupListDetailUser />
+						<UserRequestedGroupList />
 					</>
 				)}
 

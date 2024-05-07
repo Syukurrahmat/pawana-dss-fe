@@ -1,25 +1,20 @@
 import { API_URL } from '@/constants/config';
 import { fetcher } from '@/utils/index.utils';
-import { Container, HStack, Heading, Text, Button, Center, useDisclosure, Flex, Stat, StatLabel, StatNumber} from '@chakra-ui/react'; //prettier-ignore
-import { IconCircleDot, IconEdit, IconKey, IconMapCheck, IconRepeat, IconTallymarks, IconTextCaption} from '@tabler/icons-react'; //prettier-ignore
+import { Container, HStack, Heading, Text, Button, Center, useDisclosure, Flex, Stat, StatLabel, StatNumber, Box} from '@chakra-ui/react'; //prettier-ignore
+import { IconBuildingFactory2, IconCircleDot, IconEdit, IconKey, IconMapCheck, IconRepeat, IconTallymarks, IconTextCaption} from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import SectionTitle from '@/components/common/sectionTitle';
-import EditNodeButton from './editModal.node';
+import EditNodeProfileButton from './EditNodeProfile';
 import moment from 'moment';
 import NodePosisionInMap from './nodemap.node';
 import InputPassword from '@/components/form/inputPassword';
 
 export default function DetailNode() {
 	let { id } = useParams();
-	const apiUrl = `${API_URL}/nodes/${id}`
+	const apiUrl = `${API_URL}/nodes/${id}`;
 
-	const {
-		data: rawData,
-		isLoading,
-		error,
-		mutate,
-	} = useSWR(apiUrl, fetcher);
+	const { data: rawData, isLoading, error, mutate } = useSWR(apiUrl, fetcher);
 
 	const data = rawData?.result;
 	if (!data) return '';
@@ -44,10 +39,18 @@ export default function DetailNode() {
 			</HStack>
 			<Container mt="8" maxW="container.md">
 				<HStack spacing="4" justify="space-between">
+					<Box>
+
 					<Heading mb="1" fontSize="3xl">
 						{data.name}
 					</Heading>
-					<EditNodeButton
+					<HStack p='3' bg='white' shadow='xs'>
+						<IconBuildingFactory2 size='18'/>
+						<Text>Pabrik Manis</Text>
+
+					</HStack>
+					</Box>
+					<EditNodeProfileButton
 						data={data}
 						mutate={mutate}
 						colorScheme="blue"
@@ -68,17 +71,26 @@ export default function DetailNode() {
 				<Flex mt="3" gap="4" flexWrap="wrap">
 					<Stat bg="teal.100" p="4" rounded="md" shadow="xs">
 						<StatLabel>Status</StatLabel>
-						<StatNumber>NORMAL</StatNumber>
+						<StatNumber
+							textTransform="capitalize"
+							children={data.status}
+						/>
 					</Stat>
 					<Stat p="4" rounded="md" shadow="xs" bg="blue.100">
 						<StatLabel>Letak</StatLabel>
-						<StatNumber>OUTDOOR</StatNumber>
+						<StatNumber
+							textTransform="capitalize"
+							children={data.environment}
+						/>
 					</Stat>
 					<Stat p="4" rounded="md" shadow="xs" bg="orange.100">
 						<StatLabel>Terakhir Data Dikirim</StatLabel>
-						<StatNumber>
-							{moment(data.lastDataSent).format('HH MMM YYYY hh:mm')}
-						</StatNumber>
+						<StatNumber
+							textTransform="capitalize"
+							children={moment(data.lastDataSent).format(
+								'HH MMM YYYY hh:mm'
+							)}
+						/>
 					</Stat>
 				</Flex>
 				<SectionTitle IconEl={IconKey}>API Key</SectionTitle>

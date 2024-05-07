@@ -8,6 +8,7 @@ import { API_URL } from '@/constants/config';
 import { useState } from 'react';
 import moment from 'moment';
 import { buildMapURL, toFormatedDate } from '@/utils/index.utils';
+import InputSearch from '@/components/form/inputSearch';
 
 const columnHelper = createColumnHelper<NodeData>();
 
@@ -52,23 +53,23 @@ const columns = [
 	columnHelper.accessor('lastDataSent', {
 		header: 'Terakhir data dikirim',
 		cell: (info) =>
-			info.getValue() ? toFormatedDate(info.getValue() || "") : 'Belum mengirim data'
+			info.getValue()
+				? toFormatedDate(info.getValue() || '')
+				: 'Belum mengirim data',
 	}),
 
 	columnHelper.accessor('nodeId', {
 		header: 'Aksi',
 		cell: (info) => (
-			<HStack>
-				<RLink to={'/nodes/' + info.getValue()}>
-					<Button
-						colorScheme="blue"
-						size="xs"
-						leftIcon={<IconExternalLink size="16" />}
-					>
-						Detail
-					</Button>
-				</RLink>
-			</HStack>
+			<RLink to={'/nodes/' + info.getValue()}>
+				<Button
+					colorScheme="blue"
+					size="xs"
+					leftIcon={<IconExternalLink size="16" />}
+				>
+					Detail
+				</Button>
+			</RLink>
 		),
 	}),
 ];
@@ -81,14 +82,19 @@ export default function NodeManagement() {
 			<HStack w="full" spacing="4" align="start">
 				<HeadingWithIcon Icon={<IconCircleDot />} text="Daftar Node" />
 				<Spacer />
-				<Input type="text" w="200px" bg="white" placeholder="Cari .." />
-				<Button
-					onClick={() => navigate('create')}
-					leftIcon={<IconPlus size="20px" />}
-					colorScheme="green"
-				>
-					Tambah Node
-				</Button>
+				<InputSearch
+					w="200px"
+					bg="white"
+					placeholder="Cari .."
+					_onSubmit={null}
+				/>
+				<RLink to="./create">
+					<Button
+						leftIcon={<IconPlus size="20px" />}
+						colorScheme="green"
+						children="Tambah Node"
+					/>
+				</RLink>
 			</HStack>
 
 			<DataTable

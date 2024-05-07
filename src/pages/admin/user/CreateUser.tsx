@@ -1,18 +1,7 @@
 import * as valSchema from '@/utils/validator.utils';
 import * as Yup from 'yup';
 import { API_URL } from '@/constants/config';
-import {
-	Button,
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
-	Heading,
-	Input,
-	Text,
-	Textarea,
-	VStack,
-	useToast,
-} from '@chakra-ui/react';
+import { Button, FormControl, FormErrorMessage, FormLabel, Heading, Input, Text, Textarea, VStack, useToast } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
 import { trimAllValues } from '@/utils/index.utils';
 import axios from 'axios';
@@ -65,7 +54,7 @@ export default function CreateUser() {
 				});
 		},
 	});
-	
+
 	return (
 		<>
 			<Heading size="lg">Buat akun Pengguna</Heading>

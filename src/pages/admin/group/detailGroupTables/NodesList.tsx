@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 
 const columnHelper = createColumnHelper<nodeOfGroupData>();
 
-export default function NodeMapsAndNodesTable() {
+export default function NodeMapsAndNodesList() {
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
 	let { id } = useParams();
 
