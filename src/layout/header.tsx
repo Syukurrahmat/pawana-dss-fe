@@ -1,24 +1,20 @@
 import { Box, BoxProps, Divider, Heading, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { navbarlList } from './sidebar';
 
 interface HeaderProps extends BoxProps {}
-const headerTextList: any = {
-	'/': ['Dashboard'],
-	'/analysis': ['Analysis'],
-	'/data': ['Data'],
-	'/group': ['Grup'],
-	'/activity': ['Aktivitas'],
-	'/users': ['Manajemen Pengguna'],
-	'/groups': ['Manajemen Grup'],
-	'/nodes': ['Manajemen Node'],
-};
+
 export default function Header({ ...props }: HeaderProps) {
-	const [headerText, setHeaderText] = useState<String[]>(['', '']);
+	const [headerText, setHeaderText] = useState<string | undefined>('');
 	let location = useLocation();
 
 	useEffect(() => {
-		setHeaderText(headerTextList['/' + location.pathname.split('/')[1]]);
+		setHeaderText(
+			navbarlList
+				.flatMap((e) => e)
+				.find((e) => e.path == '/' + location.pathname.split('/')[1])?.label
+		);
 	}, [location.pathname]);
 
 	return (
@@ -27,7 +23,7 @@ export default function Header({ ...props }: HeaderProps) {
 			borderBottom="1px solid var(--chakra-colors-gray-200)"
 			{...props}
 		>
-			<Heading color="gray.600" size="md" children={headerText[0]} />
+			<Heading color="gray.600" size="md" children={headerText} />
 		</Box>
 	);
 }

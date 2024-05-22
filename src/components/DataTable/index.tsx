@@ -5,13 +5,13 @@ import usePagination from './usePagination';
 import useSorting from './useSorting';
 import { Pagination } from './Pagination';
 import useSWR from 'swr';
-import { fetcherWithQueries } from '@/utils/index.utils';
-import { useEffect } from 'react';
+import { fetcherAPIWithQueries } from "@/utils/fetcher";
+import { useEffect, useRef } from 'react';
 
 interface IDataTable extends BoxProps {
 	apiUrl: string;
 	columns: any[];
-	enableMultiRowSelection?:boolean;
+	enableMultiRowSelection?: boolean;
 	emptyMsg?: string[];
 	setDataContext?: React.Dispatch<any>;
 	getRowId?: any;
@@ -19,6 +19,7 @@ interface IDataTable extends BoxProps {
 	setRowSelection?: any;
 	searchQuery?: string;
 	withHeader?: boolean;
+	hiddenPagination?: boolean;
 }
 
 export default function DataTable({
@@ -32,12 +33,15 @@ export default function DataTable({
 	searchQuery,
 	enableMultiRowSelection = true,
 	withHeader = true,
+	hiddenPagination = false,
 	...rest
 }: IDataTable) {
 	const { pagination, pageIndex, limit, onPaginationChange } = usePagination();
 	const { sorting, field, order, onSortingChange } = useSorting();
-
-	//prettier-ignore
+	const itemcount = useRef({
+		totalItems : 0,
+		itemsInPage : 0
+	})
 
 	const queries = {
 		page: pageIndex + 1,
@@ -48,14 +52,22 @@ export default function DataTable({
 	};
 
 	const { data: rawData, isLoading } = useSWR([apiUrl, queries], ([a, b]) =>
-		fetcherWithQueries(a, b)
+		fetcherAPIWithQueries(a, b)
 	);
 
 	const data = rawData?.result || [];
 
+	
 	useEffect(() => {
 		if (setDataContext) setDataContext(rawData ? data : rawData);
 	}, [data]);
+	
+	if(rawData) {
+		itemcount.current = {
+			totalItems : rawData?.totalItems,
+			itemsInPage : rawData?.result.length
+		}
+	}
 
 	const table = useReactTable({
 		data,
@@ -69,7 +81,7 @@ export default function DataTable({
 		manualSorting: true,
 		onRowSelectionChange: setRowSelection,
 		state: { pagination, sorting, rowSelection: rowSelection },
-		rowCount: rawData?.totalItems,
+		rowCount: itemcount.current.totalItems
 	});
 
 	return (
@@ -152,10 +164,10 @@ export default function DataTable({
 
 						<Tbody>
 							{isLoading &&
-								Array.from({ length: 5 }, (_, i) => (
+								Array.from({ length: itemcount.current.itemsInPage  || 5}, (_, i) => (
 									<Tr key={i}>
 										<Td colSpan={9999}>
-											<Skeleton h="30px" />
+											<Skeleton h="28px" />
 										</Td>
 									</Tr>
 								))}
@@ -192,12 +204,14 @@ export default function DataTable({
 					</Table>
 				</TableContainer>
 			</Box>
-			<Pagination
-				px="2"
-				mt="3"
-				table={table}
-				sizes={[10, 25, 50, 75, 100]}
-			/>
+			{!hiddenPagination && (
+				<Pagination
+					px="2"
+					mt="3"
+					table={table}
+					sizes={[10, 25, 50, 75, 100]}
+				/>
+			)}
 		</Box>
 	);
 }

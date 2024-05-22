@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function useSorting(initialField = "name", initialOrder = "ASC") {
+export default function useSorting(initialField = "createdAt", initialOrder = "ASC") {
   const [sorting, setSorting] = useState([
     { id: initialField, desc: initialOrder === "DESC" },
   ]);

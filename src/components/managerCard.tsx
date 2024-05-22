@@ -1,38 +1,15 @@
-import { Avatar, Box, BoxProps, Button, HStack, Text } from '@chakra-ui/react';
-import { IconInputCheck, IconPhone } from '@tabler/icons-react';
+import { Avatar, Box, BoxProps, HStack, Text } from '@chakra-ui/react';
+import { IconPhone } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 
 interface IManagerCard extends BoxProps {
-	data: detailOfGroupData;
+	data: Partial<UserData>;
+	label : string 
 }
 
-export default function ManagerCard({ data, ...rest }: IManagerCard) {
-	if (!data.manager?.userId) {
-		return (
-			<Box
-				shadow="xs"
-				rounded="md"
-				py="3"
-				px="4"
-				bg="gray.50"
-				{...rest}
-			>
-				<Text fontWeight="700" color='gray.600'>MANAGER BELUM DITENTUKAN</Text>
-				<Button
-					mt='2'
-					size="xs"
-					leftIcon={<IconInputCheck size='18' />}
-					colorScheme="blue"
-					variant="outline"
-				>
-					Tentukan sekarang
-				</Button>
-			</Box>
-		);
-	}
-
+export default function UserCard({ data, label, ...rest }: IManagerCard) {
 	return (
-		<Link to={'../users/' + data.manager.userId}>
+		<Link to={'../users/' + data.userId}>
 			<HStack
 				spacing="3"
 				shadow="xs"
@@ -54,16 +31,17 @@ export default function ManagerCard({ data, ...rest }: IManagerCard) {
 					fontSize="sm"
 					fontWeight="700"
 					roundedBottomStart="md"
-					children="MANAGER"
+					textTransform='uppercase'
+					children={label}
 				/>
-				<Avatar name={data.manager.name} rounded="md" />
-				<Box>
+				<Avatar name={data.name} rounded="md" />
+				<Box pr="90px">
 					<Text fontSize="lg" fontWeight="600">
-						{data.manager.name}
+						{data.name}
 					</Text>
-					<HStack spacing="2" pr="90px">
+					<HStack spacing="2">
 						<IconPhone size="16" />
-						<Text>{data.manager.phone}</Text>
+						<Text>{data.phone}</Text>
 					</HStack>
 				</Box>
 			</HStack>

@@ -37,6 +37,15 @@ body {
 
 }
 
+#container #content {
+    min-height: calc(100vh - var(--header-length));
+
+}
+#container #content > *{
+    width: 100%;
+    min-height: 100%;
+}
+
 #container #sidebar {
     position: fixed;
     top: 0;
@@ -65,7 +74,7 @@ body {
     overflow-y: auto;
 }
 
-.chakra-table__container.fixTableHead thead th  {
+.chakra-table__container.fixTableHead thead th {
     font-size: var(--chakra-fontSizes-sm);
     box-shadow: var(--chakra-shadows-xs);
     position: sticky;
@@ -80,27 +89,20 @@ body {
 
 }
 
-.map-marker-centered {
-    background-image: url("./assets/mapMarker-red.svg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 40px;
-    height: 40px;
-    position: absolute;
-    z-index: 500;
-    left: calc(50% - 20px);
-    top: calc(50% - 34px);
-    transition: all 0.4s ease;
-}
 
 
-.date-picker{
-    width: 100%;
-}
-.date-picker .rdrMonth{
+.date-picker {
     width: 100%;
 }
 
-.chakra-checkbox__control{
+.date-picker .rdrMonth {
+    width: 100%;
+}
+
+.chakra-checkbox__control {
     background-color: white;
+}
+
+.color-white {
+    fill: white !important;
 }

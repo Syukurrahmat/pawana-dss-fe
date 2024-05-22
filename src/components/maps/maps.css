@@ -1,0 +1,79 @@
+.leaflet-div-icon {
+    background: none !important;
+    border: none !important;
+}
+
+.cluster-marker {
+    color: #fff;
+    background: #1978c8;
+    border-radius: 50%;
+    padding: 10px;
+    width: 10px;
+    height: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map-marker-centered {
+    background-image: url("@/assets/mapMarker-red.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    z-index: 500;
+    left: calc(50% - 20px);
+    top: calc(50% - 34px);
+    transition: all 0.4s ease;
+}
+
+
+.map-popup .leaflet-popup-content-wrapper {
+    border-radius: 8px;
+}
+
+.leaflet-popup-content p {
+    margin: inherit !important;
+}
+
+.map-popup .leaflet-popup-content {
+    margin: 12px;
+}
+
+.map-marker.mood {
+    border-radius: 100%;
+}
+
+.map-marker.mood.mood-heart {
+    background: var(--chakra-colors-teal-400);
+}
+
+.map-marker.mood.mood-smile {
+    background: var(--chakra-colors-green-400);
+}
+
+.map-marker.mood.mood-empty {
+    background: var(--chakra-colors-yellow-400);
+}
+
+.map-marker.mood.mood-sad {
+    background: var(--chakra-colors-orange-400);
+}
+
+.map-marker.mood.mood-wrrr {
+    background: var(--chakra-colors-red-400);
+}
+
+.leaflet-container.my-map-container {
+    font-family: var(--chakra-fonts-body);
+}
+
+.leaflet-tooltip.tooltip-display-value {
+    background: none;
+    font-size: 14px;
+    padding: 0;
+    font-weight: 600;
+    border: 0px;
+    box-shadow: none;
+}

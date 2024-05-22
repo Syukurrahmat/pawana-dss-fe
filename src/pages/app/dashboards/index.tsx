@@ -1,18 +1,26 @@
-import { Flex } from '@chakra-ui/react'; // prettier-ignore
-import GroupInfoDash from './grupInfo';
-import IspuCard2 from './ispuCard2';
+import { VStack } from '@chakra-ui/react'; // prettier-ignore
+import useSWR from 'swr';
+import { fetcher } from '@/utils/fetcher';
+import { HOST_URL } from '@/constants/config';
+import CompanyInformation from './CompanyInfo';
+import NodesGroupInfo from './NodesGroupInfo';
+
 
 export default function Dashboard() {
+	const { data, isLoading, error } = useSWR<DashboardDataType>(
+		HOST_URL + '/app/dashboard/data',
+		fetcher
+	);
+
+	if (isLoading || !data) return 'Loading Slurr';
+
 	return (
-		<Flex
-			flexWrap="wrap"
-			alignContent="flex-start"
-			justify="start"
-			gap="6"
-			h="4000px"
-		>
-			<GroupInfoDash />
-			<IspuCard2/>
+		<VStack spacing="6" align="stretch" h="4000px">
+			<CompanyInformation data={data} />
+			<NodesGroupInfo data={data.indoor}/>
+			<NodesGroupInfo data={data.outdoor}/>
+			{/* <ISPUCard data={data}/> */}
+
 			{/* <Flex flexWrap="wrap" w="full" gap="6">
 				<GRKCard />
 				<GRKCard />
@@ -25,6 +33,7 @@ export default function Dashboard() {
 			<Flex>
 				<ActivityCard />
 			</Flex> */}
-		</Flex>
+		</VStack>
 	);
 }
+ 

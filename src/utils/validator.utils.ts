@@ -35,9 +35,11 @@ export const confirmPassword = Yup.string()
 
 export const nodeStatus = Yup.string()
     .trim()
-    .oneOf(['normal', 'maintenance', 'nonactive'], 'Tidak valid')
+    .oneOf(['active', 'maintenance', 'nonactive'], 'Tidak valid')
 
 export const environment = Yup.string()
     .trim()
     .oneOf(['indoor', 'outdoor'], 'Tidak valid')
+
+export const id = Yup.number()
 

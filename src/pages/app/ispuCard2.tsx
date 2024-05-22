@@ -1,7 +1,7 @@
 import {Card, CardBody, Stack, StackDivider} from '@chakra-ui/react'; // prettier-ignore
-import SingleNodeISPUCard from './dashboards/ispuCard/singleNodeISPUCard';
+import SingleNodeISPUCard from './dashboards/ispuCard/SingleNodeISPU.';
 import { dashboardData } from '../../data/dashboardData';
-import MutipleNodeISPUCard from './dashboards/ispuCard/multipleNodeISPUCard';
+import MutipleNodeISPUCard from './dashboards/ispuCard/MultipleNodeISPU';
 
 export default function IspuCard2() {
 	return (

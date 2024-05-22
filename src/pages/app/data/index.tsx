@@ -1,6 +1,6 @@
 import SelectGroup from '@/components/common/SelectGroupInput';
 import { API_URL } from '@/constants/config';
-import { Button, Flex, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import {
 	IconBuildingFactory2,
 	IconCircleDot,
@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { Range } from 'react-date-range';
 import SelectAirParams, { airParameters } from './selectAirParams';
 import SelectDateRange from './selectDateRange';
-import { buildQueriesURL } from '@/utils/index.utils';
+import { buildQueriesURL } from "@/utils/fetcher";
 import axios from 'axios';
 
 const rowSelectionStateParse = (r: RowSelectionState) => {
@@ -48,7 +48,7 @@ export default function Data() {
 	};
 
 	return (
-		<>
+		<Box>
 			<Heading size="lg">Akses data yang dikirim dari Node</Heading>
 			<Text>
 				Pilih Grup yang Anda ikut, lalu pilih node mana yang hendak diakses,
@@ -100,6 +100,6 @@ export default function Data() {
 					Dapatkan data
 				</Button>
 			</Flex>
-		</>
+		</Box>
 	);
 }
