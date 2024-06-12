@@ -4,13 +4,14 @@ import {Table, Thead, Tbody, Tr, Th, Td, TableContainer, HStack, Tag, Text, VSta
 import { IconCircleDot, IconHistory, IconMoodHappy } from '@tabler/icons-react';
 
 interface MultiNodeISPU {
-	data  : NodeStat<ISPUValue[]>
+	data: NodeStat<ISPUValue[]>;
 }
 
 export default function MultiNodeISPU({ data }: MultiNodeISPU) {
-	const { highest, lowest, average, list } = data  
+	const { highest, lowest, average, list } = data;
 
-	const avrColor = ISPUColor[average.data.value[0].category];
+	const highestISPUAverage = average.data.value[0];
+	const avrColor = ISPUColor[highestISPUAverage.category];
 
 	return (
 		<>
@@ -31,15 +32,15 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 						w="full"
 						fontSize="4xl"
 						fontWeight="700"
-						children={average.data.value[0].ispu}
+						children={highestISPUAverage.ispu}
 					/>
 				</VStack>
 
 				<VStack align="start" spacing="2">
 					<Heading as="p" size="lg">
-						{average.data.value[0].category}
+						{highestISPUAverage.category}
 					</Heading>
-					<Tag>Polutan Utama : {average.data.value[0].pollutant}</Tag>
+					<Tag>Polutan Utama : {highestISPUAverage.pollutant}</Tag>
 					<HStack>
 						<IconCircleDot size="16" />
 						<Text fontSize="sm">Rerata dari {list.length} node</Text>
@@ -62,8 +63,9 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 				w="full"
 				justifyContent="space-evenly"
 			>
-				{[highest, lowest].map((e, i) => {
-					const color = ISPUColor[e.data.value[0].category];
+				{[highest, lowest].map(({ data: dt, name }, i) => {
+
+					const color = ISPUColor[dt.value[0].category];
 					return (
 						<VStack
 							key={i}
@@ -83,7 +85,7 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 								<Text
 									fontSize="2xl"
 									fontWeight={700}
-									children={e.data.value[0].ispu}
+									children={dt.value[0].ispu}
 								/>
 								<Tag bg={color + '.300'}>Aman</Tag>
 							</HStack>
@@ -94,7 +96,7 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 									w="full"
 									noOfLines={1}
 									fontSize="sm"
-									children={e.node.name}
+									children={name}
 								/>
 							</HStack>
 						</VStack>
@@ -114,23 +116,23 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 						</Tr>
 					</Thead>
 					<Tbody>
-						{list.map(({ node, data: dt }, i) => (
+						{list.map(({ name, data : {datetime, value} }, i) => (
 							<Tr key={i}>
 								<Td>
-									<Text fontWeight="600">{node.name}</Text>
+									<Text fontWeight="600">{name}</Text>
 									<Text fontSize="sm" color="gray.600">
-										{toFormatedDatetime(dt.datetime)}
+										{toFormatedDatetime(datetime)}
 									</Text>
 								</Td>
 								<Td>
 									<Tag
-										bg={ISPUColor[dt.value[0].category] + '.300'}
-										children={dt.value[0].ispu}
+										bg={ISPUColor[value[0].category] + '.300'}
+										children={value[0].ispu}
 									/>
 									<Tag
 										ml="2"
-										bg={ISPUColor[dt.value[0].category] + '.300'}
-										children={dt.value[0].category}
+										bg={ISPUColor[value[0].category] + '.300'}
+										children={value[0].category}
 									/>
 								</Td>
 								<Td>
@@ -148,13 +150,7 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 
 			<Spacer />
 
-			<HStack mt="4" color="gray.600">
-				<IconHistory size="18" />
-				<Text fontSize="sm">
-					Data Diperbarui Pada :{' '}
-					{toFormatedDatetime(average.data.datetime)}
-				</Text>
-			</HStack>
+			
 		</>
 	);
 }

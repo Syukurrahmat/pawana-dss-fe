@@ -3,7 +3,7 @@ import { IconCircleCheck, IconCornerDownLeft, IconExclamationCircle, IconOvalFil
 import { useFormik } from 'formik';
 import { useState } from 'react';
 import { API_URL } from '@/constants/config';
-import InputPassword from '@/components/form/inputPassword';
+import InputPassword from '@/components/Form/inputPassword';
 import * as valSchema from '@/utils/validator.utils';
 import * as Yup from 'yup';
 import { trimAllValues } from '@/utils/common.utils';
@@ -44,17 +44,22 @@ export default function EditPasswordButton({ data, ...rest }: IEUModal) {
 
 		onSubmit: (values) => {
 			if (!passwordIsValid) {
+				setSubmitting(false);
 				toast({
 					title: `Opss`,
 					description: 'Masukan kata sandi baru sesuai intruksi',
 					status: 'warning',
 				});
-				setSubmitting(false);
 				return;
 			}
+
 			const { password, newPassword } = trimAllValues(values);
+
 			axios
-				.put(API_URL + '/users/', { password, newPassword, userId })
+				.put(`${API_URL}/users/${userId}/password`, {
+					password,
+					newPassword,
+				})
 				.then(({ data }) => {
 					setSubmitting(false);
 					apiResponseToast(data, {

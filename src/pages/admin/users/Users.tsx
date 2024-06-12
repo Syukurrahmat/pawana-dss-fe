@@ -5,15 +5,15 @@ import { IconExternalLink, IconPlus, IconUser, IconUsersGroup} from '@tabler/ico
 import DataTable from '@/components/DataTable';
 import { Link as RLink } from 'react-router-dom';
 import { toFormatedDate } from '@/utils/dateFormating';
-import InputSearch from '@/components/form/inputSearch';
+import InputSearch from '@/components/Form/inputSearch';
 import { userRoleAttr } from '@/constants/enumVariable';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
 import { useHashBasedTabsIndex } from '../../../hooks/useHashBasedTabsIndex';
 import useSWR from 'swr';
 import { pageDataFetcher } from '@/utils/fetcher';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
-import { TagUserRole } from '@/components/tags/index.tags';
-import LoadingAnimation from '@/components/LoadingAnimation/LoadingAnimation';
+import { TagUserRole } from '@/components/Tags/index.tags';
+import LoadingComponent from '@/components/Loading/LoadingComponent';
 import { StatWithIcon } from '../../../components/common/StatWithIcon';
 
 const columnHelper = createColumnHelper<UserData>();
@@ -45,7 +45,7 @@ const columns = [
 
 	columnHelper.accessor('role', {
 		header: 'Peran',
-		cell: (info) => <TagUserRole role={info.getValue()} />,
+		cell: (info) => <TagUserRole value={info.getValue()} />,
 		meta: { sortable: true },
 	}),
 	columnHelper.accessor('createdAt', {
@@ -80,7 +80,7 @@ export default function UserManagement() {
 		pageDataFetcher
 	);
 
-	if (!data) return <LoadingAnimation />;
+	if (!data) return <LoadingComponent />;
 
 	return (
 		<Flex gap="2" flexDir="column">

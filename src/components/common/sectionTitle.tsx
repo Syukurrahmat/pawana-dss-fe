@@ -1,6 +1,4 @@
 import { HStack, Heading, HeadingProps, Icon } from '@chakra-ui/react';
-import { IconAddressBook } from '@tabler/icons-react';
-import { ReactElement } from 'react';
 
 interface ISectionTitle extends HeadingProps {
 	IconEl?: any;

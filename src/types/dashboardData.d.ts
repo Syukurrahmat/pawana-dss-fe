@@ -4,8 +4,9 @@ type ISPUValue = {
     pollutant: 'PM100' | 'PM25';
     ispu: number;
     ispuFloat: number;
-    value: number;
+    pollutantValue: number;
     category: string;
+    recomendation?: string
 }
 
 
@@ -13,48 +14,43 @@ type GRKCategorize = {
     gas: "CH4" | "CO2";
     value: number;
     category: string;
+    recomendation?: string
 }
-
-type NodeInfo = {
-    name: string, nodeId: number
-};
-
 
 // ===========================================================
 
 declare type ResultOfMappingNode = {
-    meta: {
-        isIndoor: boolean;
-        dataIsUptodate: boolean;
+    nodeId: number;
+    companyId: any;
+    name: string;
+    status: string;
+    lastDataSent: string
+    coordinate: number[];
+    dataLogs?: DataLogs[],
+
+
+    latestData?: {
+        ispu: {
+            datetime: string;
+            value: [] | [ISPUValue, ISPUValue];
+        };
+        ch4: {
+            datetime: string;
+            value: GRKCategorize;
+        };
+        co2: {
+            datetime: string;
+            value: GRKCategorize;
+        };
+        pm25: {
+            datetime: string;
+            value: number;
+        };
+        pm100: {
+            datetime: string;
+            value: number;
+        };
     }
-    node: {
-        nodeId: number
-        name: string
-        coordinate: number[]
-        status: string
-        ownerId: number
-        lastDataSent: Date
-    }
-    ispu: {
-        datetime: Date;
-        value: ISPUValue[];
-    };
-    ch4: {
-        datetime: Date;
-        value: GRKCategorize;
-    };
-    co2: {
-        datetime: Date;
-        value: GRKCategorize;
-    };
-    pm25: {
-        datetime: Date;
-        value: number;
-    };
-    pm100: {
-        datetime: Date;
-        value: number;
-    };
 }
 
 
@@ -63,20 +59,26 @@ declare type ResultOfMappingNode = {
 
 
 type SingleNodeAnalysis = {
-    ispu: SingleNodeAnalysisItem<ISPUValue[], ISPUValue[]>
-    ch4: SingleNodeAnalysisItem<GRKCategorize, number>;
-    co2: SingleNodeAnalysisItem<GRKCategorize, number>;
+    node: {
+        name: string,
+        nodeId: number,
+        lastDataSent: string;
+    }
+
+    ispu: SingleNodeAnalysisItem<ISPUValue[]>
+    ch4: SingleNodeAnalysisItem<GRKCategorize>;
+    co2: SingleNodeAnalysisItem<GRKCategorize>;
+
 }
 
-type SingleNodeAnalysisItem<V, W> = {
-    node: NodeInfo
-    current: {
+type SingleNodeAnalysisItem<V> = {
+    latestData: {
         datetime: string;
         value: V;
-    };
+    }
     tren: {
         datetime: string;
-        value: W;
+        value: V;
     }[];
 }
 
@@ -91,20 +93,39 @@ type ResultOfMultiNodeStats = {
 };
 
 type NodeStat<T> = {
+    average: {
+        data: {
+            datetime: string;
+            value: T
+        }
+    };
     highest: {
-        node: NodeInfo;
-        data: Timeseries<T>;
+        nodeId: number;
+        name: string;
+        lastDataSent: string;
+        data: {
+            datetime: string;
+            value: T
+        }
     };
     lowest: {
-        node: NodeInfo;
-        data: Timeseries<T>;
+        nodeId: number;
+        name: string;
+        lastDataSent: string;
+        data: {
+            datetime: string;
+            value: T
+        }
     };
-    average: {
-        data: Timeseries<T>;
-    };
+
     list: {
-        node: NodeInfo;
-        data: Timeseries<T>;
+        nodeId: number;
+        name: string;
+        lastDataSent: string;
+        data: {
+            datetime: string;
+            value: T
+        }
     }[]
 };
 
@@ -112,39 +133,45 @@ type NodeStat<T> = {
 // ====================================================================
 
 declare type DashboardDataType = {
-    companyInfo: {
-        companyId: number;
-        managedBy: number;
+    dashboardInfo: {
         name: string;
-        coordinate:number[]
         type: string;
-        createdAt?: string;
         countNodes: number
-    };
-    indoor: DataNodeGroup;
-    outdoor: DataNodeGroup;
-    nodes: ResultOfMappingNode[]
-}
 
-type DataNodeGroup = {
-    countNodes: {
-        all: number;
-        active: number;
-        nonactive: number;
-        noSendData: number;
+        companyId?: number;
+        managedBy?: number;
+        createdAt?: string;
     };
-    data: DataNodes
+    indoor: {
+        countNodes: DetailCountNodes;
+        data: SingleNodeAnalysis | ResultOfMultiNodeStats | null;
+    };
+    outdoor: {
+        countNodes: DetailCountNodes;
+        data: SingleNodeAnalysis | ResultOfMultiNodeStats | null;
+    };
+    nodes: ResultOfMappingNode[];
+    currentEventLogs: EventLogs[];
+    nearReports: Reports[]
 }
 
 type DetailCountNodes = {
     all: number;
     active: number;
-    nonactive: number;
-    noSendData: number;
 }
 
-type DataNodes = SingleNodeAnalysis | ResultOfMultiNodeStats;
+type DataNodeGroup = {
+    countNodes: DetailCountNodes;
+    data: SingleNodeAnalysis | ResultOfMultiNodeStats | null;
+}
 
-interface ISPUDashboardData {
-    data: DashboardDataType;
+
+type EventLogs = {
+    eventLogId: number;
+    companyId: number;
+    name: string;
+    type: string;
+    isCompleted: boolean;
+    startDate: string;
+    endDate: string;
 }

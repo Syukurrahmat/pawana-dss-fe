@@ -41,10 +41,13 @@ export const toBase64 = (file: File | null) => new Promise((resolve, reject) => 
     reader.onerror = reject;
 });
 
-export const ISPUColor : AnyObject= {
-    'Baik' : 'green',
-    'Sedang' : 'blue',
-    'Tidak Sehat' : 'yellow',
-    'Sangat Tidak Sehat' : 'red',
-    'Berbahaya' : 'black',
+export const ISPUColor: AnyObject = {
+    'Baik': 'green',
+    'Sedang': 'blue',
+    'Tidak Sehat': 'yellow',
+    'Sangat Tidak Sehat': 'red',
+    'Berbahaya': 'black',
 };
+
+
+export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

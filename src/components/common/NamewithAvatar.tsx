@@ -1,6 +1,6 @@
-import { Avatar, AvatarProps, HStack, Text } from '@chakra-ui/react';
+import { Avatar, HStack, StackProps, Text } from '@chakra-ui/react';
 
-interface INameWithAvatar {
+interface INameWithAvatar extends StackProps {
 	name: string;
 	profilePicture?: string | undefined;
 	size?: string;
@@ -12,9 +12,10 @@ export default function NameWithAvatar({
 	profilePicture,
 	size,
 	spacing,
+	...rest
 }: INameWithAvatar) {
 	return (
-		<HStack spacing={spacing || '4'}>
+		<HStack spacing={spacing || '4'} {...rest}>
 			<Avatar name={name} src={profilePicture} size={size || 'sm'} />
 			<Text>{name} </Text>
 		</HStack>

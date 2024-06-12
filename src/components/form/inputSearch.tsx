@@ -2,10 +2,8 @@ import {
 	IconButton,
 	Input,
 	InputGroup,
-	InputLeftElement,
 	InputProps,
-	InputRightElement,
-	Stack,
+	InputRightElement
 } from '@chakra-ui/react';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';

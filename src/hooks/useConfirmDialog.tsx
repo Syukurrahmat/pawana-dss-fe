@@ -20,7 +20,6 @@ export function ConfirmDialogProvider(props: any) {
 	);
 }
 
-
 interface MyConfirmDialog {
 	messageContext: [ConfirmMessage, ConfirmDialogContext];
 }
@@ -40,6 +39,8 @@ function MyConfirmDialog({ messageContext }: MyConfirmDialog) {
 			motionPreset="slideInBottom"
 			onClose={onClose}
 			leastDestructiveRef={cancelRef as any}
+			closeOnEsc={!isLoading}
+			closeOnOverlayClick={!isLoading}
 		>
 			<AlertDialogOverlay>
 				<AlertDialogContent>
@@ -48,7 +49,11 @@ function MyConfirmDialog({ messageContext }: MyConfirmDialog) {
 					</AlertDialogHeader>
 					<AlertDialogBody>{alertMessage?.message}</AlertDialogBody>
 					<AlertDialogFooter>
-						<Button ref={cancelRef.current} onClick={onClose}>
+						<Button
+							ref={cancelRef.current}
+							isDisabled={isLoading}
+							onClick={onClose}
+						>
 							Batal
 						</Button>
 						<Button

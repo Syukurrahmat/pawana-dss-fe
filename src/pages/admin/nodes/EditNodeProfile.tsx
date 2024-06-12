@@ -1,13 +1,13 @@
-import * as valSchema from '@/utils/validator.utils';
-import * as Yup from 'yup';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, VStack, FormControl, FormLabel, Input, FormErrorMessage, Textarea, useToast, useDisclosure, ButtonProps} from '@chakra-ui/react'; //prettier-ignore
-import { useFormik } from 'formik';
-import { compareObjects, trimAllValues } from '@/utils/common.utils';
 import { API_URL } from '@/constants/config';
-import { KeyedMutator } from 'swr';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { compareObjects, trimAllValues } from '@/utils/common.utils';
+import * as valSchema from '@/utils/validator.utils';
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import axios from 'axios';
+import { useFormik } from 'formik';
+import { useParams } from 'react-router-dom';
+import { KeyedMutator } from 'swr';
+import * as Yup from 'yup';
 
 interface IEUModal extends ButtonProps {
 	data: NodeDataPage;
@@ -21,15 +21,22 @@ export default function EditNodeProfileButton({
 }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { apiResponseToast, toast } = useApiResponseToast();
-	const { name, description } = data;
-	const initialValues = { name, description };
+	const { name, description, address, instalationDate } = data;
+	const initialValues = {
+		name,
+		description,
+		address,
+		instalationDate,
+	};
 	const { id: nodeId } = useParams();
+	const submitURL = `${API_URL}/nodes/${nodeId}`;
 
 	const {
 		handleChange,
 		values,
 		errors,
 		handleSubmit,
+		// setFieldValue,
 		handleBlur,
 		resetForm,
 		touched,
@@ -40,11 +47,12 @@ export default function EditNodeProfileButton({
 		validationSchema: Yup.object().shape({
 			name: valSchema.name.required('Wajib diisi'),
 			description: valSchema.description.required('Wajib diisi'),
+			address: valSchema.address.required('Wajib diisi'),
+			instalationDate: Yup.date().nullable(),
 		}),
 
 		onSubmit: (values) => {
 			trimAllValues(values);
-
 			const filteredData = compareObjects(initialValues, values);
 
 			if (Object.keys(filteredData).length === 0) {
@@ -58,15 +66,16 @@ export default function EditNodeProfileButton({
 			}
 
 			axios
-				.put(`${API_URL}/nodes/${nodeId}`, {
+				.put(submitURL, {
 					...filteredData,
 					nodeId: data.nodeId,
 				})
-				.then(({ data }) => {
+				.then(({ data: dt }) => {
 					setSubmitting(false);
-					apiResponseToast(data, {
+					apiResponseToast(dt, {
 						onSuccess() {
-							mutate();
+							alert(JSON.stringify({ ...data, ...values }));
+							mutate({ ...data, ...values });
 							onClose();
 						},
 					});
@@ -82,7 +91,6 @@ export default function EditNodeProfileButton({
 				autoFocus={false}
 				isOpen={isOpen}
 				onClose={onClose}
-				onCloseComplete={resetForm}
 				closeOnOverlayClick={false}
 			>
 				<ModalOverlay />
@@ -124,11 +132,53 @@ export default function EditNodeProfileButton({
 										{errors.description}
 									</FormErrorMessage>
 								</FormControl>
+								<FormControl
+									isInvalid={
+										Boolean(errors.address) && touched.address
+									}
+								>
+									<FormLabel>Alamat</FormLabel>
+									<Textarea
+										id="address"
+										name="address"
+										placeholder="Opsional"
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.address}
+									/>
+									<FormErrorMessage>{errors.address}</FormErrorMessage>
+								</FormControl>
+
+								<FormControl
+									isInvalid={
+										Boolean(errors.instalationDate) &&
+										touched.instalationDate
+									}
+								>
+									<FormLabel>Tanggal Instalasi</FormLabel>
+									<Input
+										id="instalationDate"
+										name="instalationDate"
+										type="date"
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.instalationDate}
+									/>
+									<FormErrorMessage>
+										{errors.instalationDate}
+									</FormErrorMessage>
+								</FormControl>
 							</VStack>
 						</ModalBody>
 
 						<ModalFooter>
-							<Button variant="ghost" onClick={onClose}>
+							<Button
+								variant="ghost"
+								onClick={() => {
+									resetForm();
+									onClose();
+								}}
+							>
 								Batal
 							</Button>
 							<Button

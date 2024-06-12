@@ -2,17 +2,19 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel, Box, HStack, Heading, Spacer, 
 import { IconCircleDot, IconHistory, IconMoodHappy } from '@tabler/icons-react';
 import { toFormatedDatetime } from '@/utils/dateFormating';
 import { ISPUColor } from '@/utils/common.utils';
-import MyISPUChart from '../../../../components/chart/ISPUChart';
-import MyLineChart from '@/components/chart/MyLineChart';
+import MyISPUChart from '@/components/Chart/ISPUChart';
+import MyLineChart from '@/components/Chart/MyLineChart';
 
 interface SingleNodeISPU {
-	data: SingleNodeAnalysisItem<ISPUValue[], ISPUValue[]>;
+	data: SingleNodeAnalysisItem<[ISPUValue,ISPUValue]>;
 }
 
 export default function SingleNodeISPU({ data }: SingleNodeISPU) {
-	const { current, tren, node } = data as SingleNodeAnalysisItem<ISPUValue[], ISPUValue[]>; // prettier-ignore
+	const { latestData : {datetime, value}, tren } = data as SingleNodeAnalysisItem<[ISPUValue,ISPUValue]>; // prettier-ignore
 
-	const color = ISPUColor[current.value[0].category];
+
+	const highestISPU = value[0]
+	const color = ISPUColor[highestISPU.category];
 
 	return (
 		<>
@@ -34,16 +36,15 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 						fontSize="4xl"
 						fontWeight="700"
 					>
-						{current.value[0].ispu}
+						{highestISPU.ispu}
 					</Text>
 				</VStack>
 
 				<VStack align="start" spacing="2">
 					<Heading as="p" size="lg">
-						{current.value[0].category}
+						{highestISPU.category}
 					</Heading>
-					<Tag>Polutan Utama : {current.value[0].pollutant}</Tag>
-					 
+					<Tag>Polutan Utama : {highestISPU.pollutant}</Tag>
 				</VStack>
 				<Spacer />
 				<Icon
@@ -57,13 +58,13 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 			{/* Tengah */}
 
 			<HStack justify="space-evenly" w="full">
-				{current.value.map((e, i) => (
+				{value.map((e, i) => (
 					<HStack
 						key={i}
 						as={Flex}
 						bg={color + '.100'}
 						py="6px"
-						h='59px'
+						h="59px"
 						px="4"
 						w="170px"
 						rounded="md"
@@ -82,7 +83,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 							<Text
 								fontSize="sm"
 								mt="-1"
-								children={e.value.toFixed(2) + ' µg/m³'}
+								children={e.pollutantValue.toFixed(2) + ' µg/m³'}
 							/>
 						</Box>
 					</HStack>
@@ -146,7 +147,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 									.map(({ datetime, value }) => ({
 										datetime: new Date(datetime).getTime(),
 										value: value.find((e) => e.pollutant == 'PM25')
-											?.value,
+											?.pollutantValue,
 									}))
 									.reverse()}
 							/>
@@ -158,9 +159,9 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 							<MyLineChart
 								data={tren
 									.map(({ datetime, value }) => ({
-										datetime: new Date(datetime).getTime(),
+										datetime: new Date(datetime),
 										value: value.find((e) => e.pollutant == 'PM100')
-											?.value,
+											?.pollutantValue,
 									}))
 									.reverse()}
 							/>
@@ -168,13 +169,6 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 					</TabPanel>
 				</TabPanels>
 			</Tabs>
-			<Spacer />
-			<HStack color="gray.600">
-				<IconHistory size="18" />
-				<Text fontSize="sm">
-					Data Diperbarui Pada : {toFormatedDatetime(current.datetime)}
-				</Text>
-			</HStack>
 		</>
 	);
 }

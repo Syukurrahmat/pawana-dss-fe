@@ -1,17 +1,19 @@
-import * as Yup from 'yup';
-import {  FormControl, FormErrorMessage, FormLabel, Textarea, VStack, useToast, Avatar, Box, HStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, Button, ModalBody, ModalCloseButton, FormHelperText, } from '@chakra-ui/react'; //prettier-ignore
-import { useFormik } from 'formik';
-import { IconSend } from '@tabler/icons-react';
+import MyMap from '@/components/Maps';
 import StarRating from '@/components/Rating';
-import { toBase64, trimAllValues } from '@/utils/common.utils';
-import axios from 'axios';
-import { API_URL } from '@/constants/config';
-import { PhotosPicker } from '../../../components/common/PhotosPicker';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import { CoordinateGetter } from '@/components/maps/index.maps';
+import { API_URL, CENTER_OF_MAP } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import useUser from '@/hooks/useUser';
+import { toBase64, trimAllValues } from '@/utils/common.utils';
+import { Avatar, Box, Button, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import axios from 'axios';
+import { useFormik } from 'formik';
+import { mutate } from 'swr';
+import * as Yup from 'yup';
+import { PhotosPicker } from '../../../components/common/PhotosPicker';
+import RequiredIndicator from '@/components/Form/RequiredIndicator';
 
 export default function CreateReport() {
+	const { user } = useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { toast, apiResponseToast } = useApiResponseToast();
 
@@ -38,8 +40,10 @@ export default function CreateReport() {
 				.max(255, 'Terlalu Panjang')
 				.required('Wajib Diisi'),
 			rating: Yup.number().required('Wajib Diisi'),
-			coordinate: Yup.array(Yup.number()).required(
-				'Anda Belum menentukan titik koordinat'
+			coordinate: Yup.array().test(
+				'',
+				'Anda Belum menentukan titik koordinat',
+				(e) => e && e.filter((e) => e).length == 2
 			),
 		}),
 		onSubmit: async (values) => {
@@ -50,8 +54,20 @@ export default function CreateReport() {
 			const data = trimAllValues({ ...values, images });
 
 			axios.post(API_URL + '/reports', data).then(({ data }) => {
+				apiResponseToast(data, {
+					onSuccess() {
+						mutate(
+							(e) =>
+								typeof e == 'string' &&
+								e.startsWith(API_URL + '/reports'),
+							null,
+							{ revalidate: true }
+						);
+						onClose();
+					},
+				});
 				setSubmitting(false);
-				apiResponseToast(data);
+				resetForm();
 			});
 		},
 	});
@@ -59,30 +75,25 @@ export default function CreateReport() {
 	return (
 		<>
 			<HStack
-				spacing="4"
 				rounded="md"
-				border="1px solid"
-				borderColor="gray.200"
 				bg="white"
-				py="3"
-				px="4"
 				w="full"
 				color="gray.500"
 				justifyContent="start"
 				cursor="pointer"
 				onClick={onOpen}
 			>
-				<Avatar boxSize="35px" name="saya R" />
+				<Avatar boxSize="37px" name={user.name} src={user.profilePicture} />
 				<Box
 					fontWeight="400"
-					shadow="xs"
+					border="1px solid"
+					borderColor="gray.300"
 					px="4"
 					py="2"
 					w="full"
-					rounded="md"
-					children="Buat Laporan"
+					rounded="full"
+					children="Buat Aduan"
 				/>
-				<IconSend />
 			</HStack>
 			<Modal
 				size="2xl"
@@ -95,7 +106,7 @@ export default function CreateReport() {
 					<ModalOverlay />
 					<ModalContent>
 						<ModalHeader borderBottom="1px solid" borderColor="gray.200">
-							Posting Laporan
+							Posting Aduan
 						</ModalHeader>
 						<ModalCloseButton />
 						<ModalBody>
@@ -105,7 +116,9 @@ export default function CreateReport() {
 										Boolean(errors.message) && touched.message
 									}
 								>
-									<FormLabel>Tuis Pesan</FormLabel>
+									<FormLabel>
+										Tuis Pesan <RequiredIndicator />
+									</FormLabel>
 									<Textarea
 										id="message"
 										name="message"
@@ -118,7 +131,9 @@ export default function CreateReport() {
 								<FormControl
 									isInvalid={Boolean(errors.rating) && touched.rating}
 								>
-									<FormLabel>Pilih Bintang</FormLabel>
+									<FormLabel>
+										Pilih Bintang <RequiredIndicator />
+									</FormLabel>
 									<StarRating
 										rating={values.rating}
 										setRating={(e) => setFieldValue('rating', e)}
@@ -133,47 +148,29 @@ export default function CreateReport() {
 										Boolean(errors.coordinate) && touched.coordinate
 									}
 								>
-									<FormLabel>Lokasi </FormLabel>
+									<FormLabel>
+										Lokasi <RequiredIndicator />
+									</FormLabel>
 									<FormHelperText>
 										Geser peta dan paskan penanda ke titik yang
 										dimaksud
 									</FormHelperText>
-									<Box
+									<MyMap
+										scrollWheelZoom={false}
 										mt="3"
-										shadow="xs"
-										rounded="md"
-										position="relative"
+										data={[]}
 										outline={
-											Boolean(errors.coordinate) &&
-											touched.coordinate
+											errors.coordinate && touched.coordinate
 												? '2px solid'
 												: ''
 										}
 										outlineColor="#E53E3E"
-										overflow="hidden"
-									>
-										<Box className="map-marker-centered" />
-										<MapContainer
-											style={{ height: '300px' }}
-											boundsOptions={{ padding: [10, 10] }}
-											zoom={13}
-											scrollWheelZoom={false}
-											center={[-7.519794, 110.082142]}
-										>
-											<TileLayer
-												attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-												url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-											/>
-											<CoordinateGetter
-												onDragend={(x: any) => {
-													setFieldValue('coordinate', [
-														x.lat,
-														x.lng,
-													]);
-												}}
-											/>
-										</MapContainer>
-									</Box>
+										isEditing={{
+											coordinate: CENTER_OF_MAP,
+											onChange: (x) =>
+												setFieldValue('coordinate', [x.lat, x.lng]),
+										}}
+									/>
 									<FormErrorMessage>
 										{errors.coordinate}
 									</FormErrorMessage>

@@ -1,40 +1,44 @@
 import { toFormatedDate } from '@/utils/dateFormating';
-import { HStack, Tag, Button, Center, Icon, Text} from '@chakra-ui/react'; //prettier-ignore
-import { IconCirclePlus, IconExternalLink, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
-import InputSearch from '@/components/form/inputSearch';
+import { HStack, Box, Tag, Button, Center, Icon, Text, Spacer, Skeleton, BoxProps, IconButton} from '@chakra-ui/react'; //prettier-ignore
+import { IconChartBar, IconCirclePlus, IconExternalLink, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
+import InputSearch from '@/components/Form/inputSearch';
 import DataTable from '@/components/DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Link, Link as RLink, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, Link as RLink } from 'react-router-dom';
 import SectionTitle from '@/components/common/SectionTitle';
 import { companyTypeAttr } from '@/constants/enumVariable';
-import { TagCompanyType } from '@/components/tags/index.tags';
+import { TagCompanyType } from '@/components/Tags/index.tags';
 import { KeyedMutator } from 'swr';
+import MyMap from '@/components/Maps';
+import { useState } from 'react';
 
 const columnHelper = createColumnHelper<DTUserManagedCompanies>();
 const columns = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
-		cell: ({ getValue, row: { original } }) => (
-			<HStack spacing="3">
-				<Center
-					rounded="md"
-					border="2px solid"
-					borderColor={companyTypeAttr[original.type].color + '.200'}
-					color={companyTypeAttr[original.type].color + '.500'}
-					p="2"
-				>
-					<Icon as={companyTypeAttr[original.type].icon} boxSize="18px" />
-				</Center>
-				<Text>{getValue()}</Text>
-			</HStack>
-		),
+		cell: (info) => {
+			const { color, icon } = companyTypeAttr[info.row.original.type];
+
+			return (
+				<HStack spacing="3">
+					<Center
+						rounded="md"
+						border="2px solid"
+						borderColor={color + '.200'}
+						color={color + '.500'}
+						p="2"
+						children={<Icon as={icon} boxSize="18px" />}
+					/>
+					<Text>{info.getValue()}</Text>
+				</HStack>
+			);
+		},
 		meta: { sortable: true },
 	}),
 
 	columnHelper.accessor('type', {
 		header: 'Jenis ',
-		cell: (info) => <TagCompanyType type={info.getValue()} />,
+		cell: (info) => <TagCompanyType value={info.getValue()} />,
 		meta: { sortable: true },
 	}),
 
@@ -48,54 +52,54 @@ const columns = [
 	columnHelper.accessor('companyId', {
 		header: 'Aksi',
 		cell: (info) => (
-			<RLink to={'/companies/' + info.getValue()}>
+			<HStack>
+				{' '}
+				<RLink to={'/companies/' + info.getValue()}>
+					<Button
+						colorScheme="blue"
+						size="sm"
+						leftIcon={<IconExternalLink size="16" />}
+						children="Detail"
+					/>
+				</RLink>
 				<Button
-					colorScheme="blue"
-					size="xs"
-					leftIcon={<IconExternalLink size="16" />}
-					children="Lihat Aktivitas"
+					size="sm"
+					colorScheme="green"
+					leftIcon={<IconChartBar size="16" />}
+					children='Dashboard'
 				/>
-			</RLink>
+			</HStack>
 		),
 	}),
 ];
 
-export default function ManagedCompaniesList({
-	data,
-}: DataAndMutateProp<UserDataPage>) {
+interface MCL extends BoxProps {
+	data: Partial<UserDataPage>;
+	mutate?: KeyedMutator<any>;
+}
+
+export default function ManagedCompaniesList({ data, ...rest }: MCL) {
+	const [companiesDataCtx, setCompaniesDataCtx] = useState<null | any[]>(null);
+
+	const showMap = companiesDataCtx == null || companiesDataCtx.length > 0;
+
 	return (
-		<>
-			<SectionTitle IconEl={IconUsersGroup}>
-				Aktivitas Anda
-				<Tag colorScheme="blue" ml="2">
-					{data.countManagedCompany || 0}
-				</Tag>
-			</SectionTitle>
-
-			<HStack mt="4" justify="space-between">
-				<Link to={"/companies/create"}>
-					<Button
-						colorScheme="blue"
-						leftIcon={<IconCirclePlus size="18" />}
-					>
-						Tambahkan Aktivitas
-					</Button>
-				</Link>
-				<InputSearch
-					rounded="md"
-					bg="white"
-					placeholder="Cari Aktivitas"
-					_onSubmit={null}
+		<Box {...rest}>
+			{showMap && (
+				<MyMap
+					data={[]}
+					companiesData={companiesDataCtx || []}
+					as={companiesDataCtx == null ? Skeleton : undefined}
 				/>
-			</HStack>
-
+			)}
 			<DataTable
 				mt="4"
 				apiUrl={`/users/${data.userId}/companies`}
 				columns={columns}
+				setDataContext={setCompaniesDataCtx}
 				emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}
 				hiddenPagination={true}
 			/>
-		</>
+		</Box>
 	);
 }

@@ -1,35 +1,60 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, useToast, Text, useDisclosure, ButtonProps, VStack, Checkbox, Flex} from '@chakra-ui/react'; //prettier-ignore
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, useToast, Text, useDisclosure, ButtonProps, VStack, Checkbox, Flex, Portal} from '@chakra-ui/react'; //prettier-ignore
 import { useState } from 'react';
 import { IconChevronDown, IconWind } from '@tabler/icons-react';
 
-export const airParameters = ['PM10', 'PM2.5', 'CH4', 'CO2', 'TEMP', 'HUMIDITY'];
+export const airParameters = [
+	{ label: 'PM10', id: 'pm25', value: false },
+	{ label: 'PM2.5', id: 'pm100', value: false },
+	{ label: 'CH4', id: 'ch4', value: false },
+	{ label: 'CO2', id: 'co2', value: false },
+];
 
-interface ISelectAirParams extends ButtonProps {
-	onChange?: (e: any) => any;
-	state: [boolean[], React.Dispatch<React.SetStateAction<boolean[]>>];
+const parseValue = (value: string) => {
+	const jj = value.split(',').map((e) => e.trim());
+	return airParameters.map(({ id, label }) => ({
+		id,
+		label,
+		value: jj.includes(id),
+	}));
+};
+
+const stringifyValue = (value: typeof airParameters, key: 'label' | 'id') => {
+	return value
+		.filter((e) => e.value)
+		.map((e) => e[key])
+		.join(', ');
+};
+
+interface params extends ButtonProps {
+	airParamsvalue: string;
+	airParamsOnChange: (v: string) => any;
 }
 
 export default function SelectAirParams({
-	state,
-	onChange,
+	airParamsvalue,
+	airParamsOnChange,
 	...rest
-}: ISelectAirParams) {
+}: params) {
 	const toast = useToast();
-	const [preValue, setPreValue] = state;
-	const [value, setValue] = useState(preValue);
+	const [value, setValue] = useState(parseValue(airParamsvalue));
 	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const onChangeHandle = (id: string) => {
+		setValue((prev) =>
+			prev.map((e) => (e.id === id ? { ...e, value: !e.value } : e))
+		);
+	};
 
 	const submitHandler = async () => {
 		if (!value.length) {
-			toast({
+			return toast({
 				title: `Opss`,
 				description: `Belum ada yang dipilih`,
 				status: 'warning',
 			});
-			return;
 		}
 
-		setPreValue(value);
+		airParamsOnChange(stringifyValue(value, 'id'));
 		onClose();
 	};
 
@@ -49,53 +74,41 @@ export default function SelectAirParams({
 				onClick={onOpen}
 				{...rest}
 			>
-				<VStack spacing="1" align="start" px="1">
+				<VStack spacing="1" align="start" px="1" w="full">
 					<Text textTransform="capitalize" fontSize="sm" color="gray.500">
 						Parameter
 					</Text>
 					<Text textTransform="uppercase">
-						{preValue
-							.map((e, i) => (e ? airParameters[i] : ''))
-							.filter((e) => e)
-							.join(', ') || '-'}
+						{stringifyValue(parseValue(airParamsvalue), 'label') || '-'}
 					</Text>
 				</VStack>
 			</Button>
+			<Portal>
+
+			
 			<Modal
 				size="xl"
 				autoFocus={false}
 				isOpen={isOpen}
 				onClose={onClose}
 				closeOnOverlayClick={false}
-				onCloseComplete={() => {
-					setValue(preValue);
-				}}
+				onCloseComplete={() => setValue(parseValue(airParamsvalue))}
 			>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>
-						Pilih Paramater Udara
-						<Text fontSize="md">Maksimal tiga</Text>
-					</ModalHeader>
+					<ModalHeader>Pilih Paramater Udara</ModalHeader>
 					<ModalBody>
 						<Flex gap="4" wrap="wrap">
-							{airParameters.map((parameter, index) => (
+							{value.map(({ id, label, value }) => (
 								<Checkbox
-									key={index}
+									key={id}
 									size="lg"
 									flexGrow="1"
 									colorScheme="green"
-									isChecked={value[index]}
-									onChange={() => {
-										setValue((old) =>
-											old.map((item, i) =>
-												i === index ? !item : item
-											)
-										);
-									}}
-								>
-									{parameter}
-								</Checkbox>
+									isChecked={value}
+									onChange={() => onChangeHandle(id)}
+									children={label}
+								/>
 							))}
 						</Flex>
 					</ModalBody>
@@ -113,6 +126,7 @@ export default function SelectAirParams({
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+			</Portal>
 		</>
 	);
 }

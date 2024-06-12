@@ -16,9 +16,10 @@ export default function GMapsButton({ coordinate, ...rest }: IGMapsButton) {
 				variant="outline"
 				iconSpacing="0.5"
 				leftIcon={<IconBrandGoogleMaps size="16" />}
-				children="Buka di Maps"
 				{...rest}
-			/>
+			>
+				{rest.children || "Buka di Maps"}
+			</Button>
 		</Link>
 	);
 }

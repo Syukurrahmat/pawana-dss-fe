@@ -10,7 +10,7 @@ declare type UserDataPage = {
     address: string;
     description: string;
     role: string;
-    profilePicture: null;
+    profilePicture: string | undefined;
     email: string;
     isVerified: boolean;
     countSubscribedNodes: number;
@@ -27,6 +27,7 @@ declare type CompanyDataPage = {
     createdAt: string;
     updatedAt: string;
     coordinate: number[]
+    countSubscribedNodes: number
     manager: {
         name: string;
         userId: number;
@@ -39,17 +40,19 @@ declare type CompanyDataPage = {
 
 declare type NodeDataPage = {
     nodeId: number;
+    companyId: number;
     name: string;
     ownerId: number;
     description: string;
     address: string;
     coordinate: number[]
     status: string;
-    instalationDate: string | null;
+    instalationDate: string | undefined;
     apiKey: string;
-    lastDataSent: string | null;
+    lastDataSent: string | undefined;
     createdAt: string;
     updatedAt: string;
+    environment: 'indoor' | 'outdoor'
     countUserSubscription: number;
     countCompanySubscribtion: number;
     owner: {
@@ -64,12 +67,14 @@ declare type NodeDataPage = {
 
 declare type ReportsPerDay = {
     success: boolean;
-    pagination: {
-        previous: string;
-        current: string;
-        next: string;
-    };
+    pagination: ReportsPagination;
     result: ReportData[]
+}
+
+declare type ReportsPagination = {
+    previous: string;
+    current: string;
+    next: string;
 }
 
 declare type ReportData = {
@@ -105,3 +110,4 @@ type NodesSummary = {
 };
 
 type SummaryItem = { value: string, count: number }
+

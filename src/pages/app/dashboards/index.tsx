@@ -1,39 +1,45 @@
-import { VStack } from '@chakra-ui/react'; // prettier-ignore
+import { Flex, VStack } from '@chakra-ui/react'; // prettier-ignore
 import useSWR from 'swr';
-import { fetcher } from '@/utils/fetcher';
-import { HOST_URL } from '@/constants/config';
-import CompanyInformation from './CompanyInfo';
+import { pageDataFetcher } from '@/utils/fetcher';
+import DashboardInfo from './DashboardInfo';
 import NodesGroupInfo from './NodesGroupInfo';
-
+import LoadingComponent from '@/components/Loading/LoadingComponent';
+import { CurrentEventsCard } from './CurrentEvents';
+import { NearReport } from './NearReport';
 
 export default function Dashboard() {
-	const { data, isLoading, error } = useSWR<DashboardDataType>(
-		HOST_URL + '/app/dashboard/data',
-		fetcher
+	const { data, isLoading } = useSWR<DashboardDataType>(
+		'/dashboard',
+		pageDataFetcher
 	);
 
-	if (isLoading || !data) return 'Loading Slurr';
+	if (isLoading || !data) return <LoadingComponent />;
 
 	return (
-		<VStack spacing="6" align="stretch" h="4000px">
-			<CompanyInformation data={data} />
-			<NodesGroupInfo data={data.indoor}/>
-			<NodesGroupInfo data={data.outdoor}/>
-			{/* <ISPUCard data={data}/> */}
+		<VStack spacing="4" align="stretch" h="4000px">
+			<DashboardInfo data={data} />
+			
+			{data.indoor && <NodesGroupInfo data={data.indoor} type="indoor" />}
+			
+			<NodesGroupInfo
+				data={data.outdoor}
+				type={data.dashboardInfo.type == 'regular' ? 'arround' : 'outdoor'}
+			/>
 
-			{/* <Flex flexWrap="wrap" w="full" gap="6">
-				<GRKCard />
-				<GRKCard />
-				<ClimateCard />
-			</Flex>
-			<Flex w="full" gap="6">
-				<ISPUCard />
-				<ISPUCard />
-			</Flex>
-			<Flex>
-				<ActivityCard />
-			</Flex> */}
+			{!!data.currentEventLogs && (
+				<Flex w="full" gap="4">
+					<>
+						<CurrentEventsCard
+							flex="1 1 0 "
+							data={data.currentEventLogs}
+						/>
+						<NearReport
+							flex="1 1 0 "
+							data={data.nearReports}
+						/>
+					</>
+				</Flex>
+			)}
 		</VStack>
 	);
 }
- 

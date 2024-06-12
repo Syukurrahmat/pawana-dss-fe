@@ -1,5 +1,5 @@
-import { IconAddressBook, IconCircleDot, IconEdit, IconTextCaption, IconUserHeart, IconCalendar, IconTag,} from '@tabler/icons-react'; //prettier-ignore
-import { Box, Container, HStack, Heading, Tag, Text,} from '@chakra-ui/react'; //prettier-ignore
+import { IconAddressBook, IconCircleDot, IconEdit, IconTextCaption, IconUserHeart, IconCalendar, IconTag, IconChartBar,} from '@tabler/icons-react'; //prettier-ignore
+import { Box, Button, Container, HStack, Heading, Spacer, Text,} from '@chakra-ui/react'; //prettier-ignore
 import { toFormatedDate } from '@/utils/dateFormating';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import { useParams } from 'react-router-dom';
@@ -8,19 +8,21 @@ import SectionTitle from '@/components/common/SectionTitle';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
 import TagWithIcon from '@/components/common/TagWithIcon';
 import EditGroupButton from './EditCompany';
-import UserCard from '../../../components/managerCard';
-import NodeMapsAndNodesList from './DTNodesList';
+import UserCard from '@/components/managerCard';
 import useSWR from 'swr';
-import LoadingAnimation from '@/components/LoadingAnimation/LoadingAnimation';
+import LoadingComponent from '@/components/Loading/LoadingComponent';
+import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
+import useUser from '@/hooks/useUser';
 
 export default function DetailCompany() {
+	useUser();
 	const { id } = useParams();
 	const { data, mutate } = useSWR<CompanyDataPage>(
 		`/companies/${id}`,
 		pageDataFetcher
 	);
 
-	if (!data) return <LoadingAnimation />;
+	if (!data) return <LoadingComponent />;
 
 	return (
 		<Box>
@@ -43,20 +45,29 @@ export default function DetailCompany() {
 								textTransform="capitalize"
 								children={data.type}
 							/>
-							<TagWithIcon icon={IconCircleDot} children={'2 Node'} />
+							<TagWithIcon
+								icon={IconCircleDot}
+								children={data.countSubscribedNodes + ' Node'}
+							/>
 						</HStack>
 
 						<UserCard mt="3" data={data.manager} label="manager" />
 					</Box>
+					<Spacer />
+					<Button
+						colorScheme="green"
+						leftIcon={<IconChartBar size="16" />}
+						alignSelf="start"
+						children="Dashboard"
+					/>
 
 					<EditGroupButton
 						data={data}
 						mutate={mutate}
 						colorScheme="blue"
 						alignSelf="start"
-						size="md"
 						leftIcon={<IconEdit size="16" />}
-						children={'Sunting Aktivitas'}
+						children={'Sunting Usaha'}
 					/>
 				</HStack>
 
@@ -64,15 +75,11 @@ export default function DetailCompany() {
 				<Text>{data.address}</Text>
 
 				<SectionTitle IconEl={IconTextCaption}>
-					Deskripsi Aktivitas
+					Deskripsi Usaha
 				</SectionTitle>
 				<Text>{data.description}</Text>
 
-				<SectionTitle IconEl={IconCircleDot}>
-					Daftar Node
-					<Tag colorScheme="blue" ml="2"></Tag>
-				</SectionTitle>
-				<NodeMapsAndNodesList companyCoord={data.coordinate} />
+				<CompanySubscribedNodesList data={data} mutate={mutate} />
 			</Container>
 		</Box>
 	);

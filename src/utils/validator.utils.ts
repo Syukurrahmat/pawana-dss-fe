@@ -43,3 +43,9 @@ export const environment = Yup.string()
 
 export const id = Yup.number()
 
+export const coordinate = Yup.array().test(
+    '',
+    'Anda Belum menentukan titik koordinat',
+    (e) => e && e.filter((e) => e).length == 2
+)
+

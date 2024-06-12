@@ -1,19 +1,23 @@
-import { Box, BoxProps, Divider, Heading, Text } from '@chakra-ui/react';
+import { Box, BoxProps, Heading } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { navbarlList } from './sidebar';
 
-interface HeaderProps extends BoxProps {}
+interface HeaderProps extends BoxProps {
+	navbarList: {
+		Icon: React.ForwardRefExoticComponent<any>;
+		label: string;
+		path: string;
+	}[];
+}
 
-export default function Header({ ...props }: HeaderProps) {
+export default function Header({ navbarList, ...props }: HeaderProps) {
 	const [headerText, setHeaderText] = useState<string | undefined>('');
 	let location = useLocation();
 
 	useEffect(() => {
 		setHeaderText(
-			navbarlList
-				.flatMap((e) => e)
-				.find((e) => e.path == '/' + location.pathname.split('/')[1])?.label
+			navbarList.find((e) => e.path == '/' + location.pathname.split('/')[1])
+				?.label
 		);
 	}, [location.pathname]);
 

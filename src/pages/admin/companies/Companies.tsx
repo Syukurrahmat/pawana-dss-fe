@@ -1,20 +1,20 @@
-import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
-import { HStack, Spacer, Button, Avatar, Text, Flex, Grid, Tabs, TabList, Tab, TabPanels, TabPanel} from '@chakra-ui/react'; //prettier-ignore
-import { IconBuildingFactory2, IconExternalLink, IconPlus, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
 import DataTable from '@/components/DataTable';
-import { Link as RLink } from 'react-router-dom';
-import HeadingWithIcon from '@/components/common/HeadingWithIcon';
-import { toFormatedDate } from '@/utils/dateFormating';
-import InputSearch from '@/components/form/inputSearch';
+import InputSearch from '@/components/Form/inputSearch';
+import LoadingComponent from '@/components/Loading/LoadingComponent';
+import MyMap from '@/components/Maps';
+import { TagCompanyType } from '@/components/Tags/index.tags';
 import CompanyIcon from '@/components/common/CompanyIcon';
-import useSWR from 'swr';
-import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
-import { companyTypeAttr } from '@/constants/enumVariable';
-import { TagCompanyType } from '@/components/tags/index.tags';
+import HeadingWithIcon from '@/components/common/HeadingWithIcon';
 import { StatWithIcon } from '@/components/common/StatWithIcon';
+import { companyTypeAttr } from '@/constants/enumVariable';
 import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
-import MyMap from '@/components/maps/index.maps';
-import LoadingAnimation from '@/components/LoadingAnimation/LoadingAnimation';
+import { toFormatedDate } from '@/utils/dateFormating';
+import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
+import { Avatar, Button, Flex, Grid, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconBuildingFactory2, IconExternalLink, IconPlus, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
+import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
+import { Link as RLink } from 'react-router-dom';
+import useSWR from 'swr';
 
 const columnHelper = createColumnHelper<CompanyData>();
 const columns = [
@@ -30,7 +30,7 @@ const columns = [
 	}),
 	columnHelper.accessor('type', {
 		header: 'Jenis ',
-		cell: (info) => <TagCompanyType type={info.getValue()} />,
+		cell: (info) => <TagCompanyType value={info.getValue()} />,
 		meta: { sortable: true },
 	}),
 
@@ -82,20 +82,20 @@ const columns = [
 
 export default function CompaniesManagement() {
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(['list', 'map']);
-
+ 
 	const { data } = useSWR<CompaniesSummary>(
 		'/companies/summary',
 		pageDataFetcher
 	);
 
-	if (!data) return <LoadingAnimation />;
+	if (!data) return <LoadingComponent />;
 
 	return (
 		<Flex gap="2" flexDir="column">
 			<HStack w="full" spacing="4" align="start">
 				<HeadingWithIcon
 					Icon={<IconUsersGroup />}
-					text="Daftar Aktivitas"
+					text="Daftar Usaha"
 				/>
 				<Spacer />
 				<InputSearch
@@ -108,7 +108,7 @@ export default function CompaniesManagement() {
 					<Button
 						leftIcon={<IconPlus size="20px" />}
 						colorScheme="green"
-						children="Tambah Aktivitas"
+						children="Tambah Usaha"
 					/>
 				</RLink>
 			</HStack>
@@ -122,7 +122,7 @@ export default function CompaniesManagement() {
 					flex="1 0 180px"
 					icon={IconBuildingFactory2}
 					count={data.all}
-					label="Total Aktivitas"
+					label="Total Usaha"
 					variant="solid"
 				/>
 

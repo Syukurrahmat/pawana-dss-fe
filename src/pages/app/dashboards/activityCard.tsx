@@ -9,7 +9,7 @@ export default function ActivityCard() {
 					<IconActivity />
 				</Square>
 				<Text fontSize="lg" fontWeight="600" as="p">
-					Aktivitas Terkini
+					Usaha Terkini
 				</Text>
 			</CardHeader>
 			<CardBody

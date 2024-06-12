@@ -1,8 +1,21 @@
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, Brush } from 'recharts'; // prettier-ignore
 import { formatDateToHHMM } from '../../pages/app/dashboards/ISPU/SingleNodeISPU';
 
+interface LineChartData {
+	data: {
+		[key: string]: any;
+		datetime: any;
+		value: any;
+	}[];
+	withBrush?: boolean;
+}
 
-export default  function MyLineChart({ data }: { data: any[]; }) {
+export default function MyLineChart({ data, withBrush }: LineChartData) {
+	data = data.map(({ datetime, ...e }) => ({
+		...e,
+		datetime: new Date(datetime).getTime(),
+	}));
+
 	return (
 		<ResponsiveContainer width="100%" height="100%">
 			<AreaChart
@@ -20,16 +33,20 @@ export default  function MyLineChart({ data }: { data: any[]; }) {
 					dataKey="datetime"
 					domain={['dataMin-10000', 'dataMax+10000']}
 					tickFormatter={(e) => formatDateToHHMM(new Date(e))}
-					tickCount={10} />
+					tickCount={10}
+				/>
 				<YAxis width={30} />
 				<CartesianGrid strokeDasharray="3 3" />
 				<Tooltip />
+
 				<Area
 					type="monotone"
 					dataKey="value"
 					stroke="#8884d8"
 					fillOpacity={1}
-					fill="url(#colorId)" />
+					fill="url(#colorId)"
+				/>
+				{withBrush && <Brush dataKey="datetime" />}
 			</AreaChart>
 		</ResponsiveContainer>
 	);

@@ -1,4 +1,4 @@
-import {HStack, Tag, Text, VStack, Box} from '@chakra-ui/react'; // prettier-ignore
+import { Box, HStack, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconCircleDot } from '@tabler/icons-react';
 import GaugeChart from 'react-gauge-chart';
 
@@ -24,6 +24,8 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 			data: CO2data,
 		},
 	];
+
+	console.log({CH4data, CO2data})
 
 	return (
 		<>
@@ -88,8 +90,8 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 							py="2"
 							px="4"
 						>
-							{[1, 1].map((e, i) => (
-								<HStack spacing="1" w="full" justify="space-between">
+							{[1, 1].map((_, i) => (
+								<HStack spacing="1" w="full"  key={i} justify="space-between">
 									<Box>
 										<HStack
 											color="gray.700"

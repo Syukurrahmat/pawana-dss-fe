@@ -1,34 +1,41 @@
-import { IconMoodEmpty, IconMoodHeart, IconMoodSad, IconMoodSmile, IconMoodWrrr, IconStar, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
-import { Avatar, Box, HStack, Card, CardBody, Text, CardHeader, Spacer, Image, CardFooter, VStack, Icon, Tag} from '@chakra-ui/react'; //prettier-ignore
-import { toFormatedDate } from '@/utils/dateFormating';
+import { IconMapPin, IconMoodEmpty, IconMoodHeart, IconMoodSad, IconMoodSmile, IconMoodWrrr, IconStar, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
+import { Button, Avatar, Box, HStack, Card, CardBody, Text, CardHeader, Spacer, Image, CardFooter, VStack, Icon, Tag, CardProps} from '@chakra-ui/react'; //prettier-ignore
+import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
 
-interface IReportCard {
+interface IReportCard extends CardProps {
 	data: ReportData;
+	map?: any;
 }
 
-export default function ReportCard({ data }: IReportCard) {
+export default function ReportCard({ data, map, ...rest }: IReportCard) {
 	return (
-		<Card w="full" shadow="xs">
+		<Card w="full" shadow="xs" {...rest}>
 			<CardHeader spacing="4" as={HStack}>
 				<Avatar name={data.creator.name} />
 				<Box>
 					<Text fontSize="lg" fontWeight="500">
 						{data.creator.name}
 					</Text>
-					<Text fontSize="sm">{toFormatedDate(data.createdAt)} </Text>
+					<Text fontSize="sm">{toFormatedDatetime(data.createdAt)} </Text>
 				</Box>
 				<Spacer />
 				<RatingIcons rating={data.rating} />
 			</CardHeader>
 			<CardBody py="0">
 				<Text>{data.message}</Text>
-				
-				{Array.isArray(data.images) && (
-					<ReportImageGalery images={data.images} />
-				)}
 
+				{!!data.images.length && <ReportImageGalery images={data.images} />}
 			</CardBody>
-			<CardFooter as={VStack}></CardFooter>
+			<CardFooter as={VStack} align="end">
+				<Button
+					leftIcon={<IconMapPin size="18" />}
+					colorScheme="blue"
+					size="sm"
+					onClick={() => (map ? map.flyTo(data.coordinate, 17) : null)}
+				>
+					Lihat di map
+				</Button>
+			</CardFooter>
 		</Card>
 	);
 }

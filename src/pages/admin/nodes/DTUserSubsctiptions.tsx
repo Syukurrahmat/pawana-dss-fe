@@ -1,17 +1,18 @@
-import { toFormatedDate } from '@/utils/dateFormating';
-import { HStack, Tag, Button, Link} from '@chakra-ui/react'; //prettier-ignore
-import { IconCirclePlus, IconExternalLink, IconTrash, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
-import InputSearch from '@/components/form/inputSearch';
 import DataTable from '@/components/DataTable';
-import { createColumnHelper } from '@tanstack/react-table';
-import { Link as RLink, useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import SectionTitle from '@/components/common/SectionTitle';
+import InputSearch from '@/components/Form/inputSearch';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
-import { KeyedMutator } from 'swr';
-import useConfirmDialog from '@/hooks/useConfirmDialog';
-import axios from 'axios';
+import SectionTitle from '@/components/common/SectionTitle';
 import { API_URL } from '@/constants/config';
+import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import useConfirmDialog from '@/hooks/useConfirmDialog';
+import { toFormatedDate } from '@/utils/dateFormating';
+import { Button, HStack, IconButton, Link, Spacer, Tag } from '@chakra-ui/react'; //prettier-ignore
+import { IconExternalLink, IconTrash, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
+import { createColumnHelper } from '@tanstack/react-table';
+import axios from 'axios';
+import { useMemo } from 'react';
+import { Link as RLink } from 'react-router-dom';
+import { KeyedMutator, mutate } from 'swr';
 
 const columnHelper = createColumnHelper<DTNodeUsersSubscription>();
 
@@ -20,16 +21,54 @@ interface UserSubsList {
 	data: NodeDataPage;
 }
 
-export default function UserSubsctiptionsList({ data, mutate }: UserSubsList) {
+export default function UserSubsctiptionsList({
+	data,
+	mutate: dataPageMutate,
+}: UserSubsList) {
 	let { nodeId, countUserSubscription } = data;
 	const confirmDialog = useConfirmDialog();
+	const { apiResponseToast } = useApiResponseToast();
+	const dataApiURL = `/nodes/${nodeId}/users`;
 
-	const deleteUserSubscription = (userId: number) => {
+	const handleDeleteSubs = (subscriptionid: number) => {
 		confirmDialog({
 			title: 'Hapus Pengguna',
 			message: 'Hapus pengguna dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
-			onConfirm: () => null,
+			onConfirm: async () => {
+				return axios
+					.delete(
+						API_URL + dataApiURL + '?subscriptionid=' + subscriptionid
+					)
+					.then(({ data: dt }) =>
+						apiResponseToast(dt, {
+							onSuccess: () => {
+								mutate((e) => e && e[0] == dataApiURL);
+								dataPageMutate();
+							},
+						})
+					);
+			},
+		});
+	};
+	const handleDeleteAllSubs = () => {
+		confirmDialog({
+			title: 'Hapus Semua Pengguna',
+			message:
+				'Hapus Semua pengguna dari daftar pelanggan node ' + data.name,
+			confirmButtonColor: 'red',
+			onConfirm: async () => {
+				return axios
+					.delete(API_URL + dataApiURL + '?all=true')
+					.then(({ data: dt }) =>
+						apiResponseToast(dt, {
+							onSuccess: () => {
+								mutate((e) => e && e[0] == dataApiURL);
+								dataPageMutate();
+							},
+						})
+					);
+			},
 		});
 	};
 
@@ -48,24 +87,24 @@ export default function UserSubsctiptionsList({ data, mutate }: UserSubsList) {
 				),
 			}),
 
-			columnHelper.accessor('UsersSubscriptions.createdAt', {
+			columnHelper.accessor('joinedAt', {
 				header: 'Berlangganan sejak',
 				cell: (info) => toFormatedDate(info.getValue()),
 				meta: { sortable: true },
 			}),
 
-			columnHelper.accessor('userId', {
+			columnHelper.accessor('subscriptionId', {
 				header: 'Aksi',
 				cell: (info) => (
 					<HStack>
-						<Button
+						<IconButton
 							size="sm"
 							colorScheme="red"
-							leftIcon={<IconTrash size="16" />}
-							children="Hapus"
-							onClick={() => deleteUserSubscription(info.getValue())}
+							icon={<IconTrash size="16" />}
+							aria-label="Hapus"
+							onClick={() => handleDeleteSubs(info.getValue())}
 						/>
-						<RLink to={'/users/' + info.getValue()}>
+						<RLink to={'/users/' + info.row.original.userId}>
 							<Button
 								colorScheme="blue"
 								size="sm"
@@ -83,16 +122,22 @@ export default function UserSubsctiptionsList({ data, mutate }: UserSubsList) {
 	return (
 		<>
 			<SectionTitle IconEl={IconUsersGroup}>
-				Daftar Pengguna yang berlangganan
+				Daftar Pengguna yang mengikuti node ini
 				<Tag colorScheme="blue" ml="2">
 					{countUserSubscription || 0}
 				</Tag>
 			</SectionTitle>
 
 			<HStack mt="4" justify="space-between">
-				<Button colorScheme="red" leftIcon={<IconTrash size="18" />}>
-					Hapus Semua Pengguna
-				</Button>
+				{!!countUserSubscription && (
+					<Button
+						colorScheme="red"
+						leftIcon={<IconTrash size="18" />}
+						onClick={handleDeleteAllSubs}
+						children="Hapus Semua Pengguna"
+					/>
+				)}
+				<Spacer/>
 				<InputSearch
 					rounded="md"
 					bg="white"
@@ -103,7 +148,7 @@ export default function UserSubsctiptionsList({ data, mutate }: UserSubsList) {
 
 			<DataTable
 				mt="4"
-				apiUrl={`/nodes/${nodeId}/usersubscriptions`}
+				apiUrl={dataApiURL}
 				columns={columns}
 				emptyMsg={['Belum ada Pengguna']}
 			/>

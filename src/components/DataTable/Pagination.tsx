@@ -9,21 +9,23 @@ interface IPagination extends BoxProps {
 
 export const Pagination = ({ table, sizes, ...rest }: IPagination) => (
 	<HStack {...rest} w="full" justify="space-between">
-		<HStack>
-			<Text>Tampikan</Text>
-			<Select
-				size="sm"
-				w="fit-content"
-				bg="white"
-				value={table.getState().pagination.pageSize}
-				onChange={(e) => table.setPageSize(parseInt(e.target.value, 10))}
-			>
-				{sizes.map((size) => (
-					<option key={size} value={size} children={size} />
-				))}
-			</Select>
-			<Text>item</Text>
-		</HStack>
+		{table.getRowCount() > sizes[0] && (
+			<HStack>
+				<Text>Tampikan</Text>
+				<Select
+					size="sm"
+					w="fit-content"
+					bg="white"
+					value={table.getState().pagination.pageSize}
+					onChange={(e) => table.setPageSize(parseInt(e.target.value, 10))}
+				>
+					{sizes.map((size) => (
+						<option key={size} value={size} children={size} />
+					))}
+				</Select>
+				<Text>item</Text>
+			</HStack>
+		)}
 		{!(
 			table.getState().pagination.pageIndex == 0 && table.getPageCount() <= 1
 		) && (

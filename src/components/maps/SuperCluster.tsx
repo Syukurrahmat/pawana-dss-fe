@@ -1,12 +1,14 @@
-import { fetchIcon } from './marker/iconMarker';
 import { useCallback, useEffect, useState } from 'react';
 import { Marker, useMap } from 'react-leaflet';
 import Supercluster, { ClusterProperties } from 'supercluster';
 import useSupercluster from 'use-supercluster';
+import { fetchIcon } from './IconMarker';
+
 import './maps.css';
+import { CompanyMarker } from './Marker';
 
 interface ISuperCluster {
-	data: LocationData[];
+	data: DataWithCoordinate[];
 	MarkerType: any;
 }
 
@@ -18,6 +20,7 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 	const maxZoom = 22;
 	const [bounds, setBounds] = useState<number[]>();
 	const [zoom, setZoom] = useState(12);
+
 	const map = useMap();
 
 	const updateMap = () => {
@@ -46,14 +49,14 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 		};
 	}, [map, onMove]);
 
-	const { clusters, supercluster } = useSupercluster<
-		LocationData & ClusterProperties
-	>({
+	type useUserClusterPropType = DataWithCoordinate & ClusterProperties;
+
+	const { clusters, supercluster } = useSupercluster<useUserClusterPropType>({
 		// @ts-ignore
 		points: data.map((point) => ({
 			type: 'Feature',
 			properties: {
-				cluster: false,
+				cluster_id: point.nodeId,
 				...point,
 			},
 			geometry: {
@@ -68,7 +71,7 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 
 	return (
 		<>
-			{clusters.map(({ properties, geometry }, i) => {
+			{clusters.map(({ properties, geometry }) => {
 				const [longitude, latitude] = geometry.coordinates;
 				const {
 					cluster: isCluster,
@@ -79,7 +82,7 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 				if (isCluster) {
 					return (
 						<Marker
-							key={i}
+							key={clusterId}
 							position={[latitude, longitude]}
 							icon={fetchIcon(
 								pointCount,
@@ -101,9 +104,21 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 					);
 				}
 
-				return (
+				return properties.isCompanyLocation ? (
+					<CompanyMarker
+						key={'comp-' + properties.companyId}
+						position={[latitude, longitude]}
+						properties={properties}
+					/>
+				) : properties.isReport ? (
 					<MarkerType
-						key={i}
+						key={'report-' + properties.reportId}
+						position={[latitude, longitude]}
+						properties={properties}
+					/>
+				) : (
+					<MarkerType
+						key={'node-' + properties.nodeId}
 						position={[latitude, longitude]}
 						properties={properties}
 					/>

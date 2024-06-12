@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Radio, HStack, Box, RadioGroup, Center, Icon, Tag } from '@chakra-ui/react'; //prettier-ignore
-import { IconMoodNeutral, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
 import { RatingIconList } from '@/pages/app/reports/ReportCard';
+import { Box, Center, HStack, Icon, Radio, RadioGroup, Tag } from '@chakra-ui/react'; //prettier-ignore
+import { IconMoodNeutral, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
+import React, { useState } from 'react';
 
 
 interface IStarRating {
@@ -10,7 +10,7 @@ interface IStarRating {
 	size: number;
 }
 
-export default function StarRating({ rating, setRating, size }: IStarRating) {
+export default function StarRating({ rating, setRating }: IStarRating) {
 	const [hover, setHover] = useState(0);
 
 	const iconIndex = hover || rating;

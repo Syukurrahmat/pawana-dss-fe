@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
 import Dashboard from '../pages/app/dashboards/index';
-import Analysis from '@/pages/app/analysis';
+import Analysis from '@/pages/app/analitics';
 import Data from '../pages/app/data';
 import NodeManagement from '@/pages/admin/nodes/Nodes';
 import CreateNode from '@/pages/admin/nodes/CreateNode';
@@ -13,21 +13,26 @@ import CompaniesManagement from '@/pages/admin/companies/Companies';
 import CreateCompany from '@/pages/admin/companies/CreateCompany';
 import DetailCompany from '@/pages/admin/companies/DetailCompany';
 import ReportsPage from '@/pages/app/reports';
-import { AuthLoader } from '@/hooks/useAuth';
+import MyCompanies from '@/pages/app/myCompanies';
+import MyNodes from '@/pages/app/myNodes/myNodes';
+import Notes from '@/pages/app/eventLogs';
+import Assesment from '@/pages/app/summary';
 
 const appRouter = createBrowserRouter([
 	{
 		path: '/',
 		element: <App />,
-		loader: AuthLoader,
 		children: [
 			{ path: '/', element: <Dashboard /> },
 			{ path: '/analytic', element: <Analysis /> },
 			{ path: '/data', element: <Data /> },
-			{ path: '/group', element: <Data /> },
-			{ path: '/account', element: <DetailUser /> },
-
 			{ path: '/reports', element: <ReportsPage /> },
+			{ path: '/account', element: <DetailUser /> },
+			{ path: '/notes', element: <Notes /> },
+			{ path: '/summary', element: <Assesment /> },
+
+			{ path: '/my-nodes', element: <MyNodes /> },
+			{ path: '/my-companies', element: <MyCompanies /> },
 
 			// FOR ADMIN ONLY
 			{ path: '/users', element: <UserManagement /> },

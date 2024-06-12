@@ -2,10 +2,11 @@ import { API_URL } from "@/constants/config";
 
 
 export const pageDataFetcher = async (...args: Parameters<typeof fetch>) => {
+    console.log(API_URL + args[0])
     return await fetch(API_URL + args[0], args[1])
         .then(e => e.json())
         .then(e => {
-            if(!e.success) throw new Error("Not Found");
+            if (!e.success) throw new Error("Not Found");
             return e.result
         })
 };

@@ -1,19 +1,19 @@
-import { HStack, Spacer, Button, Tag, Flex, Tabs, TabList, Tab, TabPanels, TabPanel, VStack, Text, Grid, Icon, Box} from '@chakra-ui/react'; //prettier-ignore
-import { IconCircle, IconCircleDot, IconExternalLink, IconPlus} from '@tabler/icons-react'; //prettier-ignore
-import { createColumnHelper} from '@tanstack/react-table'; //prettier-ignore
-import HeadingWithIcon from '@/components/common/HeadingWithIcon';
-import { Link as RLink } from 'react-router-dom';
 import DataTable from '@/components/DataTable';
-import { toFormatedDate } from '@/utils/dateFormating';
-import InputSearch from '@/components/form/inputSearch';
+import InputSearch from '@/components/Form/inputSearch';
+import LoadingComponent from '@/components/Loading/LoadingComponent';
+import MyMap from '@/components/Maps';
+import { TagNodeStatus, TagNodeType } from '@/components/Tags/index.tags';
 import GMapsButton from '@/components/common/GMapsButton';
-import { TagNodeStatus, TagNodeType } from '@/components/tags/index.tags';
-import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
-import MyMap from '@/components/maps/index.maps';
-import useSWR from 'swr';
-import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
-import LoadingAnimation from '@/components/LoadingAnimation/LoadingAnimation';
+import HeadingWithIcon from '@/components/common/HeadingWithIcon';
 import { nodeStatusAttr, nodeTypeAttr } from '@/constants/enumVariable';
+import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
+import { toFormatedDate } from '@/utils/dateFormating';
+import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
+import { Box, Button, Flex, Grid, HStack, Icon, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconCircleDot, IconExternalLink, IconPlus } from '@tabler/icons-react'; //prettier-ignore
+import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
+import { Link as RLink } from 'react-router-dom';
+import useSWR from 'swr';
 
 const columnHelper = createColumnHelper<NodeData>();
 
@@ -21,17 +21,15 @@ const columns = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
 		cell: (info) => info.getValue(),
-		meta: { sortable: true },
 	}),
 	columnHelper.accessor('status', {
 		header: 'Status',
-		cell: (info) => <TagNodeStatus status={info.getValue()} />,
+		cell: (info) => <TagNodeStatus value={info.getValue()} />,
 	}),
 
-	columnHelper.accessor('ownerId', {
+	columnHelper.accessor('companyId', {
 		header: 'Kepemilikan',
-		cell: (info) => <TagNodeType isPrivate={Boolean(info.getValue())} />,
-		meta: { sortable: true },
+		cell: (info) => <TagNodeType value={Boolean(info.getValue())} />,
 	}),
 	columnHelper.accessor('coordinate', {
 		header: 'Koordinat',
@@ -63,7 +61,7 @@ export default function NodeManagement() {
 
 	const { data } = useSWR<NodesSummary>('/nodes/summary', pageDataFetcher);
 
-	if (!data) return <LoadingAnimation />;
+	if (!data) return <LoadingComponent />;
 
 	return (
 		<Flex gap="2" flexDir="column">
@@ -91,7 +89,7 @@ export default function NodeManagement() {
 				flexWrap="wrap"
 			>
 				<VStack
-					flex="1 0 180px"
+					flex="0 0 180px"
 					bg="blue.400"
 					p="2"
 					rounded="md"
@@ -105,56 +103,62 @@ export default function NodeManagement() {
 					</HStack>
 					<Text>Total Node</Text>
 				</VStack>
-				{[
-					{ label: 'Kepemilikan Node', data: data.ownership },
-					{ label: 'Status Node', data: data.status },
-				].map(({ label, data }) => (
-					<Box
-						key={label}
-						flex="20 0 0px"
-						pb="2"
-						rounded="md"
-						px="3"
-						border="1px solid"
-						borderColor="gray.300"
-					>
-						<Text fontWeight="600" py="1" children={label} />
-						<Grid
-							gap="3"
-							gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+				<Flex flex="1 1 0" gap="3">
+					{[
+						{
+							label: 'Kepemilikan Node',
+							data: data.ownership,
+							flex: '2 0 30px',
+						},
+						{ label: 'Status Node', data: data.status, flex: '3 0 30px' },
+					].map(({ label, data, flex }) => (
+						<Box
+							flex={flex}
+							key={label}
+							pb="2"
+							rounded="md"
+							px="3"
+							border="1px solid"
+							borderColor="gray.300"
 						>
-							{data.map((e, i) => {
-								const { color, name, icon } = {
-									...nodeStatusAttr,
-									...nodeTypeAttr,
-								}[e.value];
-								return (
-									<VStack
-										bg={color + '.50'}
-										key={'s' + i}
-										border="2px solid"
-										rounded="md"
-										p="1"
-										spacing="0"
-										borderColor={color + '.200'}
-									>
-										<HStack spacing="3">
-											<Icon
-												color={color + '.500'}
-												as={icon}
-												boxSize="28px"
-											/>
-											<Text fontSize="2xl" fontWeight="600">
-												{e.count}
-											</Text>
-										</HStack>
-										<Text fontWeight="600">{name}</Text>
-									</VStack>
-								);
-							})}
-						</Grid>
-					</Box>
-				))}
+							<Text fontWeight="600" py="1" children={label} />
+							<Grid
+								gap="3"
+								gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+							>
+								{data.map((e, i) => {
+									const { color, name, icon } = {
+										...nodeStatusAttr,
+										...nodeTypeAttr,
+									}[e.value];
+									return (
+										<VStack
+											bg={color + '.50'}
+											key={'s' + i}
+											border="2px solid"
+											rounded="md"
+											p="1"
+											spacing="0"
+											borderColor={color + '.200'}
+										>
+											<HStack spacing="3">
+												<Icon
+													color={color + '.500'}
+													as={icon}
+													boxSize="28px"
+												/>
+												<Text fontSize="2xl" fontWeight="600">
+													{e.count}
+												</Text>
+											</HStack>
+											<Text fontWeight="600">{name}</Text>
+										</VStack>
+									);
+								})}
+							</Grid>
+						</Box>
+					))}
+				</Flex>
 			</Flex>
 
 			<Tabs

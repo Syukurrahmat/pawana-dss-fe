@@ -38,6 +38,7 @@ export default function DataTable({
 }: IDataTable) {
 	const { pagination, pageIndex, limit, onPaginationChange } = usePagination();
 	const { sorting, field, order, onSortingChange } = useSorting();
+
 	const itemcount = useRef({
 		totalItems : 0,
 		itemsInPage : 0
@@ -55,9 +56,11 @@ export default function DataTable({
 		fetcherAPIWithQueries(a, b)
 	);
 
+
 	const data = rawData?.result || [];
 
-	
+	console.log(data)
+
 	useEffect(() => {
 		if (setDataContext) setDataContext(rawData ? data : rawData);
 	}, [data]);
@@ -80,7 +83,7 @@ export default function DataTable({
 		manualPagination: true,
 		manualSorting: true,
 		onRowSelectionChange: setRowSelection,
-		state: { pagination, sorting, rowSelection: rowSelection },
+		state: { pagination, sorting, rowSelection },
 		rowCount: itemcount.current.totalItems
 	});
 
@@ -204,6 +207,7 @@ export default function DataTable({
 					</Table>
 				</TableContainer>
 			</Box>
+			
 			{!hiddenPagination && (
 				<Pagination
 					px="2"

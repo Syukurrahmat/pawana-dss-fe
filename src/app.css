@@ -1,6 +1,6 @@
 :root {
     --header-length: 55px;
-    --sidebar-length: 250px;
+    --sidebar-length: 230px;
     --font-size: 16px;
 }
 
@@ -41,7 +41,8 @@ body {
     min-height: calc(100vh - var(--header-length));
 
 }
-#container #content > *{
+
+#container #content>* {
     width: 100%;
     min-height: 100%;
 }
@@ -93,11 +94,25 @@ body {
 
 .date-picker {
     width: 100%;
+    font-size: inherit;
+}
+
+.date-picker * {
+    font-weight: 500;
+}
+
+.date-picker .rdrDateDisplay .rdrDateInput {
+    border-width: 1px;
+}
+.date-picker .rdrDateDisplay .rdrDateInput  input{
+    color : #45474B
 }
 
 .date-picker .rdrMonth {
     width: 100%;
 }
+
+ 
 
 .chakra-checkbox__control {
     background-color: white;
@@ -105,4 +120,18 @@ body {
 
 .color-white {
     fill: white !important;
+}
+
+
+
+.event-item {
+    border: 0px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 3px;
+}
+
+.fc-col-header {
+    background-color: var(--chakra-colors-gray-100);
+    ;
 }
