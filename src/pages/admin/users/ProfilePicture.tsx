@@ -20,8 +20,6 @@ export function ProfilePicture({ name, src }: { name: string; src?: string; }) {
 				.post(API_URL + '/upload', {
 					images: [img],
 				})
-				.then((e) => console.log(e.data));
-
 			// let img = await fetch(canvas)
 			// 	.then((res) => res.blob())
 			// 	.then((blob) => window.URL.createObjectURL(blob));

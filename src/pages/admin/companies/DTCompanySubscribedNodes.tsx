@@ -1,44 +1,45 @@
-import { Spacer,Heading,  HStack, Button, Text, Icon, VStack, Box} from '@chakra-ui/react'; //prettier-ignore
-import { IconMapCancel, IconCirclePlus, IconEdit, IconDeviceFloppy, IconUsersGroup, IconBuilding, IconTrees} from '@tabler/icons-react'; //prettier-ignore
-import { KeyedMutator, mutate } from 'swr';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import DataTable from '@/components/DataTable';
 import {
 	getPrivateNodesColumns,
 	getSubscribedNodesColumns,
 } from '@/components/DataTable/commonColumn';
-import { useMemo, useState } from 'react';
-import { API_URL } from '@/constants/config';
-import DataTable from '@/components/DataTable';
-import SectionTitle from '@/components/common/SectionTitle';
-import axios from 'axios';
+import EditInMapInputGroup from '@/components/Form/EditInMapInputGroup';
 import MyMap from '@/components/Maps';
+import NodeSubscription from '@/components/common/AddNodeSubscription';
+import SectionTitle from '@/components/common/SectionTitle';
+import { API_URL } from '@/constants/config';
+import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
-import GMapsButton from '@/components/common/GMapsButton';
-import { AddNodeCompanySubscription } from '@/components/common/AddNodeSubscription';
+import useUser from '@/hooks/useUser';
+import { Box, Button, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconBuilding, IconCirclePlus, IconTrees, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
+import axios from 'axios';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { KeyedMutator, mutate } from 'swr';
 
 interface CompSubscribedNodes {
 	data: CompanyDataPage;
-	mutate: KeyedMutator<any>;
+	mutate: KeyedMutator<CompanyDataPage>;
 }
 
 export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 	const { data, mutate: dataPageMutate } = props;
 
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
 	const { apiResponseToast } = useApiResponseToast();
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedCoordinate, setEditedCoordinate] = useState(data.coordinate);
-
+	const { user, roleIs } = useUser();
 	const confirmDialog = useConfirmDialog();
 
 	const { companyId } = data;
 	const dtNodeSubsApiURL = `/companies/${companyId}/nodes`;
 	const dtNodePrivateApiURL = `/companies/${companyId}/private-nodes`;
 
-	const handleRemoveUserSubscription = (subscriptionid: number) => {
+	const handleRemoveNodeSubscription = (subscriptionid: number) => {
 		const deleteURL = `${API_URL + dtNodeSubsApiURL}?subscriptionid=${subscriptionid}`; //prettier-ignore
 
 		confirmDialog({
@@ -48,7 +49,10 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 			onConfirm: () =>
 				axios.delete(deleteURL).then(({ data: dt }) => {
 					mutate((e: any) => e && e[0] == dtNodeSubsApiURL);
-					dataPageMutate();
+					dataPageMutate((e) => {
+						e!.countSubscribedNodes -= 1;
+						return e;
+					});
 					apiResponseToast(dt);
 				}),
 		});
@@ -72,7 +76,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 	};
 
 	const nodeSubscriptionColumns = useMemo(
-		() => getSubscribedNodesColumns(handleRemoveUserSubscription),
+		() => getSubscribedNodesColumns(user.role, handleRemoveNodeSubscription),
 		[]
 	);
 
@@ -83,46 +87,16 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 			<SectionTitle IconEl={IconUsersGroup}>
 				Lokasi Usaha dan Node yang dikuti
 			</SectionTitle>
-			<HStack>
-				{!isEditing && (
-					<>
-						<GMapsButton size="md" coordinate={data.coordinate}>
-							Buka lokasi Usaha di Gmaps
-						</GMapsButton>
-						<Spacer />
-						<Button
-							colorScheme="yellow"
-							leftIcon={<IconEdit size="18" />}
-							children="Sunting lokasi usaha"
-							onClick={() => setIsEditing(true)}
-						/>
-					</>
-				)}
-				{isEditing && (
-					<>
-						<Text fontSize="sm">
-							Geser peta dan paskan penanda ke titik yang dimaksud
-						</Text>
-						<Spacer />
-						<Button
-							colorScheme="red"
-							leftIcon={<IconMapCancel size="18" />}
-							children="Batal"
-							onClick={() => setIsEditing(false)}
-							isDisabled={isSubmiting}
-						/>
-						<Button
-							colorScheme="blue"
-							leftIcon={<IconDeviceFloppy size="18" />}
-							children="Simpan"
-							isLoading={isSubmiting}
-							onClick={handleSubmitEditedCoordinate}
-						/>
-					</>
-				)}
-			</HStack>
 
-			<VStack align="start" spacing="6">
+			<Box>
+				<EditInMapInputGroup
+					role={user.role}
+					coordinate={data.coordinate}
+					isEditingState={[isEditing, setIsEditing]}
+					editedCoordinateState={[editedCoordinate, setEditedCoordinate]}
+					isSubmiting={isSubmiting}
+					handleSubmitEditedCoordinate={handleSubmitEditedCoordinate}
+				/>
 				<MyMap
 					w="full"
 					my="4"
@@ -135,11 +109,14 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 						!isEditing
 							? undefined
 							: {
-									coordinate: data.coordinate,
+									coordinate: editedCoordinate || data.coordinate,
 									onChange: (x) => setEditedCoordinate([x.lat, x.lng]),
 							  }
 					}
 				/>
+			</Box>
+
+			<VStack align="start" spacing="6">
 				<HStack justify="space-between" align="start" w="full">
 					<Box>
 						<HStack>
@@ -152,13 +129,26 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 							Daftar sensor yang terdapat di dalam ruangan usaha Anda
 						</Text>
 					</Box>
-					<Button
-						leftIcon={<IconCirclePlus size="18" />}
-						colorScheme="blue"
-						children="Tambah Node Indoor"
-						onClick={()=>navigate('/nodes/create')}
-					/>
+					{roleIs(['admin', 'manager']) && (
+						<Button
+							leftIcon={<IconCirclePlus size="18" />}
+							colorScheme="blue"
+							children="Tambah Node Indoor"
+							onClick={() =>
+								navigate('./create-node', {
+									state: {
+										company: {
+											name: data.name,
+											companyId: data.companyId,
+											type: data.type,
+										},
+									},
+								})
+							}
+						/>
+					)}
 				</HStack>
+
 				<DataTable
 					apiUrl={dtNodePrivateApiURL}
 					columns={nodePrivateColumns}
@@ -176,15 +166,21 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 						</HStack>
 						<Text>Daftar sensor luar ruangan yang Anda ikuti</Text>
 					</Box>
-				 
-					<Button
-						leftIcon={<IconCirclePlus size="18" />}
-						colorScheme="blue"
-						children="Tambah Node outdoor"
-						as={AddNodeCompanySubscription}
-						companyData={data}
-						cursor='pointer'
-					/>
+
+					{roleIs(['admin', 'manager']) && (
+						<NodeSubscription
+							subsInfo={{
+								type: 'company',
+								companyData: data,
+							}}
+						>
+							<Button
+								leftIcon={<IconCirclePlus size="18" />}
+								colorScheme="blue"
+								children="Tambah Node outdoor"
+							/>
+						</NodeSubscription>
+					)}
 				</HStack>
 
 				<DataTable

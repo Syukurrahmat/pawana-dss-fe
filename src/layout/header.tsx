@@ -1,33 +1,22 @@
-import { Box, BoxProps, Heading } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { ChangeActiveDashboard } from '@/components/common/ChangeActiveDashButton';
+import { BoxProps, HStack, Heading } from '@chakra-ui/react';
 
 interface HeaderProps extends BoxProps {
-	navbarList: {
-		Icon: React.ForwardRefExoticComponent<any>;
-		label: string;
-		path: string;
-	}[];
+	activeNav: any;
 }
 
-export default function Header({ navbarList, ...props }: HeaderProps) {
-	const [headerText, setHeaderText] = useState<string | undefined>('');
-	let location = useLocation();
-
-	useEffect(() => {
-		setHeaderText(
-			navbarList.find((e) => e.path == '/' + location.pathname.split('/')[1])
-				?.label
-		);
-	}, [location.pathname]);
+export default function Header({ activeNav, ...props }: HeaderProps) {
 
 	return (
-		<Box
+		<HStack
 			p="5"
 			borderBottom="1px solid var(--chakra-colors-gray-200)"
+			justify="space-between"
 			{...props}
 		>
-			<Heading color="gray.600" size="md" children={headerText} />
-		</Box>
+			<Heading color="gray.600" size="md" children={activeNav.label} />
+
+			{activeNav.showChangeDahshButton && <ChangeActiveDashboard />}
+		</HStack>
 	);
 }

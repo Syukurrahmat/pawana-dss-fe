@@ -5,29 +5,35 @@ type ISPUValue = {
     ispu: number;
     ispuFloat: number;
     pollutantValue: number;
-    category: string;
-    recomendation?: string
+    category?: string;
+    recomendation?: {
+        info : string,
+        company : string,
+        public : string
+    }
 }
 
 
 type GRKCategorize = {
-    gas: "CH4" | "CO2";
     value: number;
-    category: string;
-    recomendation?: string
+    category?: string;
+    recomendation?: {
+        info : string,
+        company : string,
+        public : string
+    }
 }
+
 
 // ===========================================================
 
-declare type ResultOfMappingNode = {
+declare type NodeWLastestData = {
     nodeId: number;
     companyId: any;
     name: string;
     status: string;
     lastDataSent: string
     coordinate: number[];
-    dataLogs?: DataLogs[],
-
 
     latestData?: {
         ispu: {
@@ -51,6 +57,7 @@ declare type ResultOfMappingNode = {
             value: number;
         };
     }
+
 }
 
 
@@ -94,39 +101,20 @@ type ResultOfMultiNodeStats = {
 
 type NodeStat<T> = {
     average: {
-        data: {
-            datetime: string;
-            value: T
-        }
+        data: Timeseries<T>
     };
     highest: {
         nodeId: number;
         name: string;
         lastDataSent: string;
-        data: {
-            datetime: string;
-            value: T
-        }
+        data: Timeseries<T>
     };
     lowest: {
         nodeId: number;
         name: string;
         lastDataSent: string;
-        data: {
-            datetime: string;
-            value: T
-        }
+        data: Timeseries<T>
     };
-
-    list: {
-        nodeId: number;
-        name: string;
-        lastDataSent: string;
-        data: {
-            datetime: string;
-            value: T
-        }
-    }[]
 };
 
 
@@ -137,34 +125,29 @@ declare type DashboardDataType = {
         name: string;
         type: string;
         countNodes: number
-
+        coordinate: number[]
         companyId?: number;
         managedBy?: number;
         createdAt?: string;
     };
-    indoor: {
-        countNodes: DetailCountNodes;
-        data: SingleNodeAnalysis | ResultOfMultiNodeStats | null;
+    indoor?: NodesGroup;
+    outdoor: NodesGroup;
+    nodes: {
+        indoor?: NodeWLastestData[],
+        outdoor: NodeWLastestData[]
     };
-    outdoor: {
-        countNodes: DetailCountNodes;
-        data: SingleNodeAnalysis | ResultOfMultiNodeStats | null;
-    };
-    nodes: ResultOfMappingNode[];
     currentEventLogs: EventLogs[];
     nearReports: Reports[]
 }
 
-type DetailCountNodes = {
-    all: number;
-    active: number;
-}
-
-type DataNodeGroup = {
-    countNodes: DetailCountNodes;
+type NodesGroup = {
+    analiysisDataType: string;
+    countNodes: {
+        all: number;
+        active: number;
+    };
     data: SingleNodeAnalysis | ResultOfMultiNodeStats | null;
 }
-
 
 type EventLogs = {
     eventLogId: number;

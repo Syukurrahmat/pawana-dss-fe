@@ -16,13 +16,13 @@ import * as Yup from 'yup';
 
 export default function CreateEventLog() {
 	const { user } = useUser();
+	const companyId = user.view?.company?.companyId;
+	
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const { apiResponseToast } = useApiResponseToast();
 	const [onlyOneDayEvent, setOnlyOneDayEvent] = useState(false);
 	const [withoutEndDate, setWithoutEndDate] = useState(false);
-
-	// const { toast, apiResponseToast } = useApiResponseToast();
 
 	const {
 		handleChange,
@@ -30,7 +30,6 @@ export default function CreateEventLog() {
 		isSubmitting,
 		values,
 		setFieldValue,
-		setSubmitting,
 		resetForm,
 		touched,
 		errors,
@@ -66,7 +65,7 @@ export default function CreateEventLog() {
 
 			trimAll(values);
 
-			const url = `/companies/${user.activeCompany?.companyId}/events`;
+			const url = `/companies/${companyId}/events`;
 
 			axios.post(API_URL + url, values).then(({ data }) => {
 				apiResponseToast(data, {
@@ -75,7 +74,6 @@ export default function CreateEventLog() {
 						onClose();
 					},
 				});
-				setSubmitting(false);
 				resetForm();
 			});
 		},
@@ -176,7 +174,7 @@ export default function CreateEventLog() {
 									isInvalid={Boolean(errors.type) && touched.type}
 								>
 									<FormLabel>
-										Jenis Usaha <RequiredIndicator />
+										Jenis Kegiatan <RequiredIndicator />
 									</FormLabel>
 									<Select
 										id="type"
@@ -214,7 +212,13 @@ export default function CreateEventLog() {
 											onChange={handleChange}
 											onBlur={handleBlur}
 										/>
-										<HStack as="label" mt="2" align="center">
+										<HStack
+											as="label"
+											mt="2"
+											align="center"
+											cursor="pointer"
+											w="fit-content"
+										>
 											<Switch
 												isChecked={onlyOneDayEvent}
 												onChange={(e) => {
@@ -245,7 +249,6 @@ export default function CreateEventLog() {
 											type="date"
 											min={values.startDate}
 											isDisabled={withoutEndDate || onlyOneDayEvent}
-											placeholder="Misal : produksi tahu "
 											value={
 												!withoutEndDate ? values.endDate || '' : ''
 											}
@@ -255,22 +258,11 @@ export default function CreateEventLog() {
 											onBlur={handleBlur}
 										/>
 										<HStack mt="2" spacing="4">
-											<HStack as="label">
-												<Switch
-													isChecked={values.isCompleted}
-													isDisabled={moment(values.endDate)
-														.startOf('d')
-														.isAfter(moment())}
-													onChange={(e) => {
-														setFieldValue(
-															'isCompleted',
-															e.target.checked
-														);
-													}}
-												/>
-												<Text>Sudah Selesai</Text>
-											</HStack>
-											<HStack as="label">
+											<HStack
+												as="label"
+												cursor="pointer"
+												w="fit-content"
+											>
 												<Switch
 													isChecked={
 														withoutEndDate && !onlyOneDayEvent
@@ -288,7 +280,7 @@ export default function CreateEventLog() {
 															? 'inherit'
 															: 'gray.400'
 													}
-													children="Belum Tahu"
+													children="Atur nanti"
 												/>
 											</HStack>
 										</HStack>
@@ -297,6 +289,23 @@ export default function CreateEventLog() {
 											{errors.endDate}
 										</FormErrorMessage>
 									</FormControl>
+								</HStack>
+								<HStack
+									alignSelf="start"
+									as="label"
+									cursor="pointer"
+									w="fit-content"
+								>
+									<Switch
+										isChecked={values.isCompleted}
+										isDisabled={moment(values.endDate)
+											.startOf('d')
+											.isAfter(moment())}
+										onChange={(e) => {
+											setFieldValue('isCompleted', e.target.checked);
+										}}
+									/>
+									<Text>Kegiatan sudah selesai</Text>
 								</HStack>
 							</VStack>
 						</ModalBody>

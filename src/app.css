@@ -104,15 +104,16 @@ body {
 .date-picker .rdrDateDisplay .rdrDateInput {
     border-width: 1px;
 }
-.date-picker .rdrDateDisplay .rdrDateInput  input{
-    color : #45474B
+
+.date-picker .rdrDateDisplay .rdrDateInput input {
+    color: #45474B
 }
 
 .date-picker .rdrMonth {
     width: 100%;
 }
 
- 
+
 
 .chakra-checkbox__control {
     background-color: white;
@@ -126,12 +127,36 @@ body {
 
 .event-item {
     border: 0px;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
     margin: 3px;
 }
 
 .fc-col-header {
     background-color: var(--chakra-colors-gray-100);
-    ;
+}
+
+.fc-scroller::-webkit-scrollbar ,
+.custom-scrollbar::-webkit-scrollbar {
+    width: 12px;
+}
+
+.fc-scroller::-webkit-scrollbar-track ,
+.custom-scrollbar::-webkit-scrollbar-track {
+    background-color: var(--chakra-colors-gray-100);
+}
+
+.fc-scroller::-webkit-scrollbar-thumb ,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--chakra-colors-gray-300);
+    border-radius: 100px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover ,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--chakra-colors-gray-400);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background-color: var(--chakra-colors-gray-500);
 }

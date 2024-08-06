@@ -15,6 +15,7 @@ import NameWithAvatar from '@/components/common/NamewithAvatar';
 import { TagUserRole } from '@/components/Tags/index.tags';
 import LoadingComponent from '@/components/Loading/LoadingComponent';
 import { StatWithIcon } from '../../../components/common/StatWithIcon';
+import useUser from '@/hooks/useUser';
 
 const columnHelper = createColumnHelper<UserData>();
 
@@ -74,11 +75,8 @@ const columnWithOutRole = columns.filter((e) => e.accessorKey !== 'role');
 export default function UserManagement() {
 	const hashTabs = ['all', 'regular', 'manager', 'admin', 'gov', 'unverified'];
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(hashTabs);
-
-	const { data } = useSWR<UsersSummary>(
-		'/users/summary',
-		pageDataFetcher
-	);
+	const { roleIs } = useUser();
+	const { data } = useSWR<UsersSummary>('/users/summary', pageDataFetcher);
 
 	if (!data) return <LoadingComponent />;
 
@@ -94,13 +92,15 @@ export default function UserManagement() {
 					placeholder="Cari .."
 					_onSubmit={null}
 				/>
-				<RLink to="./create">
-					<Button
-						leftIcon={<IconPlus size="20px" />}
-						colorScheme="green"
-						children="Tambah Pengguna"
-					/>
-				</RLink>
+				{roleIs('admin') && (
+					<RLink to="./create">
+						<Button
+							leftIcon={<IconPlus size="20px" />}
+							colorScheme="green"
+							children="Tambah Pengguna"
+						/>
+					</RLink>
+				)}
 			</HStack>
 
 			<Flex

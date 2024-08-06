@@ -2,14 +2,17 @@ import DataTable from '@/components/DataTable';
 import InputSearch from '@/components/Form/inputSearch';
 import LoadingComponent from '@/components/Loading/LoadingComponent';
 import MyMap from '@/components/Maps';
-import { TagNodeStatus, TagNodeType } from '@/components/Tags/index.tags';
+import { TagNodeStatus } from '@/components/Tags/index.tags';
+import CompanyIcon from '@/components/common/CompanyIcon';
 import GMapsButton from '@/components/common/GMapsButton';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
+import { StatWithIcon } from '@/components/common/StatWithIcon';
 import { nodeStatusAttr, nodeTypeAttr } from '@/constants/enumVariable';
 import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
-import { toFormatedDate } from '@/utils/dateFormating';
+import useUser from '@/hooks/useUser';
+import { toFormatedDatetime } from '@/utils/dateFormating';
 import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
-import { Box, Button, Flex, Grid, HStack, Icon, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Button, Flex, Grid, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconCircleDot, IconExternalLink, IconPlus } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
 import { Link as RLink } from 'react-router-dom';
@@ -17,20 +20,23 @@ import useSWR from 'swr';
 
 const columnHelper = createColumnHelper<NodeData>();
 
-const columns = [
+const columnsPublicNodeTable = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
 		cell: (info) => info.getValue(),
 	}),
-	columnHelper.accessor('status', {
+	columnHelper.accessor('isUptodate', {
 		header: 'Status',
 		cell: (info) => <TagNodeStatus value={info.getValue()} />,
 	}),
 
-	columnHelper.accessor('companyId', {
-		header: 'Kepemilikan',
-		cell: (info) => <TagNodeType value={Boolean(info.getValue())} />,
+	columnHelper.accessor('address', {
+		header: 'Alamat',
+		cell: (info) => (
+			<Text noOfLines={2} whiteSpace="wrap" children={info.getValue()} />
+		),
 	}),
+
 	columnHelper.accessor('coordinate', {
 		header: 'Koordinat',
 		cell: (info) => <GMapsButton coordinate={info.getValue()} />,
@@ -38,7 +44,7 @@ const columns = [
 
 	columnHelper.accessor('lastDataSent', {
 		header: 'Terakhir data dikirim',
-		cell: (info) => toFormatedDate(info.getValue()) || '-',
+		cell: (info) => toFormatedDatetime(info.getValue()) || '-',
 	}),
 
 	columnHelper.accessor('nodeId', {
@@ -56,12 +62,54 @@ const columns = [
 	}),
 ];
 
+export const columPrivateNodeTable = [
+	...columnsPublicNodeTable.slice(0, 2),
+
+	columnHelper.accessor('owner', {
+		header: 'Usaha',
+		cell: (info) => (
+			<RLink to={'/companies/' + info.getValue()!.companyId}>
+				<HStack>
+					<CompanyIcon type={info.getValue()!.type} />
+					<Text>{info.getValue()!.name}</Text>
+				</HStack>
+			</RLink>
+		),
+	}),
+	...columnsPublicNodeTable.slice(4),
+];
+
+const tabsList = [
+	{ label: 'Daftar Node Publik', key: 'public' },
+	{ label: 'Daftar Node Privat', key: 'private' },
+	{ label: 'Lihat Dalam Maps', key: 'map' },
+];
+
 export default function NodeManagement() {
-	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(['list', 'map']);
+	const { roleIs } = useUser();
+	const tabs = roleIs('manager') ? [tabsList[1]] : tabsList;
+	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(
+		tabs.map((e) => e.key)
+	);
 
 	const { data } = useSWR<NodesSummary>('/nodes/summary', pageDataFetcher);
 
 	if (!data) return <LoadingComponent />;
+
+	const summaryList = [
+		{
+			label: 'Status Node',
+			data: data.status,
+			flex: '1 0 30px',
+		},
+	];
+
+	if (!roleIs('manager'))
+		summaryList.unshift({
+			label: 'Kepemilikan Node',
+			data: data.ownership,
+			flex: '1 0 30px',
+		});
 
 	return (
 		<Flex gap="2" flexDir="column">
@@ -74,13 +122,15 @@ export default function NodeManagement() {
 					placeholder="Cari .."
 					_onSubmit={null}
 				/>
-				<RLink to="./create">
-					<Button
-						leftIcon={<IconPlus size="20px" />}
-						colorScheme="green"
-						children="Tambah Node"
-					/>
-				</RLink>
+				{roleIs(['admin', 'manager']) && (
+					<RLink to="./create">
+						<Button
+							leftIcon={<IconPlus size="20px" />}
+							colorScheme="green"
+							children="Tambah Node"
+						/>
+					</RLink>
+				)}
 			</HStack>
 			<Flex
 				gap="3"
@@ -88,32 +138,21 @@ export default function NodeManagement() {
 				justify="space-between"
 				flexWrap="wrap"
 			>
-				<VStack
+				<StatWithIcon
 					flex="0 0 180px"
+					icon={IconCircleDot}
+					count={data.all}
+					label="Total Node"
+					h="full"
+					variant="solid"
 					bg="blue.400"
-					p="2"
-					rounded="md"
-					color="white"
-					spacing="0"
-					justify="center"
-				>
-					<HStack fontSize="3xl">
-						<IconCircleDot />
-						<Text fontWeight="600">{data.all}</Text>
-					</HStack>
-					<Text>Total Node</Text>
-				</VStack>
+				/>
+
 				<Flex flex="1 1 0" gap="3">
-					{[
-						{
-							label: 'Kepemilikan Node',
-							data: data.ownership,
-							flex: '2 0 30px',
-						},
-						{ label: 'Status Node', data: data.status, flex: '3 0 30px' },
-					].map(({ label, data, flex }) => (
+					{summaryList.map(({ label, data, flex }) => (
 						<Box
 							flex={flex}
+							maxW="600px"
 							key={label}
 							pb="2"
 							rounded="md"
@@ -131,28 +170,16 @@ export default function NodeManagement() {
 										...nodeStatusAttr,
 										...nodeTypeAttr,
 									}[e.value];
+
 									return (
-										<VStack
-											bg={color + '.50'}
-											key={'s' + i}
-											border="2px solid"
-											rounded="md"
-											p="1"
-											spacing="0"
-											borderColor={color + '.200'}
-										>
-											<HStack spacing="3">
-												<Icon
-													color={color + '.500'}
-													as={icon}
-													boxSize="28px"
-												/>
-												<Text fontSize="2xl" fontWeight="600">
-													{e.count}
-												</Text>
-											</HStack>
-											<Text fontWeight="600">{name}</Text>
-										</VStack>
+										<StatWithIcon
+											key={i}
+											flex="1 0 180px"
+											icon={icon}
+											color={color}
+											count={e.count}
+											label={name}
+										/>
 									);
 								})}
 							</Grid>
@@ -170,12 +197,24 @@ export default function NodeManagement() {
 				isLazy
 			>
 				<TabList>
-					<Tab>Daftar Node</Tab>
-					<Tab>Lihat Dalam Maps</Tab>
+					{tabs.map((e) => (
+						<Tab key={e.key}>{e.label}</Tab>
+					))}
 				</TabList>
 				<TabPanels flexGrow="1">
 					<TabPanel px="0">
-						<DataTable flexGrow="1" apiUrl={'/nodes'} columns={columns} />
+						<DataTable
+							flexGrow="1"
+							apiUrl={'/nodes?ownship=public'}
+							columns={columnsPublicNodeTable}
+						/>
+					</TabPanel>
+					<TabPanel px="0">
+						<DataTable
+							flexGrow="1"
+							apiUrl={'/nodes?ownship=private'}
+							columns={columPrivateNodeTable}
+						/>
 					</TabPanel>
 					<TabPanel px="0" h="100%">
 						<NodesMapView />
@@ -187,10 +226,36 @@ export default function NodeManagement() {
 }
 
 function NodesMapView() {
-	const { data } = useSWR('/nodes?all=true', apiFetcher);
+	const { data } = useSWR<PD<NodeData[]>>('/nodes?all=true', apiFetcher);
 	if (!data) return 'loading slurr';
 
+	const indoorNodeInCompanies = Object.values(
+		data.result
+			.filter((e) => e.companyId && e.owner)
+			.reduce((acc: Record<number, any>, item) => {
+				const { coordinate, owner, ...rest } = item;
+				const { name, companyId, type } = owner!;
+
+				if (!acc[companyId]) {
+					acc[companyId] = {
+						name,
+						companyId,
+						type,
+						coordinate,
+						indoorNodes: [],
+					};
+				}
+				acc[companyId].indoorNodes.push(rest);
+				return acc;
+			}, {})
+	);
+
 	return (
-		<MyMap h="100%" minH="350px" scrollWheelZoom={false} data={data.result} />
+		<MyMap
+			h="100%"
+			minH="350px"
+			companiesData={indoorNodeInCompanies}
+			data={data.result.filter((e: any) => !e.companyId)}
+		/>
 	);
 }

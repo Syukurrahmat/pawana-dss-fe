@@ -8,7 +8,7 @@ import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { Button, Center, HStack, Icon, IconButton, Spacer, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
-import { IconExternalLink, IconTrash, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
+import { IconBuildingFactory2, IconExternalLink, IconTrash } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table';
 import axios from 'axios';
 import { useMemo } from 'react';
@@ -52,11 +52,12 @@ export default function CompanySubsctiptionsList({
 			},
 		});
 	};
+	
 	const handleDeleteAllSubs = () => {
 		confirmDialog({
 			title: 'Hapus Semua Usaha',
 			message:
-				'Hapus Semua usaha dari daftar pelanggan node ' + data.name,
+				'Hapus semua usaha dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
 			onConfirm: async () => {
 				return axios
@@ -137,8 +138,8 @@ export default function CompanySubsctiptionsList({
 
 	return (
 		<>
-			<SectionTitle IconEl={IconUsersGroup}>
-				Daftar Usaha yang mengikuti node ini
+			<SectionTitle IconEl={IconBuildingFactory2}>
+				Daftar usaha yang mensubscribe
 				<Tag colorScheme="blue" ml="2">
 					{countCompanySubscribtion || 0}
 				</Tag>

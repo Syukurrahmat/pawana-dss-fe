@@ -10,8 +10,8 @@ import axios from 'axios';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 
 interface IEUModal extends ButtonProps {
-	data: { [key: string]: string | any };
-	mutate: KeyedMutator<any>;
+	data: CompanyDataPage
+	mutate: KeyedMutator<CompanyDataPage>;
 }
 
 export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
@@ -20,11 +20,7 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 
 	const toast = useToast();
 	const { name, description, address } = data;
-	const initialValues = {
-		name: name as string,
-		description: description as string,
-		address: address as string,
-	};
+	const initialValues = { name, description, address };
 
 	const {
 		handleChange,
@@ -46,7 +42,6 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 
 		onSubmit: (values) => {
 			trimAllValues(values);
-
 			const filteredData = compareObjects(initialValues, values);
 
 			if (Object.keys(filteredData).length === 0) {
@@ -60,16 +55,13 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 			}
 
 			axios
-				.put(API_URL + '/groups/', {
-					...filteredData,
-					groupId: data.groupId,
-				})
+				.put(`${API_URL}/companies/${data.companyId}`, { ...filteredData })
 				.then(({ data }) => {
 					setSubmitting(false);
-					
+
 					apiResponseToast(data, {
 						onSuccess() {
-							mutate(null, { revalidate: true });
+							mutate((e) => (e ? { ...e, ...filteredData } : e));
 							onClose();
 						},
 					});

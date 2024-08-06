@@ -1,53 +1,177 @@
+import Page404 from '@/pages/other/page404';
+import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconFileReport, IconNotebook, IconSpeakerphone, IconUser } from '@tabler/icons-react'; // prettier-ignore
+import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
-import Dashboard from '../pages/app/dashboards/index';
-import Analysis from '@/pages/app/analitics';
-import Data from '../pages/app/data';
-import NodeManagement from '@/pages/admin/nodes/Nodes';
-import CreateNode from '@/pages/admin/nodes/CreateNode';
-import DetailNode from '@/pages/admin/nodes/DetailNode';
-import UserManagement from '@/pages/admin/users/Users';
-import CreateUser from '@/pages/admin/users/CreateUser';
-import DetailUser from '@/pages/admin/users/DetailUser';
-import CompaniesManagement from '@/pages/admin/companies/Companies';
-import CreateCompany from '@/pages/admin/companies/CreateCompany';
-import DetailCompany from '@/pages/admin/companies/DetailCompany';
-import ReportsPage from '@/pages/app/reports';
-import MyCompanies from '@/pages/app/myCompanies';
-import MyNodes from '@/pages/app/myNodes/myNodes';
-import Notes from '@/pages/app/eventLogs';
-import Assesment from '@/pages/app/summary';
 
-const appRouter = createBrowserRouter([
+const ReportsPage = lazy(() => import('@/pages/app/reports'));
+const DetailUser = lazy(() => import('@/pages/admin/users/DetailUser'));
+const Dashboard = lazy(() => import('@/pages/app/dashboards/index'));
+const DetailNode = lazy(() => import('@/pages/admin/nodes/DetailNode'));
+const CompaniesManagement = lazy(()=> import ('@/pages/admin/companies/Companies')) // prettier-ignore
+const CreateCompany = lazy(()=> import ('@/pages/admin/companies/CreateCompany')) // prettier-ignore
+const DetailCompany = lazy(()=> import ('@/pages/admin/companies/DetailCompany')) // prettier-ignore
+const CreateNode = lazy(() => import('@/pages/admin/nodes/CreateNode'));
+const NodeManagement = lazy(() => import('@/pages/admin/nodes/Nodes'));
+const CreateUser = lazy(() => import('@/pages/admin/users/CreateUser'));
+const UserManagement = lazy(() => import('@/pages/admin/users/Users'));
+const Notes = lazy(() => import('@/pages/app/eventLogs'));
+const MyCompanies = lazy(() => import('@/pages/resource/MyCompanies'));
+const MySubscribedNodes = lazy(() => import('@/pages/resource/MySubscribedNodes')); // prettier-ignore
+const MyPrivateNode = lazy(() => import('@/pages/resource/MyPrivateNode'));
+const Summary = lazy(() => import('@/pages/app/summary'));
+const Data = lazy(() => import('@/pages/app/data'));
+
+const routers = [
+	{
+		path: '/account',
+		label: 'Akun',
+		element: <DetailUser />,
+		role: ['all'],
+	},
+
+	// REGULAR
+
 	{
 		path: '/',
-		element: <App />,
-		children: [
-			{ path: '/', element: <Dashboard /> },
-			{ path: '/analytic', element: <Analysis /> },
-			{ path: '/data', element: <Data /> },
-			{ path: '/reports', element: <ReportsPage /> },
-			{ path: '/account', element: <DetailUser /> },
-			{ path: '/notes', element: <Notes /> },
-			{ path: '/summary', element: <Assesment /> },
-
-			{ path: '/my-nodes', element: <MyNodes /> },
-			{ path: '/my-companies', element: <MyCompanies /> },
-
-			// FOR ADMIN ONLY
-			{ path: '/users', element: <UserManagement /> },
-			{ path: '/users/create', element: <CreateUser /> },
-			{ path: '/users/:id', element: <DetailUser /> },
-
-			{ path: '/companies', element: <CompaniesManagement /> },
-			{ path: '/companies/create', element: <CreateCompany /> },
-			{ path: '/companies/:id', element: <DetailCompany /> },
-
-			{ path: '/nodes', element: <NodeManagement /> },
-			{ path: '/nodes/create', element: <CreateNode /> },
-			{ path: '/nodes/:id', element: <DetailNode /> },
-		],
+		label: 'Dasbor',
+		Icon: IconDashboard,
+		element: <Dashboard />,
+		role: ['all'],
 	},
-]);
+	{
+		path: '/complaint',
+		label: 'Aduan',
+		Icon: IconSpeakerphone,
+		element: <ReportsPage />,
+		role: ['all'],
+	},
+	{
+		path: '/nodes',
+		label: 'Sensor',
+		Icon: IconCircleDot,
+		element: <MySubscribedNodes />,
+		role: ['regular'],
+	},
+
+	// MANAGER
+
+	{
+		path: '/notes',
+		label: 'Pencatatan',
+		Icon: IconNotebook,
+		element: <Notes />,
+		role: ['manager', 'admin', 'gov'],
+		showChangeDahshButton: true,
+	},
+	{
+		path: '/summary',
+		label: 'Laporan',
+		Icon: IconFileReport,
+		element: <Summary />,
+		role: ['manager', 'admin', 'gov'],
+		showChangeDahshButton: true,
+	},
+	{
+		path: '/companies',
+		label: 'Usaha Saya',
+		Icon: IconBuildingFactory2,
+		element: <MyCompanies />,
+		role: ['manager'],
+	},
+	{
+		path: '/nodes',
+		label: 'Sensor Saya',
+		Icon: IconCircleDot,
+		element: <MyPrivateNode />,
+		role: ['manager'],
+	},
+
+	// ADMIN
+	{
+		path: '/users',
+		label: 'Kelola Pengguna',
+		Icon: IconUser,
+		element: <UserManagement />,
+		role: ['admin', 'gov'],
+	},
+	{
+		path: '/users/create',
+		element: <CreateUser />,
+		role: ['admin'],
+	},
+	{
+		path: '/users/:id',
+		element: <DetailUser />,
+		role: ['admin', 'gov'],
+	},
+
+	{
+		path: '/companies',
+		label: 'Kelola Usaha',
+		Icon: IconBuildingFactory2,
+		element: <CompaniesManagement />,
+		role: ['admin', 'gov'],
+	},
+	{
+		path: '/companies/create',
+		element: <CreateCompany />,
+		role: ['admin', 'manager'],
+	},
+	{
+		path: '/companies/:id',
+		element: <DetailCompany />,
+		role: ['admin', 'gov', 'manager'],
+	},
+	{
+		path: '/companies/:id/create-node',
+		element: <CreateNode />,
+		role: ['manager', 'admin'],
+	},
+	{
+		path: '/nodes',
+		label: 'Kelola Sensor',
+		Icon: IconCircleDot,
+		element: <NodeManagement />,
+		role: ['admin', 'gov'],
+	},
+	{
+		path: '/nodes/create',
+		element: <CreateNode />,
+		role: ['admin', 'manager'],
+	},
+	{
+		path: '/nodes/:id',
+		element: <DetailNode />,
+		role: ['all'],
+	},
+
+	{
+		path: '/data',
+		label: 'Data',
+		Icon: IconDatabase,
+		element: <Data />,
+		role: ['manager', 'admin', 'gov'],
+	},
+];
+
+const appRouter = (role: string) => {
+	const routerList = routers.filter(
+		(e) => e.role.includes(role) || e.role.includes('all')
+	);
+
+	const navlist = routerList.filter(
+		(e) => (e.label && e.Icon) || e.path == '/account'
+	);
+
+	return createBrowserRouter([
+		{
+			path: '/',
+			element: <App navbarList={navlist} />,
+			children: routerList,
+			errorElement: <Page404 />,
+		},
+	]);
+};
 
 export default appRouter;

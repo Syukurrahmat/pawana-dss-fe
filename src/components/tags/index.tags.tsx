@@ -10,7 +10,11 @@ import { TagLeftIcon, TagLabel, TagProps } from '@chakra-ui/react';
 import { Tag } from '@chakra-ui/react';
 
 interface MyTag extends TagProps {
-	value: string;
+	value: string ;
+}
+
+interface MyTagBoolVal extends TagProps {
+	value: boolean ;
 }
 
 export const TagCompanyType = ({ value: value, ...rest }: MyTag) => {
@@ -35,9 +39,9 @@ export const TagNodeType = ({ value = 'public', ...rest }: MyTag) => {
 	);
 };
 
-export const TagNodeStatus = ({ value: value, ...rest }: MyTag) => {
+export const TagNodeStatus = ({ value: value, ...rest }: MyTagBoolVal) => {
 	const { color, icon, name } =
-		nodeStatusAttr[value] || nodeStatusAttr.nonactive;
+		nodeStatusAttr[value ? 'active' : 'nonactive'] || nodeStatusAttr.nonactive;
 
 	return (
 		<Tag colorScheme={color} variant="outline" {...rest}>

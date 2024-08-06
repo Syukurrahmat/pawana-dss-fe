@@ -9,6 +9,9 @@ declare module "*.png" {
     export default string;
 }
 
+
+type UserRole =  'admin' | 'regular' | 'manager' | 'gov';
+
 type ConfirmMessage = {
     title: string,
     message: string,

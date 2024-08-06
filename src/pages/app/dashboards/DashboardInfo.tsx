@@ -1,60 +1,117 @@
-import { Box, Button, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconCalendar, IconCircleDot } from '@tabler/icons-react'; // prettier-ignore
-import CompanyIcon from '@/components/common/CompanyIcon';
-import TagWithIcon from '@/components/common/TagWithIcon';
-import { toFormatedDate } from '@/utils/dateFormating';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import MyMap from '@/components/Maps';
-import { ValueMarker, NodesMarker } from '@/components/Maps/Marker';
+import { NodesMarker, ValueMarker } from '@/components/Maps/Marker';
 import { TagCompanyType } from '@/components/Tags/index.tags';
 import { ChangeActiveDashboard } from '@/components/common/ChangeActiveDashButton';
+import CompanyIcon from '@/components/common/CompanyIcon';
+import TagWithIcon from '@/components/common/TagWithIcon';
+import useUser from '@/hooks/useUser';
+import { getISPUProperties } from '@/utils/common.utils';
+import { toFormatedDate } from '@/utils/dateFormating';
+import { Box, Button, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { IconCalendar, IconCircleDot } from '@tabler/icons-react'; // prettier-ignore
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 	const { dashboardInfo, nodes } = data;
-	const { name, type, countNodes, companyId, createdAt } = dashboardInfo;
+	const { name, type, coordinate, countNodes, companyId, createdAt } = dashboardInfo; //prettier-ignore
 	const [selectedParam, setSelectedParam] = useState<null | number>(null);
+	const { roleIsNot } = useUser();
 
-	const airParamsData = [
+	const airParamsData = (x: 'indoor' | 'outdoor' = 'outdoor') => [
 		{
 			name: 'ISPU',
-			currentData: nodes.map((e) => {
-				if (!e.data) return e;
-				const { datetime, value } = e.data.ispu;
+			currentData: nodes[x]?.map((e) => {
+				const ispuValues = e.latestData?.ispu;
+				if (!ispuValues) return { ...e, data: { name: 'ISPU' } };
+				const { datetime, value } = ispuValues;
+				if (!value[0]) return { ...e, data: { name: 'ISPU' } };
+				const { ispu, category } = value[0];
 
-				return { ...e, data: { datetime, value: value[0].ispu } };
+				return {
+					...e,
+					data: {
+						name: 'ISPU',
+						datetime,
+						value: ispu,
+						color: getISPUProperties(category).colorScheme,
+					},
+				};
 			}),
 		},
 		{
 			name: 'PM2.5',
-			currentData: nodes.map((e) => ({ ...e, data: e.data?.pm25 })),
+			currentData: nodes[x]?.map((e) => ({
+				...e,
+				data: {
+					name: 'PM2.5',
+					...e.latestData?.pm25,
+				},
+			})),
 		},
 		{
 			name: 'PM10',
-			currentData: nodes.map((e) => ({ ...e, data: e.data?.pm100 })),
+			currentData: nodes[x]?.map((e) => ({
+				...e,
+				data: {
+					name: 'PM10',
+					...e.latestData?.pm100,
+				},
+			})),
 		},
 		{
 			name: 'CH4',
-			currentData: nodes.map((e) => {
-				if (!e.data) return e;
-				const { datetime, value } = e.data.ch4;
+			currentData: nodes[x]?.map((e) => {
+				if (!e.latestData) return { ...e, data: { name: 'CH4' } };
+				const { datetime, value } = e.latestData.ch4;
 
-				return { ...e, data: { datetime, value: value.value } };
+				return {
+					...e,
+					data: {
+						name: 'CH4',
+						datetime,
+						value: value.value,
+						color: '',
+					},
+				};
 			}),
 		},
 		{
 			name: 'CO2',
-			currentData: nodes.map((e) => {
-				if (!e.data) return e;
-				const { datetime, value } = e.data.co2;
+			currentData: nodes[x]?.map((e) => {
+				if (!e.latestData) return { ...e, data: { name: 'CO2' } };
+				const { datetime, value } = e.latestData.co2;
 
-				return { ...e, data: { datetime, value: value.value } };
+				return {
+					...e,
+					data: {
+						name: 'CO2',
+						datetime,
+						value: value.value,
+						color: '',
+					},
+				};
 			}),
 		},
 	];
 
+	const companyData = {
+		name,
+		type,
+		coordinate,
+		companyId,
+		indoorNodeValue:
+			selectedParam !== null
+				? airParamsData('indoor')[selectedParam].currentData
+				: null,
+	};
+
 	const displayedData =
-		selectedParam !== null ? airParamsData[selectedParam].currentData : nodes;
+		selectedParam !== null
+			? airParamsData()[selectedParam].currentData
+			: nodes.outdoor;
+
+	if (type == 'regular' && countNodes == 0) return null;
 
 	return (
 		<Card size="sm" w="full">
@@ -62,9 +119,9 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 				<MyMap
 					w="60%"
 					h="275px"
-					companiesData={companyId ? [dashboardInfo] : []}
+					companiesData={companyId ? [companyData] : []}
 					marker={selectedParam === null ? NodesMarker : ValueMarker}
-					data={displayedData}
+					data={displayedData || []}
 				/>
 
 				<VStack align="start" p="1" flexGrow="1">
@@ -82,7 +139,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 								/>
 							</>
 						)}
-						<TagCompanyType value={type} />
+						{type !== 'regular' && <TagCompanyType value={type} />}
 						<TagWithIcon
 							icon={IconCircleDot}
 							children={countNodes + ' Node'}
@@ -93,7 +150,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 					<Box>
 						<Text>Tampilkan nilai dari parameter : </Text>
 						<Flex flexWrap="wrap" gap="3" mt="1">
-							{airParamsData.map((e, i) => (
+							{airParamsData().map((e, i) => (
 								<Button
 									key={i}
 									size="sm"
@@ -110,9 +167,12 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 						</Flex>
 					</Box>
 					<HStack justify="end" w="full" mt="4">
-						<ChangeActiveDashboard colorScheme="blue">
-							Ganti Dashboard
-						</ChangeActiveDashboard>
+						{roleIsNot('regular') && (
+							<ChangeActiveDashboard colorScheme="blue">
+								Ganti Dashboard
+							</ChangeActiveDashboard>
+						)}
+
 						{!!companyId && (
 							<Link to={`/companies/${companyId}`}>
 								<Button colorScheme="blue" ml="2">

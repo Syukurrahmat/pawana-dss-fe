@@ -1,6 +1,6 @@
-import { IconMapPin, IconMoodEmpty, IconMoodHeart, IconMoodSad, IconMoodSmile, IconMoodWrrr, IconStar, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
-import { Button, Avatar, Box, HStack, Card, CardBody, Text, CardHeader, Spacer, Image, CardFooter, VStack, Icon, Tag, CardProps} from '@chakra-ui/react'; //prettier-ignore
-import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
+import { toFormatedDatetime } from '@/utils/dateFormating';
+import { Avatar, Box, Button, Card, CardBody, CardFooter, CardHeader, CardProps, HStack, Icon, Image, ResponsiveValue, Spacer, Tag, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconMapPin, IconMoodEmpty, IconMoodHeart, IconMoodSad, IconMoodSmile, IconMoodWrrr, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
 
 interface IReportCard extends CardProps {
 	data: ReportData;
@@ -44,19 +44,25 @@ export const RatingIconList = [
 	{ icon: IconMoodWrrr, color: 'red.400' },
 	{ icon: IconMoodSad, color: 'orange.400' },
 	{ icon: IconMoodEmpty, color: 'yellow.400' },
-	{ icon: IconMoodSmile, color: 'green.400' },
-	{ icon: IconMoodHeart, color: 'teal.500' },
+	{ icon: IconMoodSmile, color: 'teal.500' },
+	{ icon: IconMoodHeart, color: 'green.400' },
 ];
 
-export function RatingIcons({ rating }: { rating: number }) {
+export function RatingIcons({
+	rating,
+	size = 'sm',
+}: {
+	rating: number;
+	size?: ResponsiveValue<string>;
+}) {
 	return (
 		<HStack>
 			<Icon
 				as={RatingIconList[rating - 1].icon}
 				color={RatingIconList[rating - 1].color}
-				boxSize="38px"
+				boxSize={size == 'sm' ? '38px' : '45px'}
 			/>
-			<Tag size="sm">
+			<Tag size={size}>
 				{Array(5)
 					.fill(null)
 					.map((_, i) => (
@@ -64,7 +70,7 @@ export function RatingIcons({ rating }: { rating: number }) {
 							key={i}
 							color={i + 1 <= rating ? 'orange.400' : 'gray.300'}
 							as={IconStarFilled}
-							boxSize="12px"
+							// boxSize="12px"
 						/>
 					))}
 			</Tag>

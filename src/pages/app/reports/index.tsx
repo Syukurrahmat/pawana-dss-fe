@@ -1,33 +1,36 @@
 import MyMap from '@/components/Maps';
 import { MarkerRating } from '@/components/Maps/Marker';
-import CompanyIcon from '@/components/common/CompanyIcon';
-import SelectFromDataTable from '@/components/common/SelectFromDataTable';
 import { API_URL } from '@/constants/config';
-import { buildQueriesURL, fetcher } from '@/utils/fetcher';
-import { Alert, AlertDescription, AlertIcon, Box, Card, CardBody, Collapse, Flex, HStack, IconButton, Input, Select, Spinner, Switch, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import useUser from '@/hooks/useUser';
+import { buildQueriesURL, fetcher, pageDataFetcher } from '@/utils/fetcher'; //prettier-ignore
+import { Alert, AlertDescription, AlertIcon, Box, Card, CardBody, Flex, HStack, IconButton, Input, Spinner, Switch, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useRef, useState } from 'react';
 import useSWR from 'swr';
 import CreateReport from './CreateReport';
+import FilterByDistance, { distanceList } from './FilterByDistance';
 import ReportCard from './ReportCard';
-
-const distanceList = [
-	{ distance: 250, label: '250 m' },
-	{ distance: 500, label: '500 m' },
-	{ distance: 1000, label: '1 km' },
-	{ distance: 2500, label: '2,5 km' },
-];
 
 export default function ReportsPage() {
 	const currentDate = moment().format('YYYY-MM-DD');
-	const { isOpen: filterIsOpen, onToggle } = useDisclosure();
 
+	const {
+		isOpen: filterIsOpen,
+		onToggle: onToggleFilter,
+		onClose: onCloseFilter,
+	} = useDisclosure();
+	const {
+		isOpen: showCompanyIsOpen,
+		onToggle: onToggleShowCompany,
+		onClose: onCloseShowCompany,
+	} = useDisclosure();
+
+	const { roleIsNot, user } = useUser();
 	const [date, setDate] = useState(currentDate);
 	const [company, setCompany] = useState<any>({});
 	const [distance, setDistance] = useState(distanceList[0].distance);
 	const map = useRef<any>();
-
 
 	const filterQueries =
 		filterIsOpen && company.companyId
@@ -35,12 +38,18 @@ export default function ReportsPage() {
 			: {};
 
 	const isToday = date === currentDate;
+
 	const { data, isLoading } = useSWR<ReportsPerDay>(
 		buildQueriesURL(API_URL + '/reports', {
 			date,
 			...filterQueries,
 		}),
 		fetcher
+	);
+
+	const { data: allCompaniesData } = useSWR(
+		showCompanyIsOpen ? '/me/companies?all=true' : null,
+		pageDataFetcher
 	);
 
 	return (
@@ -57,6 +66,7 @@ export default function ReportsPage() {
 				position="relative"
 				h="100%"
 				overflowY="auto"
+				className="custom-scrollbar"
 			>
 				<VStack position="absolute" pr="3" w="full" spacing="3">
 					<Card w="full">
@@ -68,23 +78,50 @@ export default function ReportsPage() {
 									dateState={[date, setDate]}
 								/>
 
-								<HStack w="full" justify="space-between">
-									<Text fontWeight="500" alignSelf="start">
-										Filter aduan di sekitar usaha Anda
-									</Text>
+								{roleIsNot('regular') && (
+									<>
+										<HStack w="full" justify="space-between">
+											<Text fontWeight="500" alignSelf="start">
+												Tampilkan Lokasi Usaha
+											</Text>
 
-									<Switch
-										onChange={onToggle}
-										isChecked={filterIsOpen}
-									/>
-								</HStack>
+											<Switch
+												onChange={(e) => {
+													if (e.target.checked) {
+														onCloseFilter();
+													}
+													onToggleShowCompany();
+												}}
+												isChecked={showCompanyIsOpen}
+											/>
+										</HStack>
+										<HStack w="full" justify="space-between">
+											<Text fontWeight="500" alignSelf="start">
+												Filter aduan di sekitar usaha Anda
+											</Text>
+
+											<Switch
+												onChange={(e) => {
+													if (e.target.checked) {
+														onCloseShowCompany();
+													}
+													onToggleFilter();
+												}}
+												isChecked={filterIsOpen}
+											/>
+										</HStack>
+									</>
+								)}
 							</VStack>
 
-							<FilterByDistance
-								isOpen={filterIsOpen}
-								distanceState={[distance, setDistance]}
-								companyState={[company, setCompany]}
-							/>
+							{roleIsNot('regular') && (
+								<FilterByDistance
+									isOpen={filterIsOpen}
+									role={user.role}
+									distanceState={[distance, setDistance]}
+									companyState={[company, setCompany]}
+								/>
+							)}
 						</CardBody>
 					</Card>
 					<Alert
@@ -122,64 +159,18 @@ export default function ReportsPage() {
 				flex="5 1 0"
 				h="auto"
 				marker={MarkerRating}
-				companiesData={filterIsOpen && company.companyId ? [company] : []}
+				companiesData={
+					showCompanyIsOpen && allCompaniesData
+						? allCompaniesData
+						: filterIsOpen && company.companyId
+						? [company]
+						: []
+				}
 				circleBoundaryRadius={filterIsOpen ? distance : undefined}
 				data={data?.result.map((e) => ({ isReport: true, ...e })) || []}
 				mapRef={map}
 			/>
 		</Flex>
-	);
-}
-
-interface FilterDist {
-	isOpen: boolean;
-	distanceState: StateOf<number>;
-	companyState: StateOf<{}>;
-}
-
-function FilterByDistance({ isOpen, distanceState, companyState }: FilterDist) {
-	const [companyId, setCompanyId] = companyState;
-	const [distance, setDistance] = distanceState;
-
-	return (
-		<Box w="full">
-			<Collapse in={isOpen} animateOpacity>
-				<HStack spacing="3" mt="4">
-					<Box as="label" flexGrow="1">
-						<Text mb="1">Usaha</Text>
-
-						<SelectFromDataTable
-							w="200px"
-							fontWeight="400"
-							itemName="Usaha"
-							hiddenTitleButton={true}
-							apiUrl="/me/companies"
-							selectValue={companyId}
-							selectOnChange={setCompanyId}
-							hiddenSearchInput={true}
-							borderColor="gray.200"
-							color="gray.700"
-							displayRow={(e: any) => (
-								<HStack>
-									<CompanyIcon bg="white" type={e.type} />
-									<Text children={e?.name || 'Node yang Anda ikuti'} />
-								</HStack>
-							)}
-						/>
-					</Box>
-					<Box as="label" flexGrow="1">
-						<Text mb="1">Jarak</Text>
-						<Select
-							value={distance}
-							onChange={(e) => setDistance(parseInt(e.target.value))}
-							children={distanceList.map((e) => (
-								<option value={e.distance} children={e.label} />
-							))}
-						/>
-					</Box>
-				</HStack>
-			</Collapse>
-		</Box>
 	);
 }
 

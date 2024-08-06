@@ -126,7 +126,7 @@ export default function SelectFromDataTable(props: SelectFromDataTable) {
 							overflow="hidden"
 							textOverflow="ellipsis"
 							whiteSpace="nowrap"
-							children={selectValue.name || title}
+							children={selectValue?.name || title}
 						/>
 					</Box>
 				)}

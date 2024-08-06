@@ -19,6 +19,7 @@ export default function EditNodeProfileButton({
 	mutate,
 	...rest
 }: IEUModal) {
+
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { apiResponseToast, toast } = useApiResponseToast();
 	const { name, description, address, instalationDate } = data;
@@ -36,7 +37,6 @@ export default function EditNodeProfileButton({
 		values,
 		errors,
 		handleSubmit,
-		// setFieldValue,
 		handleBlur,
 		resetForm,
 		touched,
@@ -74,7 +74,6 @@ export default function EditNodeProfileButton({
 					setSubmitting(false);
 					apiResponseToast(dt, {
 						onSuccess() {
-							alert(JSON.stringify({ ...data, ...values }));
 							mutate({ ...data, ...values });
 							onClose();
 						},

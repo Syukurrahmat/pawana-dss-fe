@@ -1,28 +1,26 @@
-import { Box, Button, Card, CardBody, CardHeader, HStack, Heading, Icon, IconButton, Spacer, Spinner, Text, Tooltip } from '@chakra-ui/react'; //prettier-ignore
-import moment from 'moment';
+import { eventLogsTypeAttr } from '@/constants/enumVariable';
+import { pageDataFetcher } from '@/utils/fetcher';
+import { Alert, Box, Button, HStack, Heading, Icon, IconButton, Spacer, Spinner, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { EventContentArg } from '@fullcalendar/core/index.js';
+import idLocale from '@fullcalendar/core/locales/id';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import FullCalendar from '@fullcalendar/react';
 import {
 	IconChevronLeft,
 	IconChevronRight,
 	IconRocket,
 } from '@tabler/icons-react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import { eventLogsTypeAttr } from '@/constants/enumVariable';
+import moment from 'moment';
 import { useRef, useState } from 'react';
-import { pageDataFetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
-import DetailEventLogWrapper from './DetailEventLog';
-import useUser from '@/hooks/useUser';
+import DetailEventLogTriger from './DetailEventLog';
 
-export function EventCalendar() {
+export function EventCalendar({ companyId }: { companyId: number }) {
 	const [currentMonth, setCurrentMonth] = useState(moment());
 	const calendarRef = useRef<any>(null);
-	const { user } = useUser();
-
+	
 	const { data, isLoading } = useSWR<DTEventLog[]>(
-		`/companies/${
-			user.activeCompany?.companyId
-		}/events?month=${currentMonth.format('YYYY-MM')}`,
+		`/companies/${companyId}/events?month=${currentMonth.format('YYYY-MM')}`,
 		pageDataFetcher,
 		{ keepPreviousData: true }
 	);
@@ -36,8 +34,16 @@ export function EventCalendar() {
 	};
 
 	return (
-		<Card h="100%">
-			<CardHeader as={HStack} pb="0">
+		<Alert
+			h="100%"
+			shadow="xs"
+			variant="top-accent"
+			fontSize="md"
+			rounded="sm"
+			as={VStack}
+			bg="white"
+		>
+			<HStack w="full" py="1">
 				<HStack spacing="4">
 					<Heading size="md" children={currentMonth.format('MMM YYYY')} />
 					{isLoading && (
@@ -60,26 +66,26 @@ export function EventCalendar() {
 					onClick={() => navDatehandle('next')}
 				/>
 				<Button onClick={() => navDatehandle('today')}>Bulan ini</Button>
-			</CardHeader>
-			<CardBody>
+			</HStack>
+			<Box w="full" h="full">
 				<FullCalendar
-					// @ts-ignore
 					ref={calendarRef}
 					events={data ? eventsMapping(data) : []}
 					fixedWeekCount={false}
 					height="100%"
 					initialDate={currentMonth.toDate()}
 					plugins={[dayGridPlugin]}
-					initialView="dayGridMonth"
 					headerToolbar={false}
-					eventContent={renderEventContent}
+					locale={idLocale}
+					initialView="dayGridMonth"
+					eventContent={(e)=>renderEventContent(e)}
 				/>
-			</CardBody>
-		</Card>
+			</Box>
+		</Alert>
 	);
 }
 
-function eventsMapping(data: DTEventLog[] = []) {
+export function eventsMapping(data: DTEventLog[] = []) {
 	return data.map(({ startDate, endDate, name, ...e }) => ({
 		...e,
 		start: startDate,
@@ -94,28 +100,25 @@ function eventsMapping(data: DTEventLog[] = []) {
 	}));
 }
 
-function renderEventContent(eventInfo: any) {
+export function renderEventContent(
+	eventInfo: EventContentArg,
+	readOnly = false
+) {
 	const { title } = eventInfo.event;
 	const { type, eventLogId, status } = eventInfo.event.extendedProps;
 	const { icon, color } =
 		eventLogsTypeAttr[type] || eventLogsTypeAttr['other'];
 
 	return (
-		<DetailEventLogWrapper eventId={eventLogId}>
+		<DetailEventLogTriger eventId={eventLogId} readOnly={readOnly}>
 			<Tooltip label={title} placement="top" hasArrow>
-				<HStack
-					py="1"
-					px="2"
-					spacing="1"
-					cursor="pointer"
-					bg={color + '.500'}
-				>
+				<HStack p="1" spacing="1" cursor="pointer" bg={color + '.500'}>
 					<Icon as={icon} boxSize="16px" />
 					<Text
 						fontSize="sm"
 						overflow="hidden"
 						textOverflow="ellipsis"
-						children={title}
+						children={title }
 					/>
 					<Spacer />
 					{status == 'inProgress' && (
@@ -123,6 +126,6 @@ function renderEventContent(eventInfo: any) {
 					)}
 				</HStack>
 			</Tooltip>
-		</DetailEventLogWrapper>
+		</DetailEventLogTriger>
 	);
 }

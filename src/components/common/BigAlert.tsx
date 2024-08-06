@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertProps, AlertTitle, Button, HStack } from '@chakra-ui/react';
-import { IconChevronLeft, IconChevronRight, IconCirclePlus, IconLayoutNavbarExpand } from '@tabler/icons-react';
+import { IconChevronLeft, IconCirclePlus, IconLayoutNavbarExpand } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export interface BigAlert extends AlertProps {

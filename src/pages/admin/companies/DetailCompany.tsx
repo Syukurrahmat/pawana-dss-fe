@@ -1,22 +1,24 @@
-import { IconAddressBook, IconCircleDot, IconEdit, IconTextCaption, IconUserHeart, IconCalendar, IconTag, IconChartBar,} from '@tabler/icons-react'; //prettier-ignore
-import { Box, Button, Container, HStack, Heading, Spacer, Text,} from '@chakra-ui/react'; //prettier-ignore
-import { toFormatedDate } from '@/utils/dateFormating';
-import { companyTypeAttr } from '@/constants/enumVariable';
-import { useParams } from 'react-router-dom';
-import { pageDataFetcher } from '@/utils/fetcher';
-import SectionTitle from '@/components/common/SectionTitle';
-import HeadingWithIcon from '@/components/common/HeadingWithIcon';
-import TagWithIcon from '@/components/common/TagWithIcon';
-import EditGroupButton from './EditCompany';
-import UserCard from '@/components/managerCard';
-import useSWR from 'swr';
 import LoadingComponent from '@/components/Loading/LoadingComponent';
-import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
+import { ButtonViewDashboard } from '@/components/common/ChangeActiveDashButton';
+import HeadingWithIcon from '@/components/common/HeadingWithIcon';
+import SectionTitle from '@/components/common/SectionTitle';
+import TagWithIcon from '@/components/common/TagWithIcon';
+import UserCard from '@/components/managerCard';
+import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
+import { toFormatedDate } from '@/utils/dateFormating';
+import { pageDataFetcher } from '@/utils/fetcher';
+import { Box, Button, Container, HStack, Heading, Spacer, Text, } from '@chakra-ui/react'; //prettier-ignore
+import { IconAddressBook, IconCalendar, IconEdit, IconLock, IconTag, IconTextCaption, IconUserHeart } from '@tabler/icons-react'; //prettier-ignore
+import { useParams } from 'react-router-dom';
+import useSWR from 'swr';
+import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
+import EditGroupButton from './EditCompany';
 
 export default function DetailCompany() {
-	useUser();
 	const { id } = useParams();
+	const { user, roleIs } = useUser();
+
 	const { data, mutate } = useSWR<CompanyDataPage>(
 		`/companies/${id}`,
 		pageDataFetcher
@@ -26,7 +28,7 @@ export default function DetailCompany() {
 
 	return (
 		<Box>
-			<HeadingWithIcon Icon={<IconUserHeart />} text="Detail Grup" />
+			<HeadingWithIcon Icon={<IconUserHeart />} text="Detail Usaha" />
 			<Container mt="8" maxW="container.md">
 				<HStack justify="space-between">
 					<Box>
@@ -45,30 +47,27 @@ export default function DetailCompany() {
 								textTransform="capitalize"
 								children={data.type}
 							/>
-							<TagWithIcon
-								icon={IconCircleDot}
-								children={data.countSubscribedNodes + ' Node'}
-							/>
+							 
 						</HStack>
-
-						<UserCard mt="3" data={data.manager} label="manager" />
+						{['admin', 'gov'].includes(user.role) && (
+							<UserCard mt="3" data={data.manager} label="manager" />
+						)}
 					</Box>
 					<Spacer />
-					<Button
-						colorScheme="green"
-						leftIcon={<IconChartBar size="16" />}
+					<ButtonViewDashboard
 						alignSelf="start"
-						children="Dashboard"
+						companyId={data.companyId}
 					/>
-
-					<EditGroupButton
-						data={data}
-						mutate={mutate}
-						colorScheme="blue"
-						alignSelf="start"
-						leftIcon={<IconEdit size="16" />}
-						children={'Sunting Usaha'}
-					/>
+					{roleIs(['admin', 'manager']) && (
+						<EditGroupButton
+							data={data}
+							mutate={mutate}
+							colorScheme="blue"
+							alignSelf="start"
+							leftIcon={<IconEdit size="16" />}
+							children={'Sunting Usaha'}
+						/>
+					)}
 				</HStack>
 
 				<SectionTitle IconEl={IconAddressBook}>Alamat</SectionTitle>
@@ -78,8 +77,14 @@ export default function DetailCompany() {
 					Deskripsi Usaha
 				</SectionTitle>
 				<Text>{data.description}</Text>
-
 				<CompanySubscribedNodesList data={data} mutate={mutate} />
+
+				{roleIs(['admin', 'manager']) && (
+					<>
+						<SectionTitle IconEl={IconLock}>Lainnya</SectionTitle>
+						<Button colorScheme="red">Hapus Usaha</Button>
+					</>
+				)}
 			</Container>
 		</Box>
 	);

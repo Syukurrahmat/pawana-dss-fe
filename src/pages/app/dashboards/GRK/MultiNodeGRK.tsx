@@ -1,5 +1,8 @@
-import { Box, HStack, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconCircleDot } from '@tabler/icons-react';
+import { MAX_CH4, MAX_CO2, TRESHOLD_CH4, TRESHOLD_CO2 } from '@/constants/data';
+import { getCH4Properties, getCO2Properties } from '@/utils/common.utils';
+import { Box, HStack, Icon, Spacer, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { IconHistory } from '@tabler/icons-react';
+import moment from 'moment';
 import GaugeChart from 'react-gauge-chart';
 
 interface MultiNodeISPU {
@@ -8,24 +11,23 @@ interface MultiNodeISPU {
 }
 
 export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
-	const xixixi = [
-		{
-			symbol: 'CH4',
-			name: 'Metana',
-			threshold: [0.3, 0.5, 0.2],
-			max: 10000,
-			data: CH4data,
-		},
+	const grkEmissionList = [
+
 		{
 			symbol: 'CO2',
 			name: 'Karbondioksida',
-			max: 2000,
-			threshold: [0.3, 0.5, 0.2],
+			max: MAX_CO2,
+			threshold: TRESHOLD_CO2,
 			data: CO2data,
 		},
+		{
+			symbol: 'CH4',
+			name: 'Metana',
+			threshold: TRESHOLD_CH4,
+			max: MAX_CH4,
+			data: CH4data,
+		},
 	];
-
-	console.log({CH4data, CO2data})
 
 	return (
 		<>
@@ -39,47 +41,60 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 				borderColor="gray.300"
 				rounded="5"
 			>
-				{xixixi.map(({ symbol, name, threshold, data, max }, i) => {
-					const { value, category } = data.average.data.value;
+				{grkEmissionList.map(
+					({ symbol, name, threshold, data, max }, i) => {
+						const { value, category } = data.average.data.value;
+						const { colorScheme } =
+							symbol == 'CO2'
+								? getCO2Properties(category)
+								: getCH4Properties(category);
 
-					return (
-						<VStack spacing="1" key={i}>
-							<HStack color="gray.600" fontSize="lg">
-								<Text fontWeight="700">
-									{symbol.slice(0, 2)}
-									<sub>{symbol[2]}</sub>
-								</Text>
-								<Text fontWeight="600">{name}</Text>
-							</HStack>
-							<GaugeChart
-								style={{ width: '110px' }}
-								arcsLength={threshold}
-								colors={['#5BE12C', '#F5CD19', '#EA4228']}
-								percent={value / max}
-								arcPadding={0.02}
-								hideText={true}
-							/>
-							<Text
-								fontSize="xl"
-								fontWeight="600"
-								children={value + ' PPM'}
-							/>
-							<Tag
-								fontSize="md"
-								justifyContent="center"
-								w="80%"
-								colorScheme="green"
-								children={category}
-							/>
-						</VStack>
-					);
-				})}
+						return (
+							<VStack spacing="1" key={i} h="86px">
+								<HStack
+									color="gray.600"
+									alignSelf="start"
+									fontSize="lg"
+									spacing="1"
+								>
+									<Text fontWeight="600">
+										{symbol.slice(0, 2)}
+										<sub>{symbol[2]}</sub>
+									</Text>
+									<Text fontWeight="600">{name}</Text>
+								</HStack>
+								<HStack>
+									<Box>
+										<Text
+											fontSize="xl"
+											fontWeight="600"
+											children={value + ' PPM'}
+										/>
+										<Tag
+											w="full"
+											fontSize="md"
+											justifyContent="center"
+											colorScheme={colorScheme}
+											children={category}
+										/>
+									</Box>
+									<GaugeChart
+										style={{ width: '125px' }}
+										arcsLength={threshold}
+										colors={['#5BE12C', '#F5CD19', '#EA4228']}
+										percent={value >= max ? 1 : value / max}
+										arcPadding={0.02}
+										hideText={true}
+									/>
+								</HStack>
+							</VStack>
+						);
+					}
+				)}
 			</HStack>
 
 			<HStack w="full">
-				{xixixi.map(({ symbol, data }, i) => {
-					const { value, category } = data.average.data.value;
-
+				{grkEmissionList.map(({ symbol, data }, i) => {
 					return (
 						<VStack
 							flex="1 1 0px"
@@ -90,146 +105,66 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 							py="2"
 							px="4"
 						>
-							{[1, 1].map((_, i) => (
-								<HStack spacing="1" w="full"  key={i} justify="space-between">
-									<Box>
-										<HStack
-											color="gray.700"
-											spacing="1"
-											fontWeight="600"
-										>
-											<Text>
-												{symbol.slice(0, 2)}
-												<sub>{symbol[2]}</sub>
-											</Text>
-											<Text>Tertinggi</Text>
-										</HStack>
-										<HStack color='gray.600' mt='1'>
-											<IconCircleDot size="16" />
-											<Text fontSize="sm">Rerata dari node</Text>
-										</HStack>
-									</Box>
-									<VStack spacing="0">
-										<Text
-											fontSize="lg"
-											fontWeight="600"
-											children={value + ' PPM'}
-										/>
-										<Tag
-											fontSize="md"
-											w="full"
-											justifyContent="center"
-											colorScheme="green"
-											children={category}
-										/>
-									</VStack>
-								</HStack>
-							))}
+							{[data.highest, data.lowest].map(
+								({ name, data: { value } }, i) => (
+									<HStack
+										spacing="1"
+										w="full"
+										key={i}
+										justify="space-between"
+									>
+										<Box>
+											<HStack
+												color="gray.700"
+												spacing="1"
+												fontWeight="600"
+											>
+												<Text>
+													{symbol.slice(0, 2)}
+													<sub>{symbol[2]}</sub>
+												</Text>
+												<Text>{i ? 'Terendah' : 'Tertinggi'}</Text>
+											</HStack>
+											<HStack color="gray.600" mt="1">
+												<Text fontSize="sm">{name}</Text>
+											</HStack>
+										</Box>
+										<VStack spacing="0">
+											<Text
+												fontSize="lg"
+												fontWeight="600"
+												children={value.value + ' PPM'}
+											/>
+											<Tag
+												fontSize="md"
+												w="full"
+												justifyContent="center"
+												colorScheme={
+													(symbol == 'CO2'
+														? getCO2Properties(value.category)
+														: getCH4Properties(value.category)
+													).colorScheme
+												}
+												children={value.category}
+											/>
+										</VStack>
+									</HStack>
+								)
+							)}
 						</VStack>
 					);
 				})}
 			</HStack>
-			{/* Tengah */}
-
-			{/* <Stack
-				direction="row"
-				spacing="4"
-				w="full"
-				justifyContent="space-evenly"
-			>
-				{[highest, lowest].map((e, i) => {
-					const color = ISPUColor[e.data.value[0].category];
-					return (
-						<VStack
-							key={i}
-							minW="200px"
-							spacing="0"
-							rounded="md"
-							align="start"
-							px="4"
-							py="3"
-							justify="center"
-							bg={color + '.100'}
-						>
-							<Text fontWeight="500">
-								{i ? 'Terendah' : 'Tertinggi'}
-							</Text>
-							<HStack w="full" justify="space-between">
-								<Text
-									fontSize="2xl"
-									fontWeight={700}
-									children={e.data.value[0].ispu}
-								/>
-								<Tag bg={color + '.300'}>Aman</Tag>
-							</HStack>
-							<HStack spacing="1">
-								<IconCircleDot size="16" />
-
-								<Text
-									w="full"
-									noOfLines={1}
-									fontSize="sm"
-									children={e.node.name}
-								/>
-							</HStack>
-						</VStack>
-					);
-				})}
-			</Stack>
-			<Text fontWeight="600" mt="2">
-				Kualitas Udara Per Node
-			</Text>
-			<TableContainer shadow="xs" rounded="md" w="full">
-				<Table variant="striped">
-					<Thead>
-						<Tr>
-							<Th>Node</Th>
-							<Th>ISPU</Th>
-							<Th>Aksi</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{list.map(({ node, data: dt }, i) => (
-							<Tr key={i}>
-								<Td>
-									<Text fontWeight="600">{node.name}</Text>
-									<Text fontSize="sm" color="gray.600">
-										{toFormatedDatetime(dt.datetime)}
-									</Text>
-								</Td>
-								<Td>
-									<Tag
-										bg={ISPUColor[dt.value[0].category] + '.300'}
-										children={dt.value[0].ispu}
-									/>
-									<Tag
-										ml="2"
-										bg={ISPUColor[dt.value[0].category] + '.300'}
-										children={dt.value[0].category}
-									/>
-								</Td>
-								<Td>
-									<Button
-										size="sm"
-										colorScheme="blue"
-										children="Detail ISPU"
-									/>
-								</Td>
-							</Tr>
-						))}
-					</Tbody>
-				</Table>
-			</TableContainer>
-
 			<Spacer />
-
-			<HStack mt="4" color="gray.600">
-				<IconHistory size="18" />
-				<Text fontSize="sm">
-					Data Diperbarui Pada :{' '}
-					{toFormatedDatetime(average.data.datetime)}
+			<HStack justify="end" w="full">
+				<Icon as={IconHistory} boxSize="18px" />
+				<Text>
+					Data diperbarui pada{' '}
+					{moment(CH4data.average.data.datetime).format(
+						'HH:mm DD MMM YYYY'
+					)}
 				</Text>
-			</HStack> */}
+			</HStack>
 		</>
 	);
 }

@@ -1,13 +1,14 @@
-import * as valSchema from '@/utils/validator.utils';
-import * as Yup from 'yup';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, VStack, FormControl, FormLabel, Input, FormErrorMessage, Textarea, useToast, useDisclosure, ButtonProps} from '@chakra-ui/react'; //prettier-ignore
-import { useFormik } from 'formik';
-import { compareObjects, trimAllValues } from '@/utils/common.utils';
 import { API_URL } from '@/constants/config';
-import { KeyedMutator } from 'swr';
-import { useParams } from 'react-router-dom';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import useUser from '@/hooks/useUser';
+import { compareObjects, trimAllValues } from '@/utils/common.utils';
+import * as valSchema from '@/utils/validator.utils';
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import axios from 'axios';
+import { useFormik } from 'formik';
+import { useMatch, useParams } from 'react-router-dom';
+import { KeyedMutator } from 'swr';
+import * as Yup from 'yup';
 
 interface IEUModal extends ButtonProps {
 	data: UserDataPage;
@@ -23,7 +24,10 @@ export default function EditUserProfileButton({
 	const initialValues = { name, phone, description, address };
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { id } = useParams();
+	const { user } = useUser();
 	const { apiResponseToast, toast } = useApiResponseToast();
+
+	const userId = useMatch('/account') ? user.userId : id;
 
 	const {
 		values,
@@ -48,7 +52,6 @@ export default function EditUserProfileButton({
 			trimAllValues(values);
 
 			const filteredData = compareObjects(initialValues, values);
-
 			if (Object.keys(filteredData).length === 0) {
 				toast({
 					title: `Opss !!!`,
@@ -60,7 +63,7 @@ export default function EditUserProfileButton({
 			}
 
 			axios
-				.put(`${API_URL}/users/${id}/`, {
+				.put(`${API_URL}/users/${userId}/`, {
 					...filteredData,
 				})
 				.then(({ data }) => {

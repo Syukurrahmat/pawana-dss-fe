@@ -1,16 +1,16 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, VStack, FormControl, FormLabel, FormErrorMessage, useToast, useDisclosure, ButtonProps} from '@chakra-ui/react'; //prettier-ignore
-import { IconCircleCheck, IconCornerDownLeft, IconExclamationCircle, IconOvalFilled } from '@tabler/icons-react'; //prettier-ignore
+import InputPassword from '@/components/Form/inputPassword';
+import { API_URL } from '@/constants/config';
+import { trimAllValues } from '@/utils/common.utils';
+import * as valSchema from '@/utils/validator.utils';
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import { IconCircleCheck, IconExclamationCircle } from '@tabler/icons-react'; //prettier-ignore
 import { useFormik } from 'formik';
 import { useState } from 'react';
-import { API_URL } from '@/constants/config';
-import InputPassword from '@/components/Form/inputPassword';
-import * as valSchema from '@/utils/validator.utils';
 import * as Yup from 'yup';
-import { trimAllValues } from '@/utils/common.utils';
 
-import PasswordChecklist from 'react-password-checklist';
-import axios from 'axios';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import axios from 'axios';
+import PasswordChecklist from 'react-password-checklist';
 
 interface IEUModal extends ButtonProps {
 	data: UserDataPage;

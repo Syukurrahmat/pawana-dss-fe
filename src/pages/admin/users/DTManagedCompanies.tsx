@@ -1,18 +1,18 @@
-import { toFormatedDate } from '@/utils/dateFormating';
-import { HStack, Box, Tag, Button, Center, Icon, Text, Spacer, Skeleton, BoxProps, IconButton} from '@chakra-ui/react'; //prettier-ignore
-import { IconChartBar, IconCirclePlus, IconExternalLink, IconUsersGroup} from '@tabler/icons-react'; //prettier-ignore
-import InputSearch from '@/components/Form/inputSearch';
 import DataTable from '@/components/DataTable';
-import { createColumnHelper } from '@tanstack/react-table';
-import { Link, Link as RLink } from 'react-router-dom';
-import SectionTitle from '@/components/common/SectionTitle';
-import { companyTypeAttr } from '@/constants/enumVariable';
-import { TagCompanyType } from '@/components/Tags/index.tags';
-import { KeyedMutator } from 'swr';
 import MyMap from '@/components/Maps';
+import { TagCompanyType } from '@/components/Tags/index.tags';
+import { ButtonViewDashboard } from '@/components/common/ChangeActiveDashButton';
+import { companyTypeAttr } from '@/constants/enumVariable';
+import { toFormatedDate } from '@/utils/dateFormating';
+import { Box, BoxProps, Button, Center, HStack, Icon, Skeleton, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconExternalLink } from '@tabler/icons-react'; //prettier-ignore
+import { createColumnHelper } from '@tanstack/react-table';
 import { useState } from 'react';
+import { Link as RLink } from 'react-router-dom';
+import { KeyedMutator } from 'swr';
 
 const columnHelper = createColumnHelper<DTUserManagedCompanies>();
+
 const columns = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
@@ -53,7 +53,6 @@ const columns = [
 		header: 'Aksi',
 		cell: (info) => (
 			<HStack>
-				{' '}
 				<RLink to={'/companies/' + info.getValue()}>
 					<Button
 						colorScheme="blue"
@@ -62,11 +61,9 @@ const columns = [
 						children="Detail"
 					/>
 				</RLink>
-				<Button
+				<ButtonViewDashboard
 					size="sm"
-					colorScheme="green"
-					leftIcon={<IconChartBar size="16" />}
-					children='Dashboard'
+					companyId={info.row.original.companyId}
 				/>
 			</HStack>
 		),
@@ -80,7 +77,6 @@ interface MCL extends BoxProps {
 
 export default function ManagedCompaniesList({ data, ...rest }: MCL) {
 	const [companiesDataCtx, setCompaniesDataCtx] = useState<null | any[]>(null);
-
 	const showMap = companiesDataCtx == null || companiesDataCtx.length > 0;
 
 	return (
@@ -92,6 +88,7 @@ export default function ManagedCompaniesList({ data, ...rest }: MCL) {
 					as={companiesDataCtx == null ? Skeleton : undefined}
 				/>
 			)}
+			
 			<DataTable
 				mt="4"
 				apiUrl={`/users/${data.userId}/companies`}

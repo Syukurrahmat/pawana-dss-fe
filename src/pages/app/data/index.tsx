@@ -9,7 +9,7 @@ import { IconCalendar, IconChartAreaLine, IconCircleDot, IconClick, IconDatabase
 import axios from 'axios';
 import { useFormik } from 'formik';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import SelectDateRange from './selectDateRange';
 
@@ -78,12 +78,6 @@ export default function Data() {
 			},
 		});
 
-	useEffect(() => {
-		const queryParams = Object.fromEntries(
-			new URLSearchParams(location.search)
-		);
-	}, []);
-
 	return (
 		<Box>
 			<Heading size="lg">Akses data yang dikirim dari Node</Heading>
@@ -145,7 +139,8 @@ export default function Data() {
 							justify="space-between"
 							align="start"
 							w="full"
-							p="3"
+							p="4"
+							bg='white'
 							border="1px solid"
 							borderColor="gray.300"
 							rounded="md"
@@ -210,13 +205,14 @@ export default function Data() {
 												<TabPanel key={e.key} h="350px" px="0">
 													<MyLineChart
 														withBrush={true}
-														data={data.result.dataLogs.map(
-															(dt) => ({
-																// @ts-ignore
-																value: dt[e.key],
-																datetime: dt.datetime,
-															})
-														)}
+														data={data.result.dataLogs}
+														dataKeyTypeAndFunc={{
+															envType: 'outdoor',
+															//@ts-ignore
+															func: (f) => f[e.key],
+														}}
+														tickFormat="DD MMM YYYY HH:mm"
+														withoutLegend
 													/>
 												</TabPanel>
 											))}

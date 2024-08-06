@@ -1,31 +1,26 @@
-// import RequiredIndicator from '@/components/Form/RequiredIndicator';
+import FormMapPicker from '@/components/Form/FormMapPicker';
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
-import MyMap from '@/components/Maps';
 import { BigAlert } from '@/components/common/BigAlert';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
 import SelectFromDataTable from '@/components/common/SelectFromDataTable';
-import { API_URL, CENTER_OF_MAP } from '@/constants/config';
+import { API_URL } from '@/constants/config';
 import { companyTypeAttr } from '@/constants/enumVariable';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useUser from '@/hooks/useUser';
 import { trimAllValues } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
-import { Box, Button, Container, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Select, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconUserBolt } from '@tabler/icons-react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 
 export default function CreateCompany() {
-	const { apiResponseToast } = useApiResponseToast();
-	const navigate = useNavigate();
-	const { user } = useUser();
+	const { user, roleIs } = useUser();
 	const { role, userId } = user;
-	const [managerInfo, setManagerInfo] = useState({});
+	const [managerInfo, setManagerInfo] = useState<any>({});
 
-	const managerId = role == 'manager' ? userId : '';
+	const defaultManagerId = role == 'manager' ? userId : NaN;
 
 	const {
 		handleChange,
@@ -34,6 +29,7 @@ export default function CreateCompany() {
 		setSubmitting,
 		touched,
 		errors,
+		values,
 		setStatus,
 		status,
 		resetForm,
@@ -41,7 +37,7 @@ export default function CreateCompany() {
 		handleSubmit,
 	} = useFormik({
 		initialValues: {
-			managerId: managerId,
+			managerId: defaultManagerId,
 			name: '',
 			type: 'tofufactory',
 			description: '',
@@ -58,7 +54,6 @@ export default function CreateCompany() {
 		}),
 
 		onSubmit: (values) => {
-			alert(JSON.stringify(values));
 			axios
 				.post(`${API_URL}/companies`, trimAllValues(values))
 				.then(({ data }) => setStatus(data || false))
@@ -67,10 +62,15 @@ export default function CreateCompany() {
 		},
 	});
 
+	useEffect(() => {
+		if (!defaultManagerId)
+			setFieldValue('managerId', managerInfo?.userId as any);
+	}, [managerInfo]);
+
 	return (
 		<Box>
 			<Heading size="lg">Buat Usaha</Heading>
-			<Text>Buat Usaha untuk dashboard suatu pabrik</Text>
+			<Text>Buat Usaha dan dapatkan dukungan keputusan untuk perusahaan Anda</Text>
 
 			<Container maxW="container.sm" mt="6">
 				{status !== undefined ? (
@@ -94,7 +94,7 @@ export default function CreateCompany() {
 				) : (
 					<form onSubmit={handleSubmit} className="my-form">
 						<VStack mx="auto" spacing="2">
-							{(role !== 'manager' || true) && (
+							{roleIs('admin') && (
 								<FormControl
 									isInvalid={
 										Boolean(errors.managerId) && touched.managerId
@@ -194,36 +194,12 @@ export default function CreateCompany() {
 								</FormErrorMessage>
 							</FormControl>
 
-							<FormControl
-								isInvalid={
-									Boolean(errors.coordinate) && touched.coordinate
-								}
-							>
-								<FormLabel>
-									Koordinat Node <RequiredIndicator />
-								</FormLabel>
-								<FormHelperText>
-									Geser peta dan paskan penanda ke titik yang dimaksud
-								</FormHelperText>
-								<MyMap
-									mt="3"
-									data={[]}
-									outline={
-										errors.coordinate && touched.coordinate
-											? '2px solid'
-											: ''
-									}
-									outlineColor="#E53E3E"
-									isEditing={{
-										coordinate: CENTER_OF_MAP,
-										onChange: (x) =>
-											setFieldValue('coordinate', [x.lat, x.lng]),
-									}}
-								/>
-
-								<FormErrorMessage>{errors.coordinate}</FormErrorMessage>
-							</FormControl>
-
+							<FormMapPicker
+								errors={errors.coordinate}
+								touched={touched.coordinate}
+								values={values.coordinate}
+								setFieldValue={setFieldValue}
+							/>
 							<Button
 								isLoading={isSubmitting}
 								w="full"

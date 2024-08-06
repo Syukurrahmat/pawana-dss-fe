@@ -43,7 +43,6 @@ export default function CreateUser() {
 			role: Yup.string().required('Wajib diisi'),
 		}),
 		onSubmit: (values) => {
-			console.log(JSON.stringify(values));
 			axios
 				.post(API_URL + '/users', trimAllValues(values))
 				.then(({ data }) => setStatus(data.success))
@@ -56,7 +55,7 @@ export default function CreateUser() {
 		<Box>
 			<Heading size="lg">Buat akun Pengguna</Heading>
 			<Text>
-				Buat Akun pengguna untuk memberikan akses orang lain ke DSS ini
+				Buat Akun pengguna untuk memberikan akses orang lain ke sistem
 			</Text>
 
 			<Container maxW="container.sm" mt="6">

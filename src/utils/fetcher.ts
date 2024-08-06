@@ -12,6 +12,8 @@ export const pageDataFetcher = async (...args: Parameters<typeof fetch>) => {
 };
 
 export const apiFetcher = async (...args: Parameters<typeof fetch>) => {
+    console.log(API_URL + args[0])
+
     const res = await fetch(API_URL + args[0], args[1]);
     return await res.json();
 };
@@ -36,7 +38,6 @@ export const fetcherAPIWithQueries = async (baseURL: string, queries: Record<str
 
     baseURL = API_URL + baseURL;
 
-    console.log(baseURL);
     const hasQuery = new URL(baseURL).search.length > 0;
     const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
 
@@ -76,7 +77,7 @@ export const buildQueriesURL = (baseURL: string, queries: Record<string, string 
         }
     }
 
-    const hasQuery = new URL(baseURL).search.length > 0;
+    const hasQuery = new URL(baseURL, window.location.origin).search.length > 0;
     const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
 
     return url;

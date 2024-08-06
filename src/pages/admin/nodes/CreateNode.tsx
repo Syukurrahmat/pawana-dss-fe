@@ -1,19 +1,19 @@
+import FormMapPicker from '@/components/Form/FormMapPicker';
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
-import MyMap from '@/components/Maps';
 import { BigAlert } from '@/components/common/BigAlert';
 import CompanyIcon from '@/components/common/CompanyIcon';
-import { MyRadio } from '@/components/common/MyRadio';
 import SelectFromDataTable from '@/components/common/SelectFromDataTable';
-import { API_URL, CENTER_OF_MAP } from '@/constants/config';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { API_URL } from '@/constants/config';
+import { companyTypeAttr } from '@/constants/enumVariable';
+import useUser from '@/hooks/useUser';
 import { trimAllValues } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
-import { Box, Button, Container, Divider, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Heading, Icon, Input, RadioGroup, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Button, Container, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconBuildingFactory2, IconInfoCircle, IconLock, IconWorld } from '@tabler/icons-react'; //prettier-ignore
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useMatch } from 'react-router-dom';
 import * as Yup from 'yup';
 
 const publicNodeValidationSchema = Yup.object().shape({
@@ -36,10 +36,20 @@ const privateNodeValidationSchema = Yup.object().shape({
 });
 
 export default function CreateNode() {
-	const { apiResponseToast } = useApiResponseToast();
+	const { roleIs } = useUser();
+	const location = useLocation();
+
+	const isOnSpesificNode = !useMatch('/nodes/create');
+	const showChooseOwnshipNode = !isOnSpesificNode && roleIs('admin');
+
 	const [managerInfo, setManagerInfo] = useState<any>({});
-	const [isPrivate, setIsPrivate] = useState(0);
-	const navigate = useNavigate();
+	const [isPrivate, setIsPrivate] = useState(showChooseOwnshipNode ? 0 : 1);
+
+	const currentCompany = location.state?.company;
+
+	if (isOnSpesificNode && !currentCompany) {
+		return <Navigate to=".." relative="path" />;
+	}
 
 	const validationSchema = isPrivate
 		? privateNodeValidationSchema
@@ -63,10 +73,9 @@ export default function CreateNode() {
 			name: '',
 			description: '',
 			address: '',
-			status: 'active',
 			instalationDate: '',
 			coordinate: [NaN, NaN],
-			companyId: NaN,
+			companyId: currentCompany?.companyId || NaN,
 		},
 		validationSchema,
 		onSubmit: (values) => {
@@ -79,8 +88,12 @@ export default function CreateNode() {
 	});
 
 	useEffect(() => {
-		setFieldValue('companyId', managerInfo.companyId);
+		setFieldValue('companyId', managerInfo?.companyId);
 	}, [managerInfo]);
+
+	useEffect(() => {
+		setFieldValue('companyId', currentCompany?.companyId || NaN);
+	}, []);
 
 	const tabsListInfo = [
 		{
@@ -97,10 +110,10 @@ export default function CreateNode() {
 
 	return (
 		<Box>
-			<Heading size="lg">Buat Grup</Heading>
-			<Text>Buat Grup untuk dashboard suatu pabrik</Text>
+			<Heading size="lg">Buat Sensor</Heading>
+			<Text>Buat sensor untuk menambah akurasi sistem</Text>
 			<Container maxW="container.md" mt="4">
-				{status === undefined && (
+				{status === undefined && showChooseOwnshipNode && (
 					<Tabs
 						index={isPrivate}
 						onChange={setIsPrivate}
@@ -147,40 +160,73 @@ export default function CreateNode() {
 				) : (
 					<Container maxW="container.sm">
 						<form onSubmit={handleSubmit} className="my-form">
-							<VStack
-								mx="auto"
-								spacing="2"
-								maxW="container.sm"
-								pb="1000px"
-							>
-								{isPrivate && (
-									<FormControl isInvalid={Boolean(errors.companyId)}>
-										<FormLabel>
-											Pilih Usaha <RequiredIndicator />
-										</FormLabel>
+							<VStack mx="auto" spacing="2" maxW="container.sm">
+								{isPrivate &&
+									(!currentCompany ? (
+										<FormControl>
+											<FormLabel>
+												Pilih Usaha <RequiredIndicator />
+											</FormLabel>
 
-										<SelectFromDataTable
-											leftIcon={<IconBuildingFactory2 size="30" />}
-											itemName="Usaha"
-											apiUrl="/search/companies"
-											selectValue={managerInfo}
-											selectOnChange={setManagerInfo}
-											displayRow={(e) => (
-												<HStack>
-													<CompanyIcon bg="white" type={e.type} />
-													<Text
-														children={
-															e?.name || 'Node yang Anda ikuti'
+											<SelectFromDataTable
+												leftIcon={
+													<IconBuildingFactory2 size="30" />
+												}
+												itemName="Usaha"
+												apiUrl="/search/companies"
+												selectValue={managerInfo}
+												selectOnChange={setManagerInfo}
+												displayRow={(e) => (
+													<HStack>
+														<CompanyIcon
+															bg="white"
+															type={e.type}
+														/>
+														<Text
+															children={
+																e?.name ||
+																'Node yang Anda ikuti'
+															}
+														/>
+													</HStack>
+												)}
+											/>
+											<FormErrorMessage>
+												{errors.companyId as string}
+											</FormErrorMessage>
+										</FormControl>
+									) : (
+										<Box alignSelf="start">
+											<Text fontWeight="600">
+												Buat Node Untuk Usaha
+											</Text>
+											<HStack
+												mt="2"
+												spacing="3"
+												shadow="xs"
+												p="3"
+												bg="white"
+												rounded="md"
+											>
+												<CompanyIcon
+													type={currentCompany.type}
+													size="24px"
+												/>
+												<Box>
+													<Text fontWeight="600" pr="2">
+														{currentCompany.name}
+													</Text>
+													<Text>
+														{
+															companyTypeAttr[
+																currentCompany.type
+															].name
 														}
-													/>
-												</HStack>
-											)}
-										/>
-										<FormErrorMessage>
-											{errors.companyId}
-										</FormErrorMessage>
-									</FormControl>
-								)}
+													</Text>
+												</Box>
+											</HStack>
+										</Box>
+									))}
 								<FormControl
 									isInvalid={Boolean(errors.name) && touched.name}
 								>
@@ -253,62 +299,13 @@ export default function CreateNode() {
 									/>
 								</FormControl>
 
-								<FormControl>
-									<FormLabel>
-										Status Node <RequiredIndicator />
-									</FormLabel>
-									<RadioGroup
-										onChange={(e) => setFieldValue('status', e)}
-										value={values.status}
-									>
-										<HStack spacing={4}>
-											<MyRadio value="active">Aktifkan</MyRadio>
-											<MyRadio value="nonactive">
-												Nonaktifkan
-											</MyRadio>
-										</HStack>
-									</RadioGroup>
-								</FormControl>
-
 								{!isPrivate && (
-									<>
-										<FormControl
-											isInvalid={
-												Boolean(errors.coordinate) &&
-												touched.coordinate
-											}
-										>
-											<FormLabel>
-												Koordinat Node <RequiredIndicator />
-											</FormLabel>
-											<FormHelperText>
-												Geser peta dan paskan penanda ke titik yang
-												dimaksud
-											</FormHelperText>
-											<MyMap
-												mt="3"
-												data={[]}
-												outline={
-													errors.coordinate && touched.coordinate
-														? '2px solid'
-														: ''
-												}
-												outlineColor="#E53E3E"
-												isEditing={{
-													coordinate: CENTER_OF_MAP,
-													onChange: (x) =>
-														setFieldValue('coordinate', [
-															x.lat,
-															x.lng,
-														]),
-												}}
-											/>
-
-											<FormErrorMessage>
-												{errors.coordinate}
-											</FormErrorMessage>
-										</FormControl>
-									</>
+									<FormMapPicker
+										errors={errors.coordinate}
+										touched={touched.coordinate}
+										values={values.coordinate}
+										setFieldValue={setFieldValue}
+									/>
 								)}
 								<Button
 									isLoading={isSubmitting}

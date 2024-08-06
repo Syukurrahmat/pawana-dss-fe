@@ -1,21 +1,22 @@
 import opssImage from '@/assets/opss.png';
-import { AddNodeCompanySubscription, AddNodeUserSubscription } from '@/components/common/AddNodeSubscription'; //prettier-ignore
+
+import NodeSubscription from '@/components/common/AddNodeSubscription';
 import useUser from '@/hooks/useUser';
-import { Alert, AlertDescription, AlertTitle, Box, Button, Card, CardBody, CardHeader, Center, HStack, Heading, Icon, Image, Stack, StackDivider, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconBuilding, IconCirclePlus, IconReceipt, IconTrees, IconZzz } from '@tabler/icons-react'; // prettier-ignore
+import { Alert, AlertTitle, Box, Button, Card, CardBody, CardHeader, Center, HStack, Heading, Icon, Image, Spacer, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { IconBuilding, IconCircleDot, IconCirclePlus, IconCircleX, IconReceipt, IconTrees, IconZzz } from '@tabler/icons-react'; // prettier-ignore
 import MultiNodeGRK from './GRK/MultiNodeGRK';
 import SingleNodeGRK from './GRK/SingleNodeGRK';
 import MultiNodeISPU from './ISPU/MultiNodeISPU';
 import SingleNodeISPU from './ISPU/SingleNodeISPU';
 
 type SingleISPU = SingleNodeAnalysisItem<[ISPUValue, ISPUValue]>;
-type MutiISPU = NodeStat<ISPUValue[]>;
+type MutiISPU = NodeStat<[ISPUValue, ISPUValue]>;
 type SingleGRK = SingleNodeAnalysisItem<GRKCategorize>;
 type MutiGRK = NodeStat<GRKCategorize>;
 type NodeGroupType = 'indoor' | 'outdoor' | 'arround';
 
 interface ISPUCard {
-	data: DataNodeGroup;
+	data: NodesGroup;
 	type: NodeGroupType;
 }
 
@@ -23,24 +24,25 @@ const iconAndTitle = {
 	indoor: {
 		icon: IconBuilding,
 		color: 'blue',
-		title: 'Kualitas Udara Di dalam ruangan',
+		title: 'Kualitas udara di perusahaan',
 	},
 	outdoor: {
 		icon: IconTrees,
 		color: 'green',
-		title: 'Kualitas Udara Di sekitar usaha Anda',
+		title: 'Kualitas udara di sekitar perusahaan Anda',
 	},
 	arround: {
 		icon: IconTrees,
 		color: 'green',
-		title: 'Kualitas Udara Di sekitar Anda',
+		title: 'Kualitas udara di sekitar Anda',
 	},
 };
 
 export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
-	const { data, countNodes } = dt;
-	const isSingleNode = countNodes.active === 1;
+	const { data, countNodes, analiysisDataType } = dt;
 
+	const isSingleNode = analiysisDataType == 'single';
+	const countNonActiveNode = countNodes.all - countNodes.active;
 	const { icon, color, title } = iconAndTitle[type];
 
 	return (
@@ -56,7 +58,27 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 						boxSize="45px"
 						children={<Icon as={icon} boxSize="28px" />}
 					/>
-					<Heading size="md" children={title} />
+					<Box>
+						<Heading size="md" children={title} />
+						{!!data && (
+							<HStack spacing="4">
+								<HStack>
+									<Icon as={IconCircleDot} />
+									<Text>
+										{isSingleNode
+											? (data as SingleNodeAnalysis).node.name
+											: `Rerata dari ${countNodes.active} sensor`}
+									</Text>
+								</HStack>
+								{!!countNonActiveNode && (
+									<HStack>
+										<Icon as={IconCircleX} />
+										<Text>{countNonActiveNode} Node Tidak Aktif</Text>
+									</HStack>
+								)}
+							</HStack>
+						)}
+					</Box>
 				</HStack>
 			</CardHeader>
 
@@ -106,14 +128,76 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 								as={IconReceipt}
 								boxSize="7"
 								color="blue.600"
-								mt="1"
+								mt="2"
 							/>
 
 							<Box ml="3">
-								<AlertTitle>Your browser is outdated!</AlertTitle>
-								<AlertDescription>
-									Your Chakra experience may be degraded.
-								</AlertDescription>
+								{(() => {
+									const recomendationIspu = isSingleNode
+											? (data.ispu as SingleISPU).latestData.value[0].recomendation //prettier-ignore
+											: (data.ispu as MutiISPU).average.data.value[0].recomendation //prettier-ignore
+
+									const recomendationCH4 = isSingleNode
+											? (data.ch4 as SingleGRK).latestData.value.recomendation //prettier-ignore
+											: (data.ch4 as MutiGRK).average.data.value.recomendation //prettier-ignore
+
+									const recomendationCO2 = isSingleNode
+											? (data.co2 as SingleGRK).latestData.value.recomendation //prettier-ignore
+											: (data.co2 as MutiGRK).average.data.value.recomendation //prettier-ignore
+
+									const contents = [
+										{ recomendation: recomendationIspu },
+										{ recomendation: recomendationCO2 },
+										{ recomendation: recomendationCH4 },
+									];
+
+									return (
+										<Tabs variant="soft-rounded" colorScheme="gray">
+											<TabList as={HStack}>
+												<AlertTitle m="0">Rekomendasi</AlertTitle>
+												<Spacer />
+												<Tab rounded="lg">Kualitas Udara</Tab>
+												<Tab rounded="lg">Emisi Karbondioksida</Tab>
+												<Tab rounded="lg">Emisi Metana</Tab>
+											</TabList>
+
+											<TabPanels pb="2">
+												{contents.map(({ recomendation }, i) => (
+													<TabPanel
+														px="0"
+														py="2"
+														key={i}
+														as={VStack}
+														align="start"
+													>
+														<Text
+															textIndent="40px"
+															fontSize="md"
+															textAlign="justify"
+														>
+															{recomendation?.info}
+														</Text>
+														<Text
+															fontSize="md"
+															textAlign="justify"
+														>
+															<span
+																style={{
+																	fontWeight: 600,
+																}}
+															>
+																Saran :{' '}
+															</span>
+															{type == 'indoor'
+																? recomendation?.company
+																: recomendation?.public}
+														</Text>
+													</TabPanel>
+												))}
+											</TabPanels>
+										</Tabs>
+									);
+								})()}
 							</Box>
 						</Alert>
 					</>
@@ -142,23 +226,31 @@ function NoDataDisplay({ data, type }: ISPUCard) {
 						</Heading>
 
 						{type == 'arround' ? (
-							<Button
-								as={AddNodeUserSubscription}
-								userId={user.userId}
-								countSubscribedNode={user.countSubscribedNodes}
-								colorScheme="blue"
-								leftIcon={<IconCirclePlus size="18" />}
-								children="Tambahkan Node"
-							/>
+							<NodeSubscription
+								subsInfo={{
+									type: 'user',
+									userId: user.userId,
+								}}
+							>
+								<Button
+									colorScheme="blue"
+									leftIcon={<IconCirclePlus size="18" />}
+									children="Tambahkan Node"
+								/>
+							</NodeSubscription>
 						) : (
-							<Button
-								as={AddNodeCompanySubscription}
-								companyData={user.activeCompany as any}
-								countSubscribedNode={3}
-								colorScheme="blue"
-								leftIcon={<IconCirclePlus size="18" />}
-								children="Tambahkan Node"
-							/>
+							<NodeSubscription
+								subsInfo={{
+									type: 'company',
+									companyData: user.view?.company!,
+								}}
+							>
+								<Button
+									colorScheme="blue"
+									leftIcon={<IconCirclePlus size="18" />}
+									children="Tambahkan Node"
+								/>
+							</NodeSubscription>
 						)}
 					</>
 				) : (
@@ -183,7 +275,7 @@ function NoDataDisplay({ data, type }: ISPUCard) {
 							</Center>
 
 							<Text fontWeight="600" fontSize="lg">
-								{`Data pada ${nonActiveCount} node Tidak Uptodate `}
+								{`Data pada ${nonActiveCount} node tidak mutakhir `}
 							</Text>
 						</HStack>
 					</>

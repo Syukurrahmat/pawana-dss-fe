@@ -1,11 +1,4 @@
 import {
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuList
-} from '@chakra-ui/react';
-
-import {
 	TagEventLogStatus,
 	TagEventLogType,
 } from '@/components/Tags/index.tags';
@@ -16,17 +9,47 @@ import useUser from '@/hooks/useUser';
 import { delay } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { pageDataFetcher } from '@/utils/fetcher';
-import { Box, BoxProps, Button, HStack, Heading, Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Portal, Skeleton, Spacer, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import { IconCalendarEvent, IconChecks, IconDotsVertical, IconEdit, IconMapPin, IconRocket, IconTrash } from '@tabler/icons-react'; //prettier-ignore
+import {
+	Box,
+	BoxProps,
+	Button,
+	HStack,
+	Heading,
+	Icon,
+	IconButton,
+	Menu,
+	MenuButton,
+	MenuItem,
+	MenuList,
+	Modal,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
+	Portal,
+	Skeleton,
+	Spacer,
+	Text,
+	VStack,
+	useDisclosure,
+} from '@chakra-ui/react';
+import { IconCalendarEvent, IconChecks, IconDotsVertical, IconEdit, IconHourglass, IconMapPin, IconRocket, IconTrash } from '@tabler/icons-react'; //prettier-ignore
 import axios from 'axios';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 
 interface DetailEL extends BoxProps {
 	eventId: number;
+	readOnly?: boolean;
 }
 
-export default function DetailEventLogWrapper({ eventId, ...rest }: DetailEL) {
+export default function DetailEventLogTriger({
+	eventId,
+	readOnly = false,
+	...rest
+}: DetailEL) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
@@ -39,7 +62,11 @@ export default function DetailEventLogWrapper({ eventId, ...rest }: DetailEL) {
 					<ModalContent>
 						<ModalCloseButton size="lg" />
 						<ModalHeader>Detail kegiatan</ModalHeader>
-						<DetailNote eventId={eventId} onClose={onClose} />
+						<DetailNote
+							eventId={eventId}
+							readOnly={readOnly}
+							onClose={onClose}
+						/>
 					</ModalContent>
 				</Modal>
 			</Portal>
@@ -47,14 +74,19 @@ export default function DetailEventLogWrapper({ eventId, ...rest }: DetailEL) {
 	);
 }
 
-function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
+interface DetailNote {
+	eventId: number;
+	readOnly?: boolean;
+	onClose: any;
+}
+
+function DetailNote({ eventId, onClose, readOnly }: DetailNote) {
 	const [isActionRunning, setIsActionRunning] = useState(false);
+	const { user } = useUser();
 	const { apiResponseToast } = useApiResponseToast();
 	const confirmDialog = useConfirmDialog();
-	const { user } = useUser();
-	//@ts-ignore
-	const { companyId } = user.activeCompany; 
 
+	const companyId = user.view?.company?.companyId;
 	const entryApiUrl = `/companies/${companyId}/events/${eventId}`;
 
 	const { data: event, mutate: eventMutate } = useSWR<DetailEventLog>(
@@ -62,23 +94,20 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 		pageDataFetcher
 	);
 
+	const mutateAllEvent = () => mutate((e) => typeof e == 'string' && e.startsWith(`/companies/${companyId}/events`) ); // prettier-ignore
+
 	const deleteEventHandler = async () => {
 		onClose();
-		await delay(300);
 
+		await delay(300);
 		confirmDialog({
 			title: 'Hapus Kegiatan ini',
-			message:
-				'Anda yakin hendak menghapus kegiatan ini dari usaha Anda',
+			message: 'Anda yakin hendak menghapus kegiatan ini dari usaha Anda',
 			confirmButtonColor: 'red',
 			onConfirm: () =>
 				axios.delete(API_URL + entryApiUrl).then(({ data: dt }) => {
 					apiResponseToast(dt);
-					mutate(
-						(e) =>
-							typeof e == 'string' &&
-							e.startsWith(`/companies/${companyId}/events`)
-					);
+					mutateAllEvent();
 				}),
 		});
 	};
@@ -91,14 +120,13 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 				? `${API_URL + entryApiUrl}/completed`
 				: `${API_URL + entryApiUrl}/startnow`;
 
-
-		console.log(putEntryApiUrl)
 		const resp = await axios.put(putEntryApiUrl);
 		apiResponseToast(resp.data, {
 			onSuccess: () => {
 				eventMutate((e) =>
 					e ? { ...e, status: 'isCompleted' } : undefined
 				);
+				mutateAllEvent();
 			},
 		});
 		setIsActionRunning(false);
@@ -107,7 +135,7 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 	return (
 		<>
 			<ModalBody pt="1" pb="6">
-				<VStack w="full" align="start">
+				<VStack w="full" align="stretch">
 					{event ? (
 						<>
 							<HStack>
@@ -129,8 +157,12 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 						</>
 					) : (
 						<>
-							<Skeleton rounded="md" h="6" w="100px" />
+							<HStack>
+								<Skeleton rounded="md" h="6" w="80px" />
+								<Skeleton rounded="md" h="6" w="80px" />
+							</HStack>
 							<Skeleton rounded="md" h="9" w="80%" />
+							<Skeleton rounded="md" h="6" w="70%" />
 							<Skeleton rounded="md" h="6" w="70%" />
 						</>
 					)}
@@ -138,7 +170,7 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 					<Spacer />
 					{event ? (
 						<>
-							<HStack w="full" align="start">
+							<HStack>
 								<Icon boxSize="6" as={IconCalendarEvent} />
 								<Text>
 									{toFormatedDate(event.startDate)}
@@ -147,20 +179,22 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 											(toFormatedDate(event.endDate) || 'Selesai')}
 								</Text>
 							</HStack>
-							<HStack w="full" align="start">
+							<HStack>
 								<Icon boxSize="6" as={IconMapPin} />
-								{event.location ? (
-									<Text children={event.location} />
-								) : (
-									<Text
-										fontStyle="italic"
-										children={'Tempat tidak ditentukan'}
-									/>
-								)}
+								<Text fontStyle={event.location ? 'inherit' : 'italic'}>
+									{event.location || 'Tempat tidak ditentukan'}
+								</Text>
 							</HStack>
+
+							{event.duration > 0 && (
+								<HStack>
+									<Icon boxSize="6" as={IconHourglass} />
+									<Text>Durasi {event.duration} Hari</Text>
+								</HStack>
+							)}
 						</>
 					) : (
-						Array(3)
+						Array(2)
 							.fill(null)
 							.map((_, i) => (
 								<Skeleton key={i} rounded="md" h="6" w="60%" />
@@ -169,49 +203,51 @@ function DetailNote({ eventId, onClose }: { eventId: number; onClose: any }) {
 				</VStack>
 			</ModalBody>
 
-			<ModalFooter as={HStack} justify="start" w="full">
-				{!!event && (
-					<>
-						{event.status == 'inProgress' && (
-							<Button
-								leftIcon={<IconChecks size="20" />}
-								colorScheme="green"
-								children="Selesaikan Sekarang"
-								isLoading={isActionRunning}
-								onClick={() => actionHandler('endnow')}
-							/>
-						)}
+			{!readOnly && (
+				<ModalFooter as={HStack} justify="start" w="full">
+					{!!event && (
+						<>
+							{event.status == 'inProgress' && (
+								<Button
+									leftIcon={<IconChecks size="20" />}
+									colorScheme="green"
+									children="Selesaikan Sekarang"
+									isLoading={isActionRunning}
+									onClick={() => actionHandler('endnow')}
+								/>
+							)}
 
-						{event.status == 'upcoming' && (
-							<Button
-								leftIcon={<IconRocket size="20" />}
-								colorScheme="green"
-								children="Mulai Sekarang"
-								isLoading={isActionRunning}
-								onClick={() => actionHandler('startnow')}
-							/>
-						)}
-					</>
-				)}
+							{event.status == 'upcoming' && (
+								<Button
+									leftIcon={<IconRocket size="20" />}
+									colorScheme="orange"
+									children="Mulai Sekarang"
+									isLoading={isActionRunning}
+									onClick={() => actionHandler('startnow')}
+								/>
+							)}
+						</>
+					)}
 
-				<Spacer />
+					<Spacer />
 
-				<Menu>
-					<MenuButton
-						as={IconButton}
-						aria-label="More"
-						icon={<IconDotsVertical size="20" />}
-					/>
-					<MenuList>
-						<MenuItem
-							icon={<IconTrash size="18" />}
-							onClick={deleteEventHandler}
-							children="Hapus"
+					<Menu>
+						<MenuButton
+							as={IconButton}
+							aria-label="More"
+							icon={<IconDotsVertical size="20" />}
 						/>
-						<MenuItem icon={<IconEdit size="18" />}>Sunting</MenuItem>
-					</MenuList>
-				</Menu>
-			</ModalFooter>
+						<MenuList>
+							<MenuItem
+								icon={<IconTrash size="18" />}
+								onClick={deleteEventHandler}
+								children="Hapus"
+							/>
+							<MenuItem icon={<IconEdit size="18" />}>Sunting</MenuItem>
+						</MenuList>
+					</Menu>
+				</ModalFooter>
+			)}
 		</>
 	);
 }

@@ -8,6 +8,7 @@ import { KeyedMutator, mutate } from 'swr';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import { getSubscribedNodesColumns } from '@/components/DataTable/commonColumn';
+import useUser from '@/hooks/useUser';
 
 interface x extends BoxProps {
 	data: Partial<UserDataPage>;
@@ -21,6 +22,7 @@ export default function UserSubscribedNodesList({
 }: x) {
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
 	const confirmDialog = useConfirmDialog();
+	const { user } = useUser();
 	const { apiResponseToast } = useApiResponseToast();
 
 	const apiURL = `/users/${data.userId}/nodes`;
@@ -34,7 +36,7 @@ export default function UserSubscribedNodesList({
 			confirmButtonColor: 'red',
 			onConfirm: () =>
 				axios.delete(deleteURL).then(({ data: dt }) => {
-					mutate((e) => e && e[0] == apiURL);
+					mutate((e: any) => e && e[0] == apiURL);
 					if (dataPageMutate) dataPageMutate();
 					apiResponseToast(dt);
 				}),
@@ -42,7 +44,7 @@ export default function UserSubscribedNodesList({
 	};
 
 	const columns = useMemo(
-		() => getSubscribedNodesColumns(handleRemoveUserSubscription),
+		() => getSubscribedNodesColumns(user.role, handleRemoveUserSubscription),
 		[]
 	);
 
@@ -52,6 +54,7 @@ export default function UserSubscribedNodesList({
 				data={nodesDataCtx || []}
 				as={nodesDataCtx == null ? Skeleton : undefined}
 			/>
+
 			<DataTable
 				mt="4"
 				apiUrl={apiURL}
@@ -63,4 +66,3 @@ export default function UserSubscribedNodesList({
 		</Box>
 	);
 }
-

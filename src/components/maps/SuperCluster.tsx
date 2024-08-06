@@ -104,13 +104,13 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 					);
 				}
 
-				return properties.isCompanyLocation ? (
+				return properties.companyId ? (
 					<CompanyMarker
 						key={'comp-' + properties.companyId}
 						position={[latitude, longitude]}
 						properties={properties}
 					/>
-				) : properties.isReport ? (
+				) : properties.reportId ? (
 					<MarkerType
 						key={'report-' + properties.reportId}
 						position={[latitude, longitude]}

@@ -20,7 +20,9 @@ export function StatWithIcon({
 	return (
 		<VStack
 			p="2"
+			justify='center'
 			rounded="md"
+			h='fit-content'
 			spacing="0"
 			sx={
 				variant == 'outline'
@@ -30,8 +32,10 @@ export function StatWithIcon({
 							borderColor: color + '.200',
 					  }
 					: {
+							border: '2px solid',
 							bg: color + '.400',
 							justify: 'center',
+							borderColor: color + '.400',
 							color: 'white',
 					  }
 			}

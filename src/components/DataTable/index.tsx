@@ -59,8 +59,6 @@ export default function DataTable({
 
 	const data = rawData?.result || [];
 
-	console.log(data)
-
 	useEffect(() => {
 		if (setDataContext) setDataContext(rawData ? data : rawData);
 	}, [data]);

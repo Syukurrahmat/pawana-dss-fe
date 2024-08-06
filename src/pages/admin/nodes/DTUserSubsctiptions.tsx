@@ -122,7 +122,7 @@ export default function UserSubsctiptionsList({
 	return (
 		<>
 			<SectionTitle IconEl={IconUsersGroup}>
-				Daftar Pengguna yang mengikuti node ini
+				Daftar pengguna yang mensubscribe
 				<Tag colorScheme="blue" ml="2">
 					{countUserSubscription || 0}
 				</Tag>

@@ -1,12 +1,10 @@
-import { Box, Card, CardBody, CardHeader, Center, Container, Flex, HStack, Heading, Image, Text, VStack, FormControl, FormLabel, FormHelperText, Input, Button, InputGroup, InputRightElement, IconButton, useToast, FormErrorMessage, InputProps } from '@chakra-ui/react'; // prettier-ignore
 import logo from '@/assets/icon.svg';
-import { useState } from 'react';
-import { HOST_URL } from '@/constants/config';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import InputPassword from '@/components/Form/inputPassword';
-
-
+import { HOST_URL } from '@/constants/config';
+import { Box, Button, Card, CardBody, CardHeader, Center, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Image, Input, Text, VStack, useToast } from '@chakra-ui/react'; // prettier-ignore
+import { useFormik } from 'formik';
+import { useState } from 'react';
+import * as Yup from 'yup';
 
 export default function LoginPage() {
 	const toast = useToast();
@@ -29,7 +27,7 @@ export default function LoginPage() {
 
 			onSubmit: (values) => {
 				setIsloading(true);
-				alert(JSON.stringify(values));
+
 				fetch(HOST_URL + '/auth/login', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -69,13 +67,13 @@ export default function LoginPage() {
 						<Center rounded="lg" boxSize="50px" bg="gray.50">
 							<Image src={logo} />
 						</Center>
-						<Heading size="2xl">Pawana</Heading>
+						<Heading size="2xl">AtmosEye</Heading>
 					</HStack>
 					<Text fontSize="lg" mt="4" maxW="500px">
-						Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ad
-						quisquam quibusdam odio labore dignissimos. Vitae expedita
-						corrupti, illum ullam quidem, nostrum excepturi ipsum
-						accusamus porro laborum ea veritatis consectetur similique!
+						Solusi pemantauan dan pendukung keputusan tentang kualitas
+						udara dan emisi gas rumah kaca. Berdayakan bisnis,
+						pemerintah, dan komunitas untuk memastikan lingkungan yang
+						lebih bersih dan sehat.
 					</Text>
 				</Box>
 				<Card w="40%" shadow="xl">

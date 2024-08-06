@@ -1,20 +1,13 @@
 import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
-import { Avatar, Box, Button, Divider, HStack, Heading, IconButton, Tag, TagLabel, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import {
-	IconCheck,
-	IconExternalLink,
-	IconPhoto,
-	IconTrash,
-	IconX,
-} from '@tabler/icons-react';
+import { Avatar, Box, Button, Divider, HStack, Heading, Spacer, Tag, TagLabel, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconCheck, IconPhoto, IconX } from '@tabler/icons-react';
 import L from 'leaflet';
 import { useRef } from 'react';
-import { CircleMarker, Marker, MarkerProps, Popup, Tooltip } from 'react-leaflet';
-import { Link } from 'react-router-dom';
+import { CircleMarker, Marker, MarkerProps, Popup, Tooltip } from 'react-leaflet';  //prettier-ignore
 import Supercluster, { ClusterProperties } from 'supercluster';
-import { TagNodeStatus, TagNodeType } from '../Tags/index.tags';
+import { TagCompanyType, TagNodeStatus } from '../Tags/index.tags';
 import TagWithIcon from '../common/TagWithIcon';
-import { getCompanyMarker, getMarkerEmojiRating, getNodesMarker, getSubscriptionMarkers as getSubscriptionMarker } from './IconMarker'; //prettier-ignore
+import { getCompanyMarker, getMarkerEmojiRating, getNodesMarker, getSubscriptionMarkers } from './IconMarker'; //prettier-ignore
 
 interface Marker<T> extends MarkerProps {
 	properties:
@@ -31,34 +24,13 @@ export const NodesMarker = ({ properties, ...rest }: Marker<NodeData>) => {
 					<Text fontSize="lg" fontWeight="600" textTransform="capitalize">
 						{properties.name}
 					</Text>
-					{properties.status !== 'active' && (
-						<TagNodeStatus value={properties.status} size="sm" />
-					)}
-
+					<TagNodeStatus value={properties.isUptodate} size="sm" />
 					{!!properties.lastDataSent && (
 						<HStack spacing="1">
 							<Text fontWeight="600">Data diperbarui pada : </Text>
 							<Text>{toFormatedDatetime(properties.lastDataSent)}</Text>
 						</HStack>
 					)}
-
-					<HStack>
-						<IconButton
-							colorScheme="red"
-							size="xs"
-							icon={<IconTrash size="14" />}
-							aria-label="Hapus Node"
-						/>
-						<Link to={'/nodes/' + properties.nodeId}>
-							<Button
-								colorScheme="blue"
-								size="xs"
-								leftIcon={<IconExternalLink size="14" />}
-								aria-label="Lihat Node"
-								children="Lihat Node"
-							/>
-						</Link>
-					</HStack>
 				</VStack>
 			</Popup>
 		</Marker>
@@ -94,7 +66,7 @@ export const GenerateNodesMarkerWithSubs: GenNodesMarkerWithSubs = (
 
 		return (
 			<Marker
-				icon={getSubscriptionMarker(
+				icon={getSubscriptionMarkers(
 					properties.isSubscribed
 						? 'subscribed'
 						: isChecked
@@ -107,11 +79,10 @@ export const GenerateNodesMarkerWithSubs: GenNodesMarkerWithSubs = (
 				<Popup className="map-popup" offset={[0, -16]}>
 					<VStack align="start" spacing="1">
 						<Heading size="sm" textTransform="capitalize">
-							{properties.name}
+							{properties.name} 
 						</Heading>
 						<HStack mb="2">
-							<TagNodeStatus value={properties.status} />
-							<TagNodeType value={properties.ownerId} />
+							<TagNodeStatus value={properties.isUptodate} />
 						</HStack>
 
 						{properties.isSubscribed ? (
@@ -158,32 +129,142 @@ type NodeDataValue = NodeData & {
 	};
 };
 
-export const CompanyMarker = ({ properties, ...rest }: Marker<CompanyData>) => (
-	<Marker icon={getCompanyMarker(properties.type)} {...rest}>
-		<Popup className="map-popup" offset={[0, -16]}>
-			<VStack align="start">
-				<Text fontSize="sm">Lokasi Usaha</Text>
-				<Heading size="sm">{properties.name}</Heading>
-			</VStack>
-		</Popup>
-	</Marker>
-);
+export const CompanyMarker = ({ properties, ...rest }: any) => {
+	const { name, type, indoorNodeValue, indoorNodes } = properties;
 
-export const ValueMarker = ({ properties, ...rest }: Marker<NodeDataValue>) => (
-	<CircleMarker
-		center={rest.position}
-		pathOptions={{ color: 'red', weight: 2.2 }}
-		radius={18}
-		{...rest}
-	>
-		<Tooltip
-			className="tooltip-display-value"
-			direction="center"
-			children={properties?.data?.value || '??'}
-			permanent
-		/>
-	</CircleMarker>
-);
+	return (
+		<Marker icon={getCompanyMarker(type)} {...rest}>
+			<Popup className="map-popup" offset={[0, -16]}>
+				<VStack align="start" spacing="1">
+					<Text fontSize="sm">Lokasi Usaha</Text>
+					<Heading size="sm">{name}</Heading>
+					{indoorNodeValue ? (
+						<>
+							<Divider />
+							<VStack>
+								{indoorNodeValue.map((e: any, i: number) => (
+									<VStack key={i} align="end" spacing="1">
+										<HStack>
+											<Text
+												fontWeight="600"
+												fontSize="md"
+												children={e.name}
+											/>
+											<Spacer />
+											<Tag children={e.data?.name} />
+											<Tag
+												colorScheme={e.data?.color || 'gray'}
+												children={e.data?.value || '??'}
+											/>
+										</HStack>
+										{!!e.data?.datetime && (
+											<Text>
+												Diperbarui pada{' '}
+												{toFormatedDatetime(e.data?.datetime)}
+											</Text>
+										)}
+									</VStack>
+								))}
+							</VStack>
+						</>
+					) : indoorNodes ? (
+						<>
+							<Divider />
+
+							<VStack>
+								{indoorNodes.map((e: any, i: number) => (
+									<VStack key={i} spacing="1">
+										<HStack>
+											<Text
+												fontWeight="600"
+												fontSize="md"
+												children={e.name}
+											/>
+											<Spacer />
+											<TagNodeStatus value={e.isUptodate} size="sm" />
+										</HStack>
+										<Text>
+											Diperbarui pada{' '}
+											{toFormatedDatetime(e.lastDataSent)}
+										</Text>
+									</VStack>
+								))}
+							</VStack>
+						</>
+					) : (
+						<TagCompanyType value={type} />
+					)}
+				</VStack>
+			</Popup>
+		</Marker>
+	);
+};
+
+function formatNumber(number: any) {
+	return typeof number !== 'number'
+		? ''
+		: number % 1
+		? number.toFixed(1)
+		: number.toString();
+}
+
+export const ValueMarker = ({ properties, ...rest }: Marker<NodeDataValue>) => {
+	const { data, name } = properties;
+
+	return (
+		<CircleMarker
+			center={rest.position}
+			pathOptions={{
+				color: `var(--chakra-colors-${data?.color || 'gray'}-500)`,
+				weight: 2.2,
+			}}
+			radius={18}
+			{...rest}
+		>
+			<Popup className="map-popup" offset={[0, -16]}>
+				<VStack spacing="1" align="end">
+					{data ? (
+						(() => {
+							const { value, datetime, name: dataName, color } = data;
+
+							return (
+								<>
+									<HStack>
+										<Text
+											fontWeight="600"
+											fontSize="md"
+											children={name}
+										/>
+										<Spacer />
+										<Tag children={dataName} />
+										<Tag
+											colorScheme={color || 'gray'}
+											children={value}
+										/>
+									</HStack>
+									<Text>
+										Diperbarui pada {toFormatedDatetime(datetime)}
+									</Text>
+								</>
+							);
+						})()
+					) : (
+						<Text>Node tidak uptodate</Text>
+					)}
+				</VStack>
+			</Popup>
+
+			<Tooltip
+				className="tooltip-display-value"
+				direction="center"
+				children={
+					<Text stroke="1px red">{formatNumber(data?.value) || '??'}</Text>
+				}
+				permanent
+			/>
+		</CircleMarker>
+	);
+};
 
 export const MarkerRating = ({ properties, ...rest }: Marker<ReportData>) => (
 	<Marker icon={getMarkerEmojiRating(properties.rating)} {...rest}>

@@ -1,5 +1,9 @@
 import MyLineChart from '@/components/Chart/MyLineChart';
-import { Box, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { MAX_CH4, MAX_CO2, TRESHOLD_CH4, TRESHOLD_CO2 } from '@/constants/data';
+import { getCH4Properties, getCO2Properties } from '@/utils/common.utils';
+import { Box, HStack, Icon, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { IconHistory } from '@tabler/icons-react';
+import moment from 'moment';
 import GaugeChart from 'react-gauge-chart';
 
 interface SingleNodeISPU {
@@ -12,15 +16,15 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 		{
 			symbol: 'CH4',
 			name: 'Metana',
-			threshold: [0.3, 0.5, 0.2],
-			max: 10000,
+			threshold: TRESHOLD_CH4,
+			max: MAX_CH4,
 			data: CH4data,
 		},
 		{
 			symbol: 'CO2',
 			name: 'Karbondioksida',
-			max: 2000,
-			threshold: [0.3, 0.5, 0.2],
+			max: MAX_CO2,
+			threshold: TRESHOLD_CO2,
 			data: CO2data,
 		},
 	];
@@ -41,6 +45,10 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 				{grkEmissionList.map(
 					({ symbol, name, threshold, data, max }, i) => {
 						const { value, category } = data.latestData.value;
+						const { colorScheme } =
+							symbol == 'CO2'
+								? getCO2Properties(category)
+								: getCH4Properties(category);
 
 						return (
 							<VStack spacing="1" key={i}>
@@ -55,7 +63,7 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 									style={{ width: '125px' }}
 									arcsLength={threshold}
 									colors={['#5BE12C', '#F5CD19', '#EA4228']}
-									percent={value / max}
+									percent={value > max ? 1 : value / max}
 									arcPadding={0.02}
 									hideText={true}
 								/>
@@ -67,8 +75,9 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								<Tag
 									w="full"
 									fontSize="md"
+									py='1'
 									justifyContent="center"
-									colorScheme="green"
+									colorScheme={colorScheme}
 									children={category}
 								/>
 							</VStack>
@@ -87,12 +96,12 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								Tren Gas Metana (CH4)
 							</Text>
 							<MyLineChart
-								data={CH4data.tren
-									.map(({ datetime, value }) => ({
-										datetime,
-										value : value.value,
-									}))
-									.reverse()}
+								withoutLegend
+								data={CH4data.tren}
+								dataKeyTypeAndFunc={{
+									envType: 'outdoor',
+									func: (e) => e.value.value,
+								}}
 							/>
 						</Box>
 						<Box mt="8" h="110px" w="full">
@@ -100,12 +109,12 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								Tren Karbondioksida (CO2)
 							</Text>
 							<MyLineChart
-								data={CO2data.tren
-									.map(({ datetime, value }) => ({
-										datetime,
-										value : value.value,
-									}))
-									.reverse()}
+								withoutLegend
+								data={CO2data.tren}
+								dataKeyTypeAndFunc={{
+									envType: 'outdoor',
+									func: (e) => e.value.value,
+								}}
 							/>
 						</Box>
 					</TabPanel>
@@ -113,13 +122,13 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 			</Tabs>
 
 			<Spacer />
-			{/* <HStack color="gray.600">
-				<IconHistory size="18" />
-				<Text fontSize="sm">
-					Data Diperbarui Pada :{' '}
-					{toFormatedDatetime(CO2data.datetime)}
+			<HStack justify="end" w="full">
+				<Icon as={IconHistory} boxSize="18px" />
+				<Text>
+					Data diperbarui pada{' '}
+					{moment(CH4data.latestData.datetime).format('HH:mm DD MMM YYYY')}
 				</Text>
-			</HStack> */}
+			</HStack>
 		</>
 	);
 }

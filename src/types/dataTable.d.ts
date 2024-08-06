@@ -19,6 +19,23 @@ declare type CompanyData = {
 	address: string;
 	type: string;
 	createdAt: string;
+	indoorNodeValue?: {
+		name: string,
+		data: {
+			name: string,
+			datetime: string,
+			value: number
+		}
+	}[]
+	indoorNodes?: {
+		isUptodate: boolean;
+		nodeId: number;
+		companyId: number;
+		name: string;
+		status: string;
+		lastDataSent: string;
+		createdAt: string;
+	}[]
 	manager: {
 		userId: number;
 		name: string;
@@ -27,15 +44,21 @@ declare type CompanyData = {
 
 declare type NodeData = {
 	nodeId: number;
-	companyId?: number
+	companyId: number | null
 	name: string;
+	address : string;
 	ownerId: number | undefined,
 	coordinate: number[]
-	status: string;
+	isUptodate: boolean;
 	lastDataSent: string | undefined;
 	createdAt: string;
 	isCompanyLocation?: boolean
-	isSubscribed?: boolean
+	isSubscribed?: boolean,
+	owner?: {
+		name: string,
+		companyId: number,
+		type: string,
+	}
 }
 
 declare type PaginationDataRes = {
@@ -74,13 +97,13 @@ declare type DTSubscribedNodes = {
 	nodeId: number,
 	name: string,
 	coordinate: number[]
-	status: string,
+	isUptodate: boolean,
 	lastDataSent: string,
 	joinedAt: string
 	subscriptionId: number
 }
 
-// "result": [
+// result": [
 //     {
 //       "coordinate": [
 //         -7.51510258,
@@ -98,7 +121,7 @@ declare type DTPrivateNodes = {
 	nodeId: number,
 	name: string,
 	coordinate: number[]
-	status: string,
+	isUptodate: boolean,
 	lastDataSent: string,
 	createdAt: string
 }
@@ -175,6 +198,7 @@ declare type DTEventLog = {
 	startDate: string;
 	status: string;
 	endDate: string;
+	duration: number
 }
 
 declare type DetailEventLog = {
@@ -184,6 +208,7 @@ declare type DetailEventLog = {
 	status: string;
 	type: string;
 	startDate: string;
+	duration: number;
 	endDate: string;
 	description: string;
 	location: string;

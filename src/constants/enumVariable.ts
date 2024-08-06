@@ -92,9 +92,10 @@ export const nodeTypeAttr: attributes = {
     public: { icon: IconWorld, color: 'blue', name: 'Publik', note: 'Node dapat diikuti semua pengguna' }
 }
 
+
 export const nodeStatusAttr: (attributes) = {
     active: { icon: IconToggleRight, color: 'green', name: 'Aktif', note: 'Node berjalan dengan baik' },
-    nonactive: { icon: IconToggleLeft, color: 'red', name: 'Nonaktif', note: 'Node tidak dapat menerima data' },
+    nonactive: { icon: IconToggleLeft, color: 'red', name: 'Nonaktif', note: 'Node tidak menerima data' },
     idle: { icon: IconZzz, color: 'orange', name: 'Diam', note: 'Lebih dari 6 jam node tidak menerima data' },
     neversentdata: { icon: IconZzz, color: 'orange', name: 'Menunggu', note: 'Belum pernah mengirimkan data' }
 }

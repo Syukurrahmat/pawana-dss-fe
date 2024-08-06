@@ -42,6 +42,7 @@ declare type NodeDataPage = {
     nodeId: number;
     companyId: number;
     name: string;
+    isUptodate : boolean;
     ownerId: number;
     description: string;
     address: string;
@@ -55,6 +56,7 @@ declare type NodeDataPage = {
     environment: 'indoor' | 'outdoor'
     countUserSubscription: number;
     countCompanySubscribtion: number;
+    dataLogs: DTDatalog[]
     owner: {
         userId: number
         name: string

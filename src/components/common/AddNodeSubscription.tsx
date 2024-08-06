@@ -1,74 +1,52 @@
-import { Box, Tag, TagCloseButton, TagLabel } from '@chakra-ui/react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Skeleton, Button, useDisclosure, BoxProps } from '@chakra-ui/react'; //prettier-ignore
-import { HStack, Text } from '@chakra-ui/react';
-import MyMap from '@/components/Maps';
-import useSWR, { mutate } from 'swr';
-import { apiFetcher } from '@/utils/fetcher';
-import { GenerateNodesMarkerWithSubs } from '@/components/Maps/Marker';
-import React, { useState } from 'react';
 import InputSearch from '@/components/Form/inputSearch';
-import axios from 'axios';
+import MyMap from '@/components/Maps';
+import { GenerateNodesMarkerWithSubs } from '@/components/Maps/Marker';
 import { API_URL } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
+import { Box, BoxProps, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Skeleton, Tag, TagCloseButton, TagLabel, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import axios from 'axios';
+import { useState } from 'react';
+import useSWR, { mutate } from 'swr';
 
-interface AddNodeUserSubs extends BoxProps {
-	countSubscribedNode: number;
-	userId: number;
-}
-
-interface AddNodeCompanySubs extends BoxProps {
-	countSubscribedNode: number;
-	companyData: DataWithCoordinate;
-}
-
-interface AddNodeSubs extends BoxProps {
-	countSubscribedNode: number;
-	apiURL: string;
-	postDataApiURL: string;
-	companyData?: DataWithCoordinate;
+interface NodeSubs extends BoxProps {
+	subsInfo:
+		| {
+				type: 'user';
+				userId: number;
+		  }
+		| {
+				type: 'company';
+				companyData: DataWithCoordinate;
+		  };
 }
 
 type SelectedNode = { nodeId: number; name: string };
 
-export function AddNodeUserSubscription(props: AddNodeUserSubs) {
-	const { userId, ...rest } = props;
-
-	return (
-		<AddNodeSubscription
-			apiURL={`/nodes/available?forUserSubs=${userId}`}
-			postDataApiURL={`${API_URL}/users/${userId}/nodes`}
-			{...rest}
-		/>
-	);
-}
-
-export const AddNodeCompanySubscription = React.forwardRef(
-	(props: AddNodeCompanySubs) => {
-		const { companyData, ...rest } = props;
-
-		return (
-			<AddNodeSubscription
-				companyData={companyData}
-				apiURL={`/nodes/available?forCompanySubs=${companyData.companyId}`}
-				postDataApiURL={`${API_URL}/companies/${companyData.companyId}/nodes`}
-				{...rest}
-			/>
-		);
-	}
-);
-
-function AddNodeSubscription({
-	countSubscribedNode,
-	apiURL,
-	postDataApiURL,
-	companyData,
-	...rest
-}: AddNodeSubs) {
+export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 	const { toast, apiResponseToast } = useApiResponseToast();
-
 	const [selectedNodes, setSelectedNodes] = useState<SelectedNode[]>([]);
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	let apiURL = '';
+	let postDataApiURL = '';
+	let remainingLimitURL = '';
+
+	if (subsInfo.type == 'user') {
+		apiURL = `/nodes/available?forUserSubs=${subsInfo.userId}`;
+		postDataApiURL = `${API_URL}/users/${subsInfo.userId}/nodes`;
+		remainingLimitURL = `/users/${subsInfo.userId}/remaining-subs-limit`;
+	} else {
+		apiURL = `/nodes/available?forCompanySubs=${subsInfo.companyData.companyId}`;
+		postDataApiURL = `${API_URL}/companies/${subsInfo.companyData.companyId}/nodes`;
+		remainingLimitURL = `/companies/${subsInfo.companyData.companyId}/remaining-subs-limit`;
+	}
+
+	const { data: limit, mutate: mutateLimit } = useSWR<number>(
+		remainingLimitURL,
+		pageDataFetcher
+	);
 
 	const limitationToast = () =>
 		toast({
@@ -78,14 +56,8 @@ function AddNodeSubscription({
 			status: 'warning',
 		});
 
-	const buttonOnClickHandle = () => {
-		if (countSubscribedNode >= 5) return limitationToast();
-		console.log(postDataApiURL.replace(API_URL, ''));
-		onOpen();
-	};
-
-	const onSelectChange = (s: SelectedNode) => {
-		const limit = 5 - countSubscribedNode;
+	const nodeSelectedHandler = (s: SelectedNode) => {
+		if (limit === undefined) return;
 		if (selectedNodes.length >= limit) return limitationToast();
 
 		setSelectedNodes((prev) =>
@@ -95,7 +67,7 @@ function AddNodeSubscription({
 		);
 	};
 
-	const onPreSubmitHandler = async () => {
+	const submitHandler = async () => {
 		if (!selectedNodes.length) {
 			return toast({
 				title: 'Opss',
@@ -107,10 +79,13 @@ function AddNodeSubscription({
 		setIsSubmiting(true);
 		const nodeIds = selectedNodes.map((e) => e.nodeId);
 		const response = await axios.post(postDataApiURL, { nodeIds });
-
+		mutateLimit((e) => (e || 0) + selectedNodes.length);
 		apiResponseToast(response.data, {
-			onSuccess: () =>
-				mutate((e) => e && e[0] == postDataApiURL.replace(API_URL, '')),
+			onSuccess() {
+				mutate(
+					(e: any) => e && e[0] == postDataApiURL.replace(API_URL, '')
+				);
+			},
 		});
 		setIsSubmiting(false);
 		onClose();
@@ -118,7 +93,13 @@ function AddNodeSubscription({
 
 	return (
 		<>
-			<Box onClick={buttonOnClickHandle} {...rest} />
+			<Box
+				onClick={() => {
+					onOpen();
+					mutateLimit();
+				}}
+				children={rest.children}
+			/>
 
 			<Modal
 				closeOnEsc={false}
@@ -133,49 +114,76 @@ function AddNodeSubscription({
 					<ModalHeader>Tambahkan node</ModalHeader>
 					{!isSubmiting && <ModalCloseButton />}
 					<ModalBody py="0">
-						<HStack mb="3" alignItems="start">
-							<HStack
-								wrap="wrap"
-								minH="35px"
-								py="1"
-								px="2"
-								flexGrow="1"
-								rounded="md"
-								border="1px solid"
-								borderColor="gray.200"
-							>
-								{selectedNodes.length ? (
-									selectedNodes.map(({ nodeId, name }) => (
-										<Tag key={nodeId} colorScheme="blue">
-											<TagLabel children={name} />
-											<TagCloseButton
-												onClick={() =>
-													setSelectedNodes((prev) =>
-														prev.filter(
-															(e) => e.nodeId !== nodeId
-														)
-													)
-												}
+						{limit !== undefined ? (
+							<>
+								{limit ? (
+									<>
+										<HStack mb="3" alignItems="start">
+											<HStack
+												wrap="wrap"
+												minH="35px"
+												py="1"
+												px="2"
+												flexGrow="1"
+												rounded="md"
+												border="1px solid"
+												borderColor="gray.200"
+											>
+												{selectedNodes.length ? (
+													selectedNodes.map(({ nodeId, name }) => (
+														<Tag key={nodeId} colorScheme="blue">
+															<TagLabel children={name} />
+															<TagCloseButton
+																onClick={() =>
+																	setSelectedNodes((prev) =>
+																		prev.filter(
+																			(e) =>
+																				e.nodeId !== nodeId
+																		)
+																	)
+																}
+															/>
+														</Tag>
+													))
+												) : (
+													<Text color="gray.500">
+														Belum ada yang dipilih
+													</Text>
+												)}
+											</HStack>
+											<InputSearch
+												minW="230px"
+												_onSubmit={null}
+												placeholder="Cari node"
 											/>
-										</Tag>
-									))
-								) : (
-									<Text color="gray.500">Belum ada yang dipilih</Text>
-								)}
-							</HStack>
-							<InputSearch
-								minW="230px"
-								_onSubmit={null}
-								placeholder="Cari node"
-							/>
-						</HStack>
+										</HStack>
 
-						<FindInMapElement
-							selectedNodes={selectedNodes}
-							onSelectChange={onSelectChange}
-							apiURL={apiURL}
-							companyData={companyData}
-						/>
+										<FindInMapElement
+											selectedNodes={selectedNodes}
+											onSelectChange={nodeSelectedHandler}
+											apiURL={apiURL}
+											companyData={
+												subsInfo.type == 'company'
+													? subsInfo.companyData
+													: undefined
+											}
+										/>
+									</>
+								) : (
+									<VStack>
+										<Text fontWeight="600" fontSize="lg">
+											Node yang diikuti dibatasi maksimal 5 node,
+										</Text>
+										<Text>
+											Hapus node yang lain terlebih dahulu untuk
+											menambahkan
+										</Text>
+									</VStack>
+								)}
+							</>
+						) : (
+							<Skeleton h="300px" rounded="md"></Skeleton>
+						)}
 					</ModalBody>
 					<ModalFooter>
 						<Button
@@ -185,12 +193,14 @@ function AddNodeSubscription({
 							onClick={onClose}
 							children="Batal"
 						/>
-						<Button
-							isLoading={isSubmiting}
-							colorScheme="blue"
-							onClick={onPreSubmitHandler}
-							children="Tambahkan"
-						/>
+						{!!limit && (
+							<Button
+								isLoading={isSubmiting}
+								colorScheme="blue"
+								onClick={submitHandler}
+								children="Tambahkan"
+							/>
+						)}
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
@@ -200,7 +210,7 @@ function AddNodeSubscription({
 
 interface FindInMapElement {
 	selectedNodes: any;
-	onSelectChange: any;
+	onSelectChange: (x: SelectedNode) => any;
 	companyData?: DataWithCoordinate;
 	apiURL: string;
 }

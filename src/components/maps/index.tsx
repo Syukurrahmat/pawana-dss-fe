@@ -17,7 +17,7 @@ interface IMyMap extends BoxProps {
 		onChange: (x: LatLng) => any;
 	};
 	circleBoundaryRadius?: number;
-	mapRef?: any
+	mapRef?: any;
 }
 
 export default function MyMap(props: IMyMap) {
@@ -25,11 +25,7 @@ export default function MyMap(props: IMyMap) {
 
 	const [showMarkerPicker, setShowMarkerPicker] = useState(false);
 
-	companiesData = companiesData
-		? companiesData.map((e) => ({ ...e, isCompanyLocation: true }))
-		: [];
-
-	data = isEditing ? [] : [...data, ...companiesData];
+	data = isEditing ? [] : [...data, ...(companiesData || [])];
 
 	const MapObject = () => {
 		const map = useMapEvents({
@@ -44,17 +40,10 @@ export default function MyMap(props: IMyMap) {
 			},
 		});
 
-		if(mapRef) mapRef.current = map
+		if (mapRef) mapRef.current = map;
 
 		useEffect(() => {
-			console.log(marker.name);
-
-			if (
-				['ValueMarker', 'NodesMarkerWithSubs'].includes(marker.name) ||
-				isEditing
-			) {
-				return;
-			}
+			if ( ['ValueMarker', 'NodesMarkerWithSubs'].includes(marker.name) || isEditing) return; //prettier-ignore
 
 			data.length
 				? map.flyToBounds(getBonds(data))
@@ -63,16 +52,14 @@ export default function MyMap(props: IMyMap) {
 
 		useEffect(() => {
 			if (isEditing) {
-				if (!showMarkerPicker) {
-					map.flyTo(isEditing.coordinate as LatLngExpression, 16);
-					map.once('moveend', () => {
-						setShowMarkerPicker(true);
-					});
-				}
+				map.flyTo(isEditing.coordinate as LatLngExpression, 16);
+				map.once('moveend', () => {
+					setShowMarkerPicker(true);
+				});
 			} else {
 				setShowMarkerPicker(false);
 			}
-		}, [isEditing]);
+		}, [isEditing, isEditing?.coordinate]);
 
 		return null;
 	};
@@ -102,13 +89,12 @@ export default function MyMap(props: IMyMap) {
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
 				<MapObject />
-				<MySuperCluster data={data} MarkerType={marker} />
 
-				 
+				<MySuperCluster data={data} MarkerType={marker} />
 
 				{circleBoundaryRadius &&
 					circleBoundaryRadius > 0 &&
-					companiesData.length && (
+					companiesData?.length && (
 						<Circle
 							center={companiesData[0].coordinate as LatLngTuple}
 							radius={circleBoundaryRadius}

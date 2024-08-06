@@ -1,3 +1,4 @@
+import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import MyMap from '@/components/Maps';
 import StarRating from '@/components/Rating';
 import { API_URL, CENTER_OF_MAP } from '@/constants/config';
@@ -10,12 +11,11 @@ import { useFormik } from 'formik';
 import { mutate } from 'swr';
 import * as Yup from 'yup';
 import { PhotosPicker } from '../../../components/common/PhotosPicker';
-import RequiredIndicator from '@/components/Form/RequiredIndicator';
 
 export default function CreateReport() {
 	const { user } = useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { toast, apiResponseToast } = useApiResponseToast();
+	const { apiResponseToast } = useApiResponseToast();
 
 	const {
 		handleChange,
@@ -166,7 +166,7 @@ export default function CreateReport() {
 										}
 										outlineColor="#E53E3E"
 										isEditing={{
-											coordinate: CENTER_OF_MAP,
+											coordinate: values.coordinate.filter(e=>e).length ? values.coordinate : CENTER_OF_MAP,
 											onChange: (x) =>
 												setFieldValue('coordinate', [x.lat, x.lng]),
 										}}
