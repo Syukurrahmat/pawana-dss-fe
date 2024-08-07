@@ -1,36 +1,21 @@
 import LoadingComponent from '@/components/Loading/LoadingComponent';
-import useUser from '@/hooks/useUser';
+import useUser, { User } from '@/hooks/useUser';
 import { pageDataFetcher } from '@/utils/fetcher';
 import { Flex, VStack } from '@chakra-ui/react'; // prettier-ignore
 import useSWR from 'swr';
 import { CurrentEventsCard } from './CurrentEvents';
-import DashboardInfo from './DashboardInfo';
+import DashboardInfo from './DashInfoWithMaps';
 import { NearReport } from './NearReport';
 import NodesGroupInfo from './NodesGroupInfo';
 import { DontHaveCompany, SelectUserOrCompanyView } from './informationCard';
 
 export default function Dashboard() {
 	const { user, roleIs, roleIsNot } = useUser();
-	const { view } = user;
-	const roleView = view?.user?.role;
-
-	const type =
-		roleView == 'regular'
-			? 'user'
-			: roleView == 'manager'
-			? 'company'
-			: undefined;
-
-	const id =
-		type === 'company'
-			? view?.company?.companyId
-			: type == 'user'
-			? view?.user?.userId
-			: undefined;
+	const { id, type } = getDahsboardView(user);
 
 	if (type && !id) return <DontHaveCompany role={user.role} />;
 	if (!type && roleIs(['admin', 'gov'])) return <SelectUserOrCompanyView />;
-
+	
 	const apiUrl =
 		id && type
 			? `${(type == 'company' ? '/companies/' : '/users/') + id}/dashboard`
@@ -61,4 +46,25 @@ export default function Dashboard() {
 			)}
 		</VStack>
 	);
+}
+
+function getDahsboardView(user: User) {
+	const { view } = user;
+	const roleView = view?.user?.role;
+
+	const type =
+		roleView == 'regular'
+			? 'user'
+			: roleView == 'manager'
+			? 'company'
+			: undefined;
+
+	const id =
+		type === 'company'
+			? view?.company?.companyId
+			: type == 'user'
+			? view?.user?.userId
+			: undefined;
+
+	return { type, id };
 }

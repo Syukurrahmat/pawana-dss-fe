@@ -1,5 +1,5 @@
 import MyMap from '@/components/Maps';
-import { NodesMarker, ValueMarker } from '@/components/Maps/Marker';
+import MyMarker from '@/components/Maps/marker';
 import { TagCompanyType } from '@/components/Tags/index.tags';
 import { ChangeActiveDashboard } from '@/components/common/ChangeActiveDashButton';
 import CompanyIcon from '@/components/common/CompanyIcon';
@@ -120,7 +120,11 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 					w="60%"
 					h="275px"
 					companiesData={companyId ? [companyData] : []}
-					marker={selectedParam === null ? NodesMarker : ValueMarker}
+					marker={
+						selectedParam === null
+							? MyMarker.DetailNodesMarker
+							: MyMarker.ValueMarker
+					}
 					data={displayedData || []}
 				/>
 

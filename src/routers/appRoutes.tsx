@@ -5,20 +5,20 @@ import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
 
 const ReportsPage = lazy(() => import('@/pages/app/reports'));
-const DetailUser = lazy(() => import('@/pages/admin/users/DetailUser'));
+const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
 const Dashboard = lazy(() => import('@/pages/app/dashboards/index'));
-const DetailNode = lazy(() => import('@/pages/admin/nodes/DetailNode'));
-const CompaniesManagement = lazy(()=> import ('@/pages/admin/companies/Companies')) // prettier-ignore
-const CreateCompany = lazy(()=> import ('@/pages/admin/companies/CreateCompany')) // prettier-ignore
-const DetailCompany = lazy(()=> import ('@/pages/admin/companies/DetailCompany')) // prettier-ignore
-const CreateNode = lazy(() => import('@/pages/admin/nodes/CreateNode'));
-const NodeManagement = lazy(() => import('@/pages/admin/nodes/Nodes'));
-const CreateUser = lazy(() => import('@/pages/admin/users/CreateUser'));
-const UserManagement = lazy(() => import('@/pages/admin/users/Users'));
+const DetailNode = lazy(() => import('@/pages/admin/Nodes/DetailNode'));
+const CompaniesManagement = lazy(()=> import ('@/pages/admin/Companies/Companies')) // prettier-ignore
+const CreateCompany = lazy(()=> import ('@/pages/admin/Companies/CreateCompany')) // prettier-ignore
+const DetailCompany = lazy(()=> import ('@/pages/admin/Companies/DetailCompany')) // prettier-ignore
+const CreateNode = lazy(() => import('@/pages/admin/Nodes/CreateNode'));
+const NodeManagement = lazy(() => import('@/pages/admin/Nodes/Nodes'));
+const CreateUser = lazy(() => import('@/pages/admin/Users/CreateUser'));
+const UserManagement = lazy(() => import('@/pages/admin/Users/Users'));
 const Notes = lazy(() => import('@/pages/app/eventLogs'));
-const MyCompanies = lazy(() => import('@/pages/resource/MyCompanies'));
-const MySubscribedNodes = lazy(() => import('@/pages/resource/MySubscribedNodes')); // prettier-ignore
-const MyPrivateNode = lazy(() => import('@/pages/resource/MyPrivateNode'));
+const MyCompanies = lazy(() => import('@/pages/app/resources/MyCompanies'));
+const MySubscribedNodes = lazy(() => import('@/pages/app/resources/MySubscribedNodes')); // prettier-ignore
+const MyPrivateNode = lazy(() => import('@/pages/app/resources/MyPrivateNode'));
 const Summary = lazy(() => import('@/pages/app/summary'));
 const Data = lazy(() => import('@/pages/app/data'));
 
@@ -169,7 +169,7 @@ const appRouter = (role: string) => {
 			path: '/',
 			element: <App navbarList={navlist} />,
 			children: routerList,
-			errorElement: <Page404 />,
+			// errorElement: <Page404 />,
 		},
 	]);
 };

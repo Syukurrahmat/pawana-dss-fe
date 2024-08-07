@@ -1,10 +1,10 @@
-import { LatLng, LatLngExpression, LatLngTuple, latLngBounds } from 'leaflet';
-import { Circle, MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MySuperCluster from './SuperCluster';
-import { Box, BoxProps } from '@chakra-ui/react';
-import { NodesMarker } from './Marker';
-import { useEffect, useState } from 'react';
 import { CENTER_OF_MAP } from '@/constants/config';
+import { Box, BoxProps } from '@chakra-ui/react';
+import { LatLng, LatLngExpression, LatLngTuple, latLngBounds } from 'leaflet';
+import { useEffect, useState } from 'react';
+import { Circle, MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import MyMarker from './marker';
+import MySuperCluster from './SuperCluster';
 
 interface IMyMap extends BoxProps {
 	data: DataWithCoordinate[] | NodeData[] | ReportData[];
@@ -21,7 +21,17 @@ interface IMyMap extends BoxProps {
 }
 
 export default function MyMap(props: IMyMap) {
-	let { data, scrollWheelZoom = true, centerAuto = true, marker = NodesMarker, mapRef, companiesData, isEditing, circleBoundaryRadius,...rest} = props; //prettier-ignore
+	let {
+		data,
+		scrollWheelZoom = true,
+		centerAuto = true,
+		marker = MyMarker.DetailNodesMarker,
+		mapRef,
+		companiesData,
+		isEditing,
+		circleBoundaryRadius,
+		...rest
+	} = props;
 
 	const [showMarkerPicker, setShowMarkerPicker] = useState(false);
 
@@ -88,8 +98,8 @@ export default function MyMap(props: IMyMap) {
 					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
-				<MapObject />
 
+				<MapObject />
 				<MySuperCluster data={data} MarkerType={marker} />
 
 				{circleBoundaryRadius &&

@@ -1,9 +1,9 @@
 import MyMap from '@/components/Maps';
-import { MarkerRating } from '@/components/Maps/Marker';
 import { Alert, Card, CardBody, Center, Flex, Grid, HStack, Icon, Select, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
 import { RatingIconList } from '../reports/ReportCard';
+import MyMarker from '@/components/Maps/marker';
 
 interface ReportSummaryCard {
 	data: SummaryReport;
@@ -117,7 +117,7 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 						</VStack>
 						<MyMap
 							flex="2 1 0"
-							marker={MarkerRating}
+							marker={MyMarker.RatingMarker}
 							scrollWheelZoom={false}
 							companiesData={[company]}
 							data={reports.filter((e) =>

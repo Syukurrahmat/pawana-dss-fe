@@ -28,7 +28,7 @@ export default function DetailNode() {
 
 	if (!data) return <LoadingComponent />;
 
-	const isPrivateNodePage = Boolean(data.ownerId);
+	const isPrivateNodePage = Boolean(data.owner);
 
 	const statusAtt = nodeStatusAttr[data.isUptodate ? 'active' : 'nonactive'];
 	const ownshipAtt = nodeTypeAttr[data.companyId ? 'private' : 'public'];
@@ -153,8 +153,9 @@ export default function DetailNode() {
 						</HStack>
 					</Stat>
 				</Flex>
-
+				
 				{!isPrivateNodePage && <NodePosisionInMap data={data} mutate={mutate} />}
+				
 				{!data.companyId && roleIs('admin') && (
 					<>
 						<CompanySubsctiptionsList data={data} mutate={mutate} />

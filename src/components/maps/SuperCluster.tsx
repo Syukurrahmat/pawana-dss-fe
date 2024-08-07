@@ -2,10 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Marker, useMap } from 'react-leaflet';
 import Supercluster, { ClusterProperties } from 'supercluster';
 import useSupercluster from 'use-supercluster';
-import { fetchIcon } from './IconMarker';
-
+import { fetchIcon } from './marker/IconMarker';
 import './maps.css';
-import { CompanyMarker } from './Marker';
+import MyMarker from './marker';
 
 interface ISuperCluster {
 	data: DataWithCoordinate[];
@@ -105,7 +104,7 @@ export default function MySuperCluster({ data, MarkerType }: ISuperCluster) {
 				}
 
 				return properties.companyId ? (
-					<CompanyMarker
+					<MyMarker.CompanyMarker
 						key={'comp-' + properties.companyId}
 						position={[latitude, longitude]}
 						properties={properties}

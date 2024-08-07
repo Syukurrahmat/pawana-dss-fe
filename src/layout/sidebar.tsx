@@ -62,6 +62,7 @@ export default function Sidebar({
 								<Button
 									w="full"
 									p="3"
+									color='gray.900'
 									isActive={isActive}
 									leftIcon={<e.Icon />}
 									justifyContent="left"

@@ -1,11 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 
 type apiResponseToastHandle = {
-    onSuccess?: () => any | null;
-    onFailure?: () => any | null;
+    onSuccess?: () => any;
+    onFailure?: () => any;
 }
-
-// handleApiResponseToast
 
 export function useApiResponseToast() {
     const toast = useToast()

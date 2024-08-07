@@ -1,5 +1,4 @@
 import MyMap from '@/components/Maps';
-import { MarkerRating } from '@/components/Maps/Marker';
 import { API_URL } from '@/constants/config';
 import useUser from '@/hooks/useUser';
 import { buildQueriesURL, fetcher, pageDataFetcher } from '@/utils/fetcher'; //prettier-ignore
@@ -11,6 +10,7 @@ import useSWR from 'swr';
 import CreateReport from './CreateReport';
 import FilterByDistance, { distanceList } from './FilterByDistance';
 import ReportCard from './ReportCard';
+import MyMarker from '@/components/Maps/marker';
 
 export default function ReportsPage() {
 	const currentDate = moment().format('YYYY-MM-DD');
@@ -158,7 +158,7 @@ export default function ReportsPage() {
 			<MyMap
 				flex="5 1 0"
 				h="auto"
-				marker={MarkerRating}
+				marker={MyMarker.RatingMarker}
 				companiesData={
 					showCompanyIsOpen && allCompaniesData
 						? allCompaniesData

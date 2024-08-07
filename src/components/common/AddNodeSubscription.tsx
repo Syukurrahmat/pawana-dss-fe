@@ -1,6 +1,5 @@
 import InputSearch from '@/components/Form/inputSearch';
 import MyMap from '@/components/Maps';
-import { GenerateNodesMarkerWithSubs } from '@/components/Maps/Marker';
 import { API_URL } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
@@ -8,6 +7,7 @@ import { Box, BoxProps, Button, HStack, Modal, ModalBody, ModalCloseButton, Moda
 import axios from 'axios';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
+import { generateNodesMarkerForNodeSubs } from '../Maps/marker/MarkerForNodeSubs';
 
 interface NodeSubs extends BoxProps {
 	subsInfo:
@@ -223,7 +223,7 @@ function FindInMapElement(props: FindInMapElement) {
 		<>
 			<MyMap
 				companiesData={companyData ? [companyData] : []}
-				marker={GenerateNodesMarkerWithSubs(selectedNodes, onSelectChange)}
+				marker={generateNodesMarkerForNodeSubs(selectedNodes, onSelectChange)}
 				data={data ? data.result : []}
 				as={data ? undefined : Skeleton}
 				centerAuto={false}
