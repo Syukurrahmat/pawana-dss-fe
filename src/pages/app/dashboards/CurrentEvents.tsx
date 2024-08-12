@@ -1,7 +1,7 @@
 import { Box, Card, CardBody, CardHeader, CardProps, Center, HStack, Heading, Icon, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconNotebook, IconNotebookOff } from '@tabler/icons-react';
 
-import { CardEventLog } from '../eventLogs/CardEventLog';
+import { CardEventLog } from '../EventLogs/CardEventLog';
 
 interface CurrentEventsCard extends CardProps {
 	data: EventLogs[];

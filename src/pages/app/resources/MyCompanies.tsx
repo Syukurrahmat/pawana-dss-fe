@@ -1,7 +1,7 @@
 import { Box, Button, Container, HStack, Heading, Text } from '@chakra-ui/react'; //prettier-ignore
 import useUser from '@/hooks/useUser';
 import { IconCirclePlus } from '@tabler/icons-react';
-import ManagedCompaniesList from '@/pages/admin/users/DTManagedCompanies';
+import ManagedCompaniesList from '@/pages/admin/Users/DTManagedCompanies';
 import { Link } from 'react-router-dom';
 
 export default function MyCompanies() {

@@ -10,7 +10,7 @@ import { userRoleAttr } from '@/constants/enumVariable';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
 import { useHashBasedTabsIndex } from '../../../hooks/useHashBasedTabsIndex';
 import useSWR from 'swr';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
 import { TagUserRole } from '@/components/Tags/index.tags';
 import LoadingComponent from '@/components/Loading/LoadingComponent';
@@ -76,7 +76,7 @@ export default function UserManagement() {
 	const hashTabs = ['all', 'regular', 'manager', 'admin', 'gov', 'unverified'];
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(hashTabs);
 	const { roleIs } = useUser();
-	const { data } = useSWR<UsersSummary>('/users/summary', pageDataFetcher);
+	const { data } = useSWR<UsersSummary>('/users/overview', fetcher);
 
 	if (!data) return <LoadingComponent />;
 

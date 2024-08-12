@@ -1,6 +1,6 @@
 import InputPassword from '@/components/Form/inputPassword';
 import { API_URL } from '@/constants/config';
-import { trimAllValues } from '@/utils/common.utils';
+import { trimAllValues, usemyToasts } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { IconCircleCheck, IconExclamationCircle } from '@tabler/icons-react'; //prettier-ignore
@@ -8,8 +8,8 @@ import { useFormik } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
 
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
-import axios from 'axios';
+import { myAxios } from '@/utils/fetcher';
+import axios, { AxiosError } from 'axios';
 import PasswordChecklist from 'react-password-checklist';
 
 interface IEUModal extends ButtonProps {
@@ -18,7 +18,7 @@ interface IEUModal extends ButtonProps {
 
 export default function EditPasswordButton({ data, ...rest }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { apiResponseToast, toast } = useApiResponseToast();
+	const toast = usemyToasts();
 	const [passwordIsValid, setPasswordIsValid] = useState(false);
 	const { userId } = data;
 
@@ -30,6 +30,7 @@ export default function EditPasswordButton({ data, ...rest }: IEUModal) {
 		errors,
 		isSubmitting,
 		setSubmitting,
+		setFieldError,
 		handleSubmit,
 		resetForm,
 	} = useFormik({
@@ -45,26 +46,28 @@ export default function EditPasswordButton({ data, ...rest }: IEUModal) {
 		onSubmit: (values) => {
 			if (!passwordIsValid) {
 				setSubmitting(false);
-				toast({
-					title: `Opss`,
-					description: 'Masukan kata sandi baru sesuai intruksi',
-					status: 'warning',
-				});
+				toast.opss('Masukan kata sandi baru sesuai intruksi');
 				return;
 			}
 
 			const { password, newPassword } = trimAllValues(values);
 
-			axios
-				.put(`${API_URL}/users/${userId}/password`, {
-					password,
-					newPassword,
+			myAxios
+				.patch(`/users/${userId}/`, { password, newPassword })
+				.then(() => {
+					toast.success('Berhasil Memperharui kata sandi');
+					onClose();
 				})
-				.then(({ data }) => {
+				.catch((e: AxiosError) => {
+					if (e.response?.status === 401) {
+						setFieldError('password', 'Kata sandi salah');
+					} else {
+						toast.error('Gagal Memperharui kata sandi');
+						onClose();
+					}
+				})
+				.finally(() => {
 					setSubmitting(false);
-					apiResponseToast(data, {
-						onSuccess: onClose,
-					});
 				});
 		},
 	});

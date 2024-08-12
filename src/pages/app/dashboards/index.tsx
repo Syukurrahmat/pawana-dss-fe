@@ -1,6 +1,6 @@
 import LoadingComponent from '@/components/Loading/LoadingComponent';
 import useUser, { User } from '@/hooks/useUser';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Flex, VStack } from '@chakra-ui/react'; // prettier-ignore
 import useSWR from 'swr';
 import { CurrentEventsCard } from './CurrentEvents';
@@ -15,16 +15,13 @@ export default function Dashboard() {
 
 	if (type && !id) return <DontHaveCompany role={user.role} />;
 	if (!type && roleIs(['admin', 'gov'])) return <SelectUserOrCompanyView />;
-	
+
 	const apiUrl =
 		id && type
-			? `${(type == 'company' ? '/companies/' : '/users/') + id}/dashboard`
+			? `${type === 'company' ? '/companies/' : '/users/'}${id}/dashboard`
 			: null;
 
-	const { data, isLoading } = useSWR<DashboardDataType>(
-		apiUrl,
-		pageDataFetcher
-	);
+	const { data, isLoading } = useSWR<DashboardDataType>(apiUrl, fetcher);
 
 	if (isLoading || !data) return <LoadingComponent />;
 

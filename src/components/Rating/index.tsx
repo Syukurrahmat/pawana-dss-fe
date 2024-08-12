@@ -1,4 +1,4 @@
-import { RatingIconList } from '@/pages/app/reports/ReportCard';
+import { RatingIconList } from '@/pages/app/Reports/ReportCard';
 import { Box, Center, HStack, Icon, Radio, RadioGroup, Tag } from '@chakra-ui/react'; //prettier-ignore
 import { IconMoodNeutral, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
 import React, { useState } from 'react';

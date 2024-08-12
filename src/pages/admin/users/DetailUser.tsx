@@ -3,7 +3,7 @@ import SectionTitle from '@/components/common/SectionTitle';
 import LoadingComponent from '@/components/Loading/LoadingComponent';
 import { TagUserRole } from '@/components/Tags/index.tags';
 import useUser from '@/hooks/useUser';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Box, Button, Container, HStack, Heading, Link, Spacer, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconAddressBook, IconCirclePlus, IconEdit, IconLock, IconMail, IconPhone, IconTextCaption, IconUserBolt, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
 import { Link as Rlink, useLocation, useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import UserSubscribedNodesList from './DTUserSubscribedNodes';
 import EditPasswordButton from './EditUserPass';
 import EditUserProfileButton from './EditUserProfile';
 import { ProfilePicture } from './ProfilePicture';
+import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 
 export default function DetailUser() {
 	const location = useLocation();
@@ -21,10 +22,7 @@ export default function DetailUser() {
 	const isProfilePage = location.pathname == '/account';
 	const id = isProfilePage ? user.userId : useParams().id;
 
-	const { data, mutate } = useSWR<UserDataPage>(
-		`/users/${id}`,
-		pageDataFetcher
-	);
+	const { data, mutate } = useSWR<UserDataPage>(`/users/${id}`, fetcher);
 
 	if (!data) return <LoadingComponent />;
 
@@ -107,7 +105,7 @@ export default function DetailUser() {
 						{data.role == 'regular' && (
 							<>
 								<SectionTitle IconEl={IconUsersGroup}>
-									Node yang Anda Ikuti
+									Node yang Ikuti
 									<Tag
 										colorScheme="blue"
 										ml="2"
@@ -143,7 +141,13 @@ export default function DetailUser() {
 									Ganti Kata Sandi
 								</EditPasswordButton>
 							)}
-							<Button colorScheme="red">Hapus Akun</Button>
+							<DeleteResourceButton
+								resource="Pengguna"
+								name={data.name}
+								colorScheme="red"
+								deleteApiUrl={'/users/' + data.userId}
+								redirectPath="/users"
+							/>
 						</HStack>
 					</>
 				)}

@@ -26,7 +26,7 @@ export const getSubscribedNodesColumns = (
 		cell: (info) => toFormatedDate(info.getValue()),
 	}),
 
-	nodeSubsColumnHelper.accessor('subscriptionId', {
+	nodeSubsColumnHelper.accessor('nodeId', {
 		header: 'Aksi',
 		cell: (info) => (
 			<HStack>
@@ -39,7 +39,7 @@ export const getSubscribedNodesColumns = (
 						onClick={() => handleRemoveUserSubs(info.getValue())}
 					/>
 				)}
-				<Link to={'/nodes/' + info.row.original.nodeId}>
+				<Link to={'/nodes/' + info.getValue()}>
 					<Button
 						colorScheme="blue"
 						size="sm"

@@ -1,42 +1,37 @@
 import CompanyIcon from '@/components/common/CompanyIcon';
 import SelectFromDataTable from '@/components/common/SelectFromDataTable';
-import { API_URL } from '@/constants/config';
 import useUser, { User } from '@/hooks/useUser';
+import { myAxios } from '@/utils/fetcher';
 import { Button, ButtonProps, HStack, Text } from '@chakra-ui/react';
 import { IconChartBar } from '@tabler/icons-react';
-import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KeyedMutator } from 'swr';
-
-export const changeActiveDashboardHandler = async (
-	mutateUser: KeyedMutator<User>,
-	companyId: number
-) => {
-	const resp = await axios.put(API_URL + '/me/active-dashboard', {
-		companyId,
-	});
-
-	if (resp.status !== 200) return;
-
-	mutateUser((e) => ({ ...e, ...resp.data }));
-};
 
 interface ViewDashboard extends ButtonProps {
 	companyId: number;
 }
 
+type ChangeDash = (m: KeyedMutator<User>, c: number) => any;
+export const changeDashboard: ChangeDash = async (mutateUser, companyId) => {
+	myAxios.patch('/app/configure-view', { companyId }).then((resp) => {
+		if (resp.status === 200) {
+			mutateUser((e) => ({ ...e, ...resp.data.data }));
+		}
+	});
+};
+
 export function ButtonViewDashboard({ companyId, ...r }: ViewDashboard) {
 	const { mutateUser } = useUser();
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [isLoading, setIsloading] = useState(false);
 
 	const onClickHandler = async () => {
 		setIsloading(true);
 
-		await changeActiveDashboardHandler(mutateUser, companyId);
+		await changeDashboard(mutateUser, companyId);
 		setIsloading(false);
-		navigate('/')
+		navigate('/');
 	};
 
 	return (
@@ -59,11 +54,9 @@ export function ChangeActiveDashboard(props: ButtonProps) {
 			dtMaxH="300px"
 			itemName="Usaha"
 			hiddenTitleButton={true}
-			apiUrl="/me/companies"
+			apiUrl={`/users/${user.userId}/companies?view=simple`}
 			selectValue={user.view!.company!}
-			selectOnChange={(e: any) =>
-				changeActiveDashboardHandler(mutateUser, e.companyId)
-			}
+			selectOnChange={(e: any) => changeDashboard(mutateUser, e.companyId)}
 			hiddenSearchInput={true}
 			displayRow={(e) => (
 				<HStack>

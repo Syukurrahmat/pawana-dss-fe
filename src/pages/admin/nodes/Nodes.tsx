@@ -11,7 +11,7 @@ import { nodeStatusAttr, nodeTypeAttr } from '@/constants/enumVariable';
 import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
 import useUser from '@/hooks/useUser';
 import { toFormatedDatetime } from '@/utils/dateFormating';
-import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Box, Button, Flex, Grid, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconCircleDot, IconExternalLink, IconPlus } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
@@ -92,7 +92,7 @@ export default function NodeManagement() {
 		tabs.map((e) => e.key)
 	);
 
-	const { data } = useSWR<NodesSummary>('/nodes/summary', pageDataFetcher);
+	const { data } = useSWR<NodesSummary>('/nodes/overview', fetcher);
 
 	if (!data) return <LoadingComponent />;
 
@@ -226,11 +226,11 @@ export default function NodeManagement() {
 }
 
 function NodesMapView() {
-	const { data } = useSWR<PD<NodeData[]>>('/nodes?all=true', apiFetcher);
+	const { data } = useSWR<NodeData[]>('/nodes?all=true', fetcher);
 	if (!data) return 'loading slurr';
 
 	const indoorNodeInCompanies = Object.values(
-		data.result
+		data
 			.filter((e) => e.companyId && e.owner)
 			.reduce((acc: Record<number, any>, item) => {
 				const { coordinate, owner, ...rest } = item;
@@ -255,7 +255,7 @@ function NodesMapView() {
 			h="100%"
 			minH="350px"
 			companiesData={indoorNodeInCompanies}
-			data={data.result.filter((e: any) => !e.companyId)}
+			data={data.filter((e: any) => !e.companyId)}
 		/>
 	);
 }

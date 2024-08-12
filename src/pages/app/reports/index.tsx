@@ -1,55 +1,47 @@
 import MyMap from '@/components/Maps';
-import { API_URL } from '@/constants/config';
+import MyMarker from '@/components/Maps/marker';
 import useUser from '@/hooks/useUser';
-import { buildQueriesURL, fetcher, pageDataFetcher } from '@/utils/fetcher'; //prettier-ignore
+import { UrlWithQuery, fetcher } from '@/utils/fetcher'; //prettier-ignore
 import { Alert, AlertDescription, AlertIcon, Box, Card, CardBody, Flex, HStack, IconButton, Input, Spinner, Switch, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useRef, useState } from 'react';
 import useSWR from 'swr';
 import CreateReport from './CreateReport';
-import FilterByDistance, { distanceList } from './FilterByDistance';
 import ReportCard from './ReportCard';
-import MyMarker from '@/components/Maps/marker';
+import AdvanceFeature, { distanceList } from './AdvanceFeature';
+
+type FilterState = {
+	company : CompanyData
+	nearCompany: number;
+	distance: number;
+
+};
 
 export default function ReportsPage() {
+	const filterDisclosure = useDisclosure();
+	const showCompaniesDisclosure = useDisclosure();
+
 	const currentDate = moment().format('YYYY-MM-DD');
-
-	const {
-		isOpen: filterIsOpen,
-		onToggle: onToggleFilter,
-		onClose: onCloseFilter,
-	} = useDisclosure();
-	const {
-		isOpen: showCompanyIsOpen,
-		onToggle: onToggleShowCompany,
-		onClose: onCloseShowCompany,
-	} = useDisclosure();
-
-	const { roleIsNot, user } = useUser();
-	const [date, setDate] = useState(currentDate);
-	const [company, setCompany] = useState<any>({});
-	const [distance, setDistance] = useState(distanceList[0].distance);
 	const map = useRef<any>();
 
-	const filterQueries =
-		filterIsOpen && company.companyId
-			? { nearCompany: company.companyId, distance: distance }
-			: {};
+	const { roleIsNot, roleIs, user } = useUser();
 
-	const isToday = date === currentDate;
+	const [date, setDate] = useState(currentDate);
+	const [filterState, setFilterState] = useState<FilterState>();
 
+	const allCompaniesURL = roleIs(['admin', 'gov'])
+		? `/companies/all=true&view=simple`
+		: `/users/${user.userId}/companies?all=true`;
+	
 	const { data, isLoading } = useSWR<ReportsPerDay>(
-		buildQueriesURL(API_URL + '/reports', {
-			date,
-			...filterQueries,
-		}),
+		UrlWithQuery('/reports', { date, ...filterState }),
 		fetcher
 	);
 
-	const { data: allCompaniesData } = useSWR(
-		showCompanyIsOpen ? '/me/companies?all=true' : null,
-		pageDataFetcher
+	const { data: allCompanies } = useSWR<CompanyData[]>(
+		showCompaniesDisclosure.isOpen ? allCompaniesURL : null,
+		fetcher
 	);
 
 	return (
@@ -77,51 +69,13 @@ export default function ReportsPage() {
 									pagination={data?.pagination}
 									dateState={[date, setDate]}
 								/>
-
 								{roleIsNot('regular') && (
-									<>
-										<HStack w="full" justify="space-between">
-											<Text fontWeight="500" alignSelf="start">
-												Tampilkan Lokasi Usaha
-											</Text>
-
-											<Switch
-												onChange={(e) => {
-													if (e.target.checked) {
-														onCloseFilter();
-													}
-													onToggleShowCompany();
-												}}
-												isChecked={showCompanyIsOpen}
-											/>
-										</HStack>
-										<HStack w="full" justify="space-between">
-											<Text fontWeight="500" alignSelf="start">
-												Filter aduan di sekitar usaha Anda
-											</Text>
-
-											<Switch
-												onChange={(e) => {
-													if (e.target.checked) {
-														onCloseShowCompany();
-													}
-													onToggleFilter();
-												}}
-												isChecked={filterIsOpen}
-											/>
-										</HStack>
-									</>
+									<AdvanceFeature
+										filterDisclosure={filterDisclosure}
+										showCompaniesDisclosure={showCompaniesDisclosure}
+									/>
 								)}
 							</VStack>
-
-							{roleIsNot('regular') && (
-								<FilterByDistance
-									isOpen={filterIsOpen}
-									role={user.role}
-									distanceState={[distance, setDistance]}
-									companyState={[company, setCompany]}
-								/>
-							)}
 						</CardBody>
 					</Card>
 					<Alert
@@ -144,7 +98,7 @@ export default function ReportsPage() {
 							{isLoading
 								? 'Mengambil Data...'
 								: (data?.result.length || 'Tidak ada') +
-								  (isToday
+								  (date === currentDate
 										? ' aduan di 24 jam terakhir'
 										: ' aduan pada tanggal ' +
 										  moment(date).format('DD MMM YYYY'))}
@@ -160,13 +114,17 @@ export default function ReportsPage() {
 				h="auto"
 				marker={MyMarker.RatingMarker}
 				companiesData={
-					showCompanyIsOpen && allCompaniesData
-						? allCompaniesData
-						: filterIsOpen && company.companyId
-						? [company]
+					showCompaniesDisclosure.isOpen && allCompanies
+						? allCompanies
+						: filterState
+						? [filterState.company]
 						: []
 				}
-				circleBoundaryRadius={filterIsOpen ? distance : undefined}
+				circleBoundaryRadius={
+					filterState
+						? filterState.distance
+						: undefined
+				}
 				data={data?.result.map((e) => ({ isReport: true, ...e })) || []}
 				mapRef={map}
 			/>

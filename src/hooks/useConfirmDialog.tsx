@@ -1,5 +1,6 @@
 import { useRef, Dispatch, SetStateAction, createContext, useContext, useState } from 'react'; //prettier-ignore
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button} from '@chakra-ui/react'; //prettier-ignore
+import { ConfirmMessage } from '@/types';
 
 type ConfirmDialogContext = Dispatch<SetStateAction<ConfirmMessage>>;
 

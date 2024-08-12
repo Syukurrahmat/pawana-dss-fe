@@ -1,5 +1,5 @@
 import SectionTitle from '@/components/common/SectionTitle';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Box, HStack, Skeleton, Tag, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconChecklist, IconNotebookOff, IconProgress, IconRocket } from '@tabler/icons-react'; //prettier-ignore
 import React from 'react';
@@ -8,10 +8,11 @@ import useSWR from 'swr';
 import { CardEventLog } from './CardEventLog';
 
 
+
 export default function CurrentEventlog({ companyId }: { companyId: number }) {
 	const { data } = useSWR<CurrentEventLogs>(
-		companyId ? `/companies/${companyId}/events/current` : null,
-		pageDataFetcher
+		companyId ? `/companies/${companyId}/events/overview` : null,
+		fetcher
 	);
 
 	const sections = [

@@ -1,27 +1,24 @@
 import { eventLogsTypeAttr } from '@/constants/enumVariable';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Alert, Box, Button, HStack, Heading, Icon, IconButton, Spacer, Spinner, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { EventContentArg } from '@fullcalendar/core/index.js';
 import idLocale from '@fullcalendar/core/locales/id';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
-import {
-	IconChevronLeft,
-	IconChevronRight,
-	IconRocket,
-} from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconRocket } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useRef, useState } from 'react';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 import useSWR from 'swr';
 import DetailEventLogTriger from './DetailEventLog';
 
 export function EventCalendar({ companyId }: { companyId: number }) {
 	const [currentMonth, setCurrentMonth] = useState(moment());
 	const calendarRef = useRef<any>(null);
-	
+
 	const { data, isLoading } = useSWR<DTEventLog[]>(
 		`/companies/${companyId}/events?month=${currentMonth.format('YYYY-MM')}`,
-		pageDataFetcher,
+		fetcher,
 		{ keepPreviousData: true }
 	);
 
@@ -78,7 +75,7 @@ export function EventCalendar({ companyId }: { companyId: number }) {
 					headerToolbar={false}
 					locale={idLocale}
 					initialView="dayGridMonth"
-					eventContent={(e)=>renderEventContent(e)}
+					eventContent={(e) => renderEventContent(e)}
 				/>
 			</Box>
 		</Alert>
@@ -118,7 +115,7 @@ export function renderEventContent(
 						fontSize="sm"
 						overflow="hidden"
 						textOverflow="ellipsis"
-						children={title }
+						children={title}
 					/>
 					<Spacer />
 					{status == 'inProgress' && (

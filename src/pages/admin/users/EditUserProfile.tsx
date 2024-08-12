@@ -1,10 +1,15 @@
-import { API_URL } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useUser from '@/hooks/useUser';
-import { compareObjects, trimAllValues } from '@/utils/common.utils';
+import {
+	compareObjects,
+	toastErrorOpt,
+	toastSuccessOpt,
+	trimAllValues,
+	usemyToasts,
+} from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
-import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import axios from 'axios';
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, UseToastOptions, VStack, useDisclosure, useToast } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
 import { useMatch, useParams } from 'react-router-dom';
 import { KeyedMutator } from 'swr';
@@ -12,7 +17,7 @@ import * as Yup from 'yup';
 
 interface IEUModal extends ButtonProps {
 	data: UserDataPage;
-	mutate: KeyedMutator<any>;
+	mutate: KeyedMutator<UserDataPage>;
 }
 
 export default function EditUserProfileButton({
@@ -25,7 +30,7 @@ export default function EditUserProfileButton({
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { id } = useParams();
 	const { user } = useUser();
-	const { apiResponseToast, toast } = useApiResponseToast();
+	const toast = usemyToasts();
 
 	const userId = useMatch('/account') ? user.userId : id;
 
@@ -50,30 +55,26 @@ export default function EditUserProfileButton({
 
 		onSubmit: (values) => {
 			trimAllValues(values);
+			const updatedData = compareObjects(initialValues, values);
 
-			const filteredData = compareObjects(initialValues, values);
-			if (Object.keys(filteredData).length === 0) {
-				toast({
-					title: `Opss !!!`,
-					description: 'Belum ada yang disunting',
-					status: 'warning',
-				});
+			if (Object.keys(updatedData).length === 0) {
+				toast.opss('Belum ada yang disunting');
 				setSubmitting(false);
 				return;
 			}
 
-			axios
-				.put(`${API_URL}/users/${userId}/`, {
-					...filteredData,
+			myAxios
+				.patch(`/users/${userId}/`, { ...updatedData })
+				.then(() => {
+					toast.success('Berhasil Memperharui data');
+					mutate((e) => (e ? { ...e, ...updatedData } : e));
 				})
-				.then(({ data }) => {
+				.catch(() => {
+					toast.error('Gagal Memperharui data');
+				})
+				.finally(() => {
 					setSubmitting(false);
-					apiResponseToast(data, {
-						onSuccess() {
-							mutate();
-							onClose();
-						},
-					});
+					onClose();
 				});
 		},
 	});

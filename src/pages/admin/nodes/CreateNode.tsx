@@ -3,14 +3,13 @@ import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { BigAlert } from '@/components/common/BigAlert';
 import CompanyIcon from '@/components/common/CompanyIcon';
 import SelectFromDataTable from '@/components/common/SelectFromDataTable';
-import { API_URL } from '@/constants/config';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
 import { trimAllValues } from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Box, Button, Container, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconBuildingFactory2, IconInfoCircle, IconLock, IconWorld } from '@tabler/icons-react'; //prettier-ignore
-import axios from 'axios';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useMatch } from 'react-router-dom';
@@ -79,8 +78,8 @@ export default function CreateNode() {
 		},
 		validationSchema,
 		onSubmit: (values) => {
-			axios
-				.post(`${API_URL}/nodes`, trimAllValues(values))
+			myAxios
+				.post(`/nodes`, trimAllValues(values))
 				.then(({ data }) => setStatus(data || false))
 				.catch(() => setStatus(false))
 				.finally(() => setSubmitting(false));

@@ -1,10 +1,9 @@
-import Page404 from '@/pages/other/page404';
 import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconFileReport, IconNotebook, IconSpeakerphone, IconUser } from '@tabler/icons-react'; // prettier-ignore
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
 
-const ReportsPage = lazy(() => import('@/pages/app/reports'));
+const ReportsPage = lazy(() => import('@/pages/app/Reports'));
 const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
 const Dashboard = lazy(() => import('@/pages/app/dashboards/index'));
 const DetailNode = lazy(() => import('@/pages/admin/Nodes/DetailNode'));
@@ -15,12 +14,12 @@ const CreateNode = lazy(() => import('@/pages/admin/Nodes/CreateNode'));
 const NodeManagement = lazy(() => import('@/pages/admin/Nodes/Nodes'));
 const CreateUser = lazy(() => import('@/pages/admin/Users/CreateUser'));
 const UserManagement = lazy(() => import('@/pages/admin/Users/Users'));
-const Notes = lazy(() => import('@/pages/app/eventLogs'));
-const MyCompanies = lazy(() => import('@/pages/app/resources/MyCompanies'));
-const MySubscribedNodes = lazy(() => import('@/pages/app/resources/MySubscribedNodes')); // prettier-ignore
-const MyPrivateNode = lazy(() => import('@/pages/app/resources/MyPrivateNode'));
-const Summary = lazy(() => import('@/pages/app/summary'));
-const Data = lazy(() => import('@/pages/app/data'));
+const Notes = lazy(() => import('@/pages/app/EventLogs'));
+const MyCompanies = lazy(() => import('@/pages/app/Resources/MyCompanies'));
+const MySubscribedNodes = lazy(() => import('@/pages/app/Resources/MySubscribedNodes')); // prettier-ignore
+const MyPrivateNode = lazy(() => import('@/pages/app/Resources/MyPrivateNode'));
+const Summary = lazy(() => import('@/pages/app/Summary'));
+const Data = lazy(() => import('@/pages/app/DownloadData'));
 
 const routers = [
 	{
@@ -155,7 +154,7 @@ const routers = [
 	},
 ];
 
-const appRouter = (role: string) => {
+const generateAppRouter = (role: string) => {
 	const routerList = routers.filter(
 		(e) => e.role.includes(role) || e.role.includes('all')
 	);
@@ -174,4 +173,4 @@ const appRouter = (role: string) => {
 	]);
 };
 
-export default appRouter;
+export default generateAppRouter;

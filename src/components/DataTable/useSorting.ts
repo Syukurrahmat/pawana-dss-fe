@@ -1,14 +1,14 @@
+import { ColumnSort } from "@tanstack/react-table";
 import { useState } from "react";
 
-export default function useSorting(initialField = "createdAt", initialOrder = "ASC") {
-  const [sorting, setSorting] = useState([
-    { id: initialField, desc: initialOrder === "DESC" },
-  ]);
+
+export default function useSorting() {
+  const [sorting, setSorting] = useState<ColumnSort[]>([])
 
   return {
     sorting,
     onSortingChange: setSorting,
-    order: !sorting.length ? initialOrder : sorting[0].desc ? "DESC" : "ASC",
-    field: sorting.length ? sorting[0].id : initialField,
+    order: sorting.length && sorting[0].id ? (sorting[0].desc ? 'DESC' : "ASC") : undefined,
+    field: sorting.length ? sorting[0].id : undefined
   };
 }

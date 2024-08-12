@@ -1,9 +1,12 @@
 import { API_URL } from '@/constants/config';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
-import { compareObjects, trimAllValues } from '@/utils/common.utils';
+import {
+	compareObjects,
+	trimAllValues,
+	usemyToasts,
+} from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import axios from 'axios';
 import { useFormik } from 'formik';
 import { useParams } from 'react-router-dom';
 import { KeyedMutator } from 'swr';
@@ -11,7 +14,7 @@ import * as Yup from 'yup';
 
 interface IEUModal extends ButtonProps {
 	data: NodeDataPage;
-	mutate: KeyedMutator<any>;
+	mutate: KeyedMutator<NodeDataPage>;
 }
 
 export default function EditNodeProfileButton({
@@ -19,9 +22,8 @@ export default function EditNodeProfileButton({
 	mutate,
 	...rest
 }: IEUModal) {
-
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { apiResponseToast, toast } = useApiResponseToast();
+	const toast = usemyToasts();
 	const { name, description, address, instalationDate } = data;
 	const initialValues = {
 		name,
@@ -53,31 +55,26 @@ export default function EditNodeProfileButton({
 
 		onSubmit: (values) => {
 			trimAllValues(values);
-			const filteredData = compareObjects(initialValues, values);
+			const updatedData = compareObjects(initialValues, values);
 
-			if (Object.keys(filteredData).length === 0) {
-				toast({
-					title: `Opss !!!`,
-					description: 'Belum ada yang disunting',
-					status: 'warning',
-				});
+			if (Object.keys(updatedData).length === 0) {
+				toast.opss('Belum ada yang disunting');
 				setSubmitting(false);
 				return;
 			}
 
-			axios
-				.put(submitURL, {
-					...filteredData,
-					nodeId: data.nodeId,
+			myAxios
+				.patch(submitURL, { ...updatedData })
+				.then((e) => {
+					toast.success('Berhasil Memperharui data');
+					mutate((e) => (e ? { ...e, ...updatedData } : e));
 				})
-				.then(({ data: dt }) => {
+				.catch(() => {
+					toast.error('Gagal Memperharui data');
+				})
+				.finally(() => {
 					setSubmitting(false);
-					apiResponseToast(dt, {
-						onSuccess() {
-							mutate({ ...data, ...values });
-							onClose();
-						},
-					});
+					onClose();
 				});
 		},
 	});

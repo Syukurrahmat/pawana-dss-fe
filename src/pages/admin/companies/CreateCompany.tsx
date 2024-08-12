@@ -3,14 +3,13 @@ import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { BigAlert } from '@/components/common/BigAlert';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
 import SelectFromDataTable from '@/components/common/SelectFromDataTable';
-import { API_URL } from '@/constants/config';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
 import { trimAllValues } from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconUserBolt } from '@tabler/icons-react';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
@@ -54,8 +53,8 @@ export default function CreateCompany() {
 		}),
 
 		onSubmit: (values) => {
-			axios
-				.post(`${API_URL}/companies`, trimAllValues(values))
+			myAxios
+				.post('/companies', trimAllValues(values))
 				.then(({ data }) => setStatus(data || false))
 				.catch(() => setStatus(false))
 				.finally(() => setSubmitting(false));

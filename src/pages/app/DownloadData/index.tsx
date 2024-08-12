@@ -3,8 +3,8 @@ import SelectFromDataTable from '@/components/common/SelectFromDataTable';
 import TagWithIcon from '@/components/common/TagWithIcon';
 import { API_URL } from '@/constants/config';
 import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
-import { buildQueriesURL } from '@/utils/fetcher';
-import { Box, Button, Container, Divider, Flex, HStack, Heading, Icon, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useToast } from '@chakra-ui/react'; //prettier-ignore
+import { UrlWithQuery } from '@/utils/fetcher';
+import { Box, Button, Container, Divider, Flex, Heading, HStack, Icon, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useToast } from '@chakra-ui/react'; //prettier-ignore
 import { IconCalendar, IconChartAreaLine, IconCircleDot, IconClick, IconDatabaseX, IconDownload, IconSend2 } from '@tabler/icons-react'; //prettier-ignore
 import axios from 'axios';
 import { useFormik } from 'formik';
@@ -20,11 +20,11 @@ const airParamsList = [
 	{ label: 'CH4', key: 'ch4' },
 ];
 
-export default function Data() {
+export default function DownloadData() {
 	const location = useLocation();
 
 	const toast = useToast();
-	const [data, setData] = useState<DataPageData | null>(null);
+	const [data, setData] = useState<any | null>(null);
 	const [tabIndex, setTabIndex] = useState(0);
 
 	const { values, setFieldValue, handleSubmit, isSubmitting, setSubmitting } =
@@ -50,39 +50,38 @@ export default function Data() {
 					return;
 				}
 
-				const requestURL = buildQueriesURL(
-					`${API_URL}/nodes/${nodeId}/datalogs`,
-					{
-						start: startDate.toISOString(),
-						end: endDate.toISOString(),
-					}
-				);
+				axios
+					.get(
+						UrlWithQuery(`${API_URL}/nodes/${nodeId}/datalogs`, {
+							start: startDate.toISOString(),
+							end: endDate.toISOString(),
+						})
+					)
+					.then((res) => {
+						setSubmitting(false);
 
-				axios.get(requestURL).then((res) => {
-					setSubmitting(false);
+						window.history.replaceState(
+							null,
+							'',
+							location.pathname +
+								'?' +
+								new URLSearchParams({
+									nodeId: nodeId.toString(),
+									start: moment(startDate).format('YYYY-MM-DD'),
+									end: moment(endDate).format('YYYY-MM-DD'),
+								}).toString()
+						);
 
-					window.history.replaceState(
-						null,
-						'',
-						location.pathname +
-							'?' +
-							new URLSearchParams({
-								nodeId: nodeId.toString(),
-								start: moment(startDate).format('YYYY-MM-DD'),
-								end: moment(endDate).format('YYYY-MM-DD'),
-							}).toString()
-					);
-
-					setData(res.data);
-				});
+						setData(res.data.data);
+					});
 			},
 		});
 
 	return (
 		<Box>
-			<Heading size="lg">Akses data yang dikirim dari Node</Heading>
+			<Heading size="lg">Akses data yang dikirim dari node</Heading>
 			<Text>
-				Pilih Grup yang Anda ikut, lalu pilih node mana yang hendak diakses,
+				Pilih node dan unduh data untuk analisis secara mandiri
 			</Text>
 
 			<form onSubmit={handleSubmit}>
@@ -140,7 +139,7 @@ export default function Data() {
 							align="start"
 							w="full"
 							p="4"
-							bg='white'
+							bg="white"
 							border="1px solid"
 							borderColor="gray.300"
 							rounded="md"
@@ -181,6 +180,7 @@ export default function Data() {
 									</HStack>
 
 									<Tabs
+										mt='2'
 										w="full"
 										isLazy
 										index={tabIndex}
@@ -237,7 +237,7 @@ function PlaceholderElement() {
 		<HStack mx="auto" py="10" color="gray.500" spacing="5" justify="center">
 			<Icon boxSize="50px" as={IconClick} />
 			<Text fontSize="xl" fontWeight="600">
-				Pilih Node yang Hendak Anda unduh data
+				Pilih node yang hendak Anda unduh datanya
 			</Text>
 		</HStack>
 	);
@@ -271,10 +271,10 @@ function NoData() {
 	);
 }
 
-function downloadData(data: DataPageData) {
+function downloadData(data: any) {
 	const csvHeaders = 'Datetime,' + airParamsList.map((e) => e.key).join(',');
 	const csvData = data.result.dataLogs
-		.map((e) => `${e.datetime},${e.pm25},${e.pm100},${e.ch4},${e.co2}`)
+		.map((e: any) => `${e.datetime},${e.pm25},${e.pm100},${e.ch4},${e.co2}`)
 		.join('\n');
 
 	const csvContent = csvHeaders + '\n' + csvData;

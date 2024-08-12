@@ -1,17 +1,17 @@
 import { HOST_URL } from '@/constants/config';
-import { BoxProps, Button, Divider, HStack, Heading, Image, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { myAxios } from '@/utils/fetcher';
+import { BoxProps, Button, Divider, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconLogout, IconUser } from '@tabler/icons-react'; // prettier-ignore
-import axios from 'axios';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/icon.svg';
+import Logo from '../components/common/Logo';
 
 const LogoutButton = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const onClickHandle = async () => {
 		setIsLoading(true);
-		const res = await axios.delete(HOST_URL + '/auth/logout');
+		const res = await myAxios.delete(HOST_URL + '/auth/logout');
 		setIsLoading(false);
 		if (res.statusText == 'OK') {
 			window.location.href = '/login';
@@ -48,10 +48,7 @@ export default function Sidebar({
 }: SidebarProps) {
 	return (
 		<VStack p="5" align="stretch" minH="100vh" bg="gray.100" {...props}>
-			<HStack mb="4" px="2">
-				<Image src={logo} h="30px" />
-				<Heading fontSize="2xl">AtmosEye</Heading>
-			</HStack>
+			<Logo mb="4" />
 
 			<VStack as="nav" align="stretch">
 				{navbarList
@@ -62,7 +59,7 @@ export default function Sidebar({
 								<Button
 									w="full"
 									p="3"
-									color='gray.900'
+									color="gray.900"
 									isActive={isActive}
 									leftIcon={<e.Icon />}
 									justifyContent="left"

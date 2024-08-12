@@ -40,7 +40,10 @@ export default function MyMap(props: IMyMap) {
 	const MapObject = () => {
 		const map = useMapEvents({
 			dragend: () => {
-				if (isEditing) isEditing.onChange(map.getCenter());
+				if (isEditing) {
+					
+					isEditing.onChange(map.getCenter());
+				}
 			},
 			locationfound: ({ latlng }) => {
 				if (isEditing) {
@@ -62,7 +65,7 @@ export default function MyMap(props: IMyMap) {
 
 		useEffect(() => {
 			if (isEditing) {
-				map.flyTo(isEditing.coordinate as LatLngExpression, 16);
+				map.flyTo(isEditing.coordinate as LatLngExpression);
 				map.once('moveend', () => {
 					setShowMarkerPicker(true);
 				});

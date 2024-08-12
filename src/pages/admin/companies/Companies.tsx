@@ -10,7 +10,7 @@ import { companyTypeAttr } from '@/constants/enumVariable';
 import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate } from '@/utils/dateFormating';
-import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Avatar, Button, Flex, Grid, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconBuildingFactory2, IconExternalLink, IconPlus, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
@@ -84,10 +84,7 @@ const columns = [
 export default function CompaniesManagement() {
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(['list', 'map']);
 	const { roleIs } = useUser();
-	const { data } = useSWR<CompaniesSummary>(
-		'/companies/summary',
-		pageDataFetcher
-	);
+	const { data } = useSWR<CompaniesSummary>('/companies/overview', fetcher);
 
 	if (!data) return <LoadingComponent />;
 
@@ -177,10 +174,8 @@ export default function CompaniesManagement() {
 }
 
 function NodesMapView() {
-	const { data } = useSWR('/companies?all=true', apiFetcher);
+	const { data } = useSWR<CompanyData[]>('/companies?all=true', fetcher);
 	if (!data) return 'loading slurr';
 
-	return (
-		<MyMap h="100%" minH="350px" scrollWheelZoom={false} data={data.result} />
-	);
+	return <MyMap h="100%" minH="350px" scrollWheelZoom={false} data={data} />;
 }

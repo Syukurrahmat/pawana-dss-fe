@@ -9,8 +9,8 @@ import FullCalendar from '@fullcalendar/react';
 import { IconCalendarEvent, IconNotebook } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useRef } from 'react';
-import { CardEventLog } from '../eventLogs/CardEventLog';
-import { eventsMapping, renderEventContent } from '../eventLogs/EventCalendar';
+import { CardEventLog } from '../EventLogs/CardEventLog';
+import { eventsMapping, renderEventContent } from '../EventLogs/EventCalendar';
 
 interface EventLogSummaryCard {
 	data: SummaryEventLog;

@@ -1,4 +1,5 @@
 import { useToast } from "@chakra-ui/react";
+import { AxiosResponse } from "axios";
 
 type apiResponseToastHandle = {
     onSuccess?: () => any;
@@ -10,21 +11,21 @@ export function useApiResponseToast() {
 
     return {
         toast,
-        apiResponseToast: (data: any, handle?: apiResponseToastHandle) => {
+        apiResponseToast: (data: AxiosResponse, handle?: apiResponseToastHandle) => {
             const onSuccess = handle?.onSuccess;
             const onFailure = handle?.onFailure;
 
-            if (!data.success) {
+            if (data.status !== 200) {
                 toast({
                     title: `Gagal`,
-                    description: data.message,
+                    description: data.data,
                     status: 'error',
                 });
                 if (onFailure) onFailure();
             } else {
                 toast({
                     title: `Sukses`,
-                    description: data.message,
+                    description: data.data,
                     status: 'success',
                 });
                 if (onSuccess) onSuccess();

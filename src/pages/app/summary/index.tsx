@@ -5,7 +5,7 @@ import {
 	getCO2Properties,
 	getISPUProperties,
 } from '@/utils/common.utils';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Box, Card, CardBody, CardHeader, Center, Divider, HStack, Heading, Icon, Select, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconAirBalloon, IconAirConditioning, IconClipboardText, IconReport } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
@@ -114,7 +114,7 @@ export default function Summary() {
 		companyId
 			? `/companies/${companyId}/summary/${periode}ly?periode=${date}`
 			: null,
-		pageDataFetcher
+		fetcher
 	);
 
 	if (!companyId) return <SelectUserOrCompanyView />;

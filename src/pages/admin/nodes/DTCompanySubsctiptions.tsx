@@ -2,15 +2,15 @@ import DataTable from '@/components/DataTable';
 import InputSearch from '@/components/Form/inputSearch';
 import { TagCompanyType } from '@/components/Tags/index.tags';
 import SectionTitle from '@/components/common/SectionTitle';
-import { API_URL } from '@/constants/config';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
+import { usemyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
+import { myAxios } from '@/utils/fetcher';
 import { Button, Center, HStack, Icon, IconButton, Spacer, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconBuildingFactory2, IconExternalLink, IconTrash } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table';
-import axios from 'axios';
 import { useMemo } from 'react';
 import { Link as RLink } from 'react-router-dom';
 import { KeyedMutator, mutate } from 'swr';
@@ -28,49 +28,45 @@ export default function CompanySubsctiptionsList({
 }: UserSubsList) {
 	let { nodeId, countCompanySubscribtion } = data;
 	const confirmDialog = useConfirmDialog();
-	const { apiResponseToast } = useApiResponseToast();
-	const dataApiURL = `/nodes/${nodeId}/companies`;
+	const apiURL = `/nodes/${nodeId}/companies`;
+	const toast = usemyToasts();
 
-	const handleDeleteSubs = (subscriptionid: number) => {
+	const handleDeleteSubs = (companyId: number) => {
 		confirmDialog({
 			title: 'Hapus Usaha',
 			message: 'Hapus pengguna dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
-			onConfirm: async () => {
-				return axios
-					.delete(
-						API_URL + dataApiURL + '?subscriptionid=' + subscriptionid
-					)
-					.then(({ data: dt }) =>
-						apiResponseToast(dt, {
-							onSuccess: () => {
-								mutate((e) => e && e[0] == dataApiURL);
-								dataPageMutate();
-							},
-						})
-					);
-			},
+			onConfirm: async () =>
+				myAxios
+					.delete(`${apiURL}/${companyId}`)
+					.then(() => {
+						mutate((e) => typeof e == 'string' && e.startsWith(apiURL));
+						dataPageMutate();
+						toast.success('Berhasil menghapus subscription pengguna');
+					})
+					.catch((e) => {
+						console.log(e);
+						toast.error('Gagal menghapus subscription pengguna');
+					}),
 		});
 	};
-	
+
 	const handleDeleteAllSubs = () => {
 		confirmDialog({
 			title: 'Hapus Semua Usaha',
-			message:
-				'Hapus semua usaha dari daftar pelanggan node ' + data.name,
+			message: 'Hapus semua usaha dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
-			onConfirm: async () => {
-				return axios
-					.delete(API_URL + dataApiURL + '?all=true')
-					.then(({ data: dt }) =>
-						apiResponseToast(dt, {
-							onSuccess: () => {
-								mutate((e) => e && e[0] == dataApiURL);
-								dataPageMutate();
-							},
-						})
-					);
-			},
+			onConfirm: async () =>
+				myAxios
+					.delete(`${apiURL}`)
+					.then(() => {
+						mutate((e) => typeof e == 'string' && e.startsWith(apiURL));
+						dataPageMutate();
+						toast.success('Berhasil menghapus subscription pengguna');
+					})
+					.catch(() => {
+						toast.error('Gagal menghapus subscription pengguna');
+					}),
 		});
 	};
 
@@ -110,7 +106,7 @@ export default function CompanySubsctiptionsList({
 				meta: { sortable: true },
 			}),
 
-			columnHelper.accessor('subscriptionId', {
+			columnHelper.accessor('companyId', {
 				header: 'Aksi',
 				cell: (info) => (
 					<HStack>
@@ -121,7 +117,7 @@ export default function CompanySubsctiptionsList({
 							aria-label="Hapus"
 							onClick={() => handleDeleteSubs(info.getValue())}
 						/>
-						<RLink to={'/companies/' + info.row.original.companyId}>
+						<RLink to={'/companies/' + info.getValue()}>
 							<Button
 								colorScheme="blue"
 								size="sm"
@@ -145,27 +141,27 @@ export default function CompanySubsctiptionsList({
 				</Tag>
 			</SectionTitle>
 
-			<HStack mt="4">
-				{!!countCompanySubscribtion && (
+			{!!countCompanySubscribtion && (
+				<HStack mt="4">
 					<Button
 						colorScheme="red"
 						leftIcon={<IconTrash size="18" />}
 						onClick={handleDeleteAllSubs}
 						children="Hapus Semua Usaha"
 					/>
-				)}
-				<Spacer />
-				<InputSearch
-					rounded="md"
-					bg="white"
-					placeholder="Cari Usaha"
-					_onSubmit={null}
-				/>
-			</HStack>
+					<Spacer />
+					<InputSearch
+						rounded="md"
+						bg="white"
+						placeholder="Cari Usaha"
+						_onSubmit={null}
+					/>
+				</HStack>
+			)}
 
 			<DataTable
 				mt="4"
-				apiUrl={dataApiURL}
+				apiUrl={apiURL}
 				columns={columns}
 				emptyMsg={['Belum ada Usaha']}
 			/>

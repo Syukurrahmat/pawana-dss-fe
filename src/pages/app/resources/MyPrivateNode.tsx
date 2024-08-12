@@ -1,9 +1,10 @@
 import DataTable from '@/components/DataTable';
 import useUser from '@/hooks/useUser';
+import { columPrivateNodeTable } from '@/pages/admin/Nodes/Nodes';
 import { Box, Button, Container, HStack, Heading, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconPlus } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
-import { columPrivateNodeTable } from '../admin/nodes/Nodes';
+
 
 export default function MyPrivateNode() {
 	const { user } = useUser();
@@ -28,7 +29,7 @@ export default function MyPrivateNode() {
 				<DataTable
 					mt="4"
 					flexGrow="1"
-					apiUrl={`/users/${user.userId}/own-nodes`}
+					apiUrl={`/users/${user.userId}/private-nodes`}
 					columns={columPrivateNodeTable}
 				/>
 			</Container>

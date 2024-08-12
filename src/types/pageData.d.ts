@@ -1,9 +1,4 @@
-declare type PD<T> = {
-    success: boolean;
-    result: T
-}
-
-declare type UserDataPage = {
+type UserDataPage = {
     userId: number;
     name: string;
     phone: string;
@@ -17,7 +12,7 @@ declare type UserDataPage = {
     countManagedCompany: number;
 }
 
-declare type CompanyDataPage = {
+type CompanyDataPage = {
     companyId: number;
     managedBy: number;
     name: string;
@@ -38,7 +33,7 @@ declare type CompanyDataPage = {
 }
 
 
-declare type NodeDataPage = {
+type NodeDataPage = {
     nodeId: number;
     companyId: number;
     name: string;
@@ -67,19 +62,18 @@ declare type NodeDataPage = {
 
 
 
-declare type ReportsPerDay = {
-    success: boolean;
+type ReportsPerDay = {
     pagination: ReportsPagination;
     result: ReportData[]
 }
 
-declare type ReportsPagination = {
+type ReportsPagination = {
     previous: string;
     current: string;
     next: string;
 }
 
-declare type ReportData = {
+type ReportData = {
     reportId: number;
     rating: number;
     message: string;

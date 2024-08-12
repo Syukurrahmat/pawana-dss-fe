@@ -9,7 +9,7 @@ import { RouterProvider } from 'react-router-dom';
 import './app.css';
 import { ConfirmDialogProvider } from './hooks/useConfirmDialog.tsx';
 import useUser, { UserContextProvider } from './hooks/useUser.tsx';
-import appRouter from './routers/appRoutes.tsx';
+import generateAppRouter from './routers/appRoutes.tsx';
 
 const toastOptions: ToastProviderProps = {
 	defaultOptions: {
@@ -26,7 +26,7 @@ moment.locale('id');
 
 const RouterProviderRoleBase = () => {
 	const { user } = useUser();
-	return <RouterProvider router={appRouter(user.role)} />;
+	return <RouterProvider router={generateAppRouter(user.role)} />;
 };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

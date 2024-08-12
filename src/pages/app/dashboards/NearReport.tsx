@@ -1,6 +1,6 @@
 import { Box, Card, CardBody, CardHeader, CardProps, Center, HStack, Heading, Icon, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconNotebookOff, IconSpeakerphone } from '@tabler/icons-react';
-import ReportCard from '../reports/ReportCard';
+import ReportCard from '../Reports/ReportCard';
 
 interface NearReport extends CardProps {
 	data: any[];

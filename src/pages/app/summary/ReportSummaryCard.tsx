@@ -2,7 +2,7 @@ import MyMap from '@/components/Maps';
 import { Alert, Card, CardBody, Center, Flex, Grid, HStack, Icon, Select, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
-import { RatingIconList } from '../reports/ReportCard';
+import { RatingIconList } from '../Reports/ReportCard';
 import MyMarker from '@/components/Maps/marker';
 
 interface ReportSummaryCard {

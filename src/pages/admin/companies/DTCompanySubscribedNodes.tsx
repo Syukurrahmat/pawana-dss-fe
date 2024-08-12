@@ -7,13 +7,13 @@ import EditInMapInputGroup from '@/components/Form/EditInMapInputGroup';
 import MyMap from '@/components/Maps';
 import NodeSubscription from '@/components/common/AddNodeSubscription';
 import SectionTitle from '@/components/common/SectionTitle';
-import { API_URL } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
+import { usemyToasts } from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import { Box, Button, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconBuilding, IconCirclePlus, IconTrees, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
-import axios from 'axios';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KeyedMutator, mutate } from 'swr';
@@ -25,58 +25,63 @@ interface CompSubscribedNodes {
 
 export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 	const { data, mutate: dataPageMutate } = props;
+	const { companyId } = data;
 
-	const navigate = useNavigate();
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
-	const { apiResponseToast } = useApiResponseToast();
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedCoordinate, setEditedCoordinate] = useState(data.coordinate);
-	const { user, roleIs } = useUser();
+
 	const confirmDialog = useConfirmDialog();
+	const navigate = useNavigate();
+	const toast = usemyToasts();
+	const { user, roleIs } = useUser();
 
-	const { companyId } = data;
-	const dtNodeSubsApiURL = `/companies/${companyId}/nodes`;
-	const dtNodePrivateApiURL = `/companies/${companyId}/private-nodes`;
+	const companyUpdateURL = `/companies/${companyId}`;
+	const dtNodeSubsURL = `/companies/${companyId}/nodes`;
+	const dtNodePrivateURL = `/companies/${companyId}/private-nodes`;
 
-	const handleRemoveNodeSubscription = (subscriptionid: number) => {
-		const deleteURL = `${API_URL + dtNodeSubsApiURL}?subscriptionid=${subscriptionid}`; //prettier-ignore
-
+	const onRemoveNodeSubs = (nodeId: number) => {
 		confirmDialog({
 			title: 'Hapus Pengikuti Node',
 			message: 'Anda yakin hendak menghapus node ini dari daftar langganan',
 			confirmButtonColor: 'red',
 			onConfirm: () =>
-				axios.delete(deleteURL).then(({ data: dt }) => {
-					mutate((e: any) => e && e[0] == dtNodeSubsApiURL);
-					dataPageMutate((e) => {
-						e!.countSubscribedNodes -= 1;
-						return e;
-					});
-					apiResponseToast(dt);
-				}),
+				myAxios
+					.delete(`${dtNodeSubsURL}/${nodeId}`)
+					.then(() => {
+						toast.success('Node berhasil di-unsubcribe');
+						mutate(
+							(e) => typeof e === 'string' && e.startsWith(dtNodeSubsURL)
+						);
+					})
+					.catch((e) => {
+						console.log(e);
+						toast.success('Node gagal di-unsubcribe');
+					}),
 		});
 	};
 
-	const handleSubmitEditedCoordinate = async () => {
-		const submitNewCoordinateURL = `${API_URL}/companies/${companyId}`;
-
+	const onSubmitEditingCoordinate = async () => {
 		setIsSubmiting(true);
-		const { data: dt } = await axios.put(submitNewCoordinateURL, {
-			coordinate: editedCoordinate,
-		});
 
-		setIsSubmiting(false);
-		apiResponseToast(dt, {
-			onSuccess() {
-				setIsEditing(false);
+		myAxios
+			.patch(companyUpdateURL, { coordinate: editedCoordinate })
+			.then(() => {
+				toast.success('Lokasi Perusahaan berhasil diperbarui');
 				dataPageMutate({ ...data, coordinate: editedCoordinate });
-			},
-		});
+			})
+			.catch(() => {
+				toast.error('Lokasi Perusahaan gagal diperbarui');
+			})
+			.finally(() => {
+				setIsEditing(false);
+				setIsSubmiting(false);
+			});
 	};
 
 	const nodeSubscriptionColumns = useMemo(
-		() => getSubscribedNodesColumns(user.role, handleRemoveNodeSubscription),
+		() => getSubscribedNodesColumns(user.role, onRemoveNodeSubs),
 		[]
 	);
 
@@ -87,7 +92,6 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 			<SectionTitle IconEl={IconUsersGroup}>
 				Lokasi Usaha dan Node yang dikuti
 			</SectionTitle>
-
 			<Box>
 				<EditInMapInputGroup
 					role={user.role}
@@ -95,13 +99,13 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 					isEditingState={[isEditing, setIsEditing]}
 					editedCoordinateState={[editedCoordinate, setEditedCoordinate]}
 					isSubmiting={isSubmiting}
-					handleSubmitEditedCoordinate={handleSubmitEditedCoordinate}
+					handleSubmitEditedCoordinate={onSubmitEditingCoordinate}
 				/>
 				<MyMap
 					w="full"
 					my="4"
 					h="300px"
-					companiesData={nodesDataCtx ? [data] : []}
+					companiesData={[data]}
 					data={nodesDataCtx || []}
 					outline={isEditing ? '3px solid' : ''}
 					outlineColor="orange.300"
@@ -150,7 +154,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 				</HStack>
 
 				<DataTable
-					apiUrl={dtNodePrivateApiURL}
+					apiUrl={dtNodePrivateURL}
 					columns={nodePrivateColumns}
 					emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}
 					hiddenPagination={true}
@@ -184,7 +188,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 				</HStack>
 
 				<DataTable
-					apiUrl={dtNodeSubsApiURL}
+					apiUrl={dtNodeSubsURL}
 					columns={nodeSubscriptionColumns}
 					setDataContext={setNodeDataCtx}
 					emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}

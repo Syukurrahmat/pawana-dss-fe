@@ -2,12 +2,12 @@ import InputSearch from '@/components/Form/inputSearch';
 import MyMap from '@/components/Maps';
 import { API_URL } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
-import { apiFetcher, pageDataFetcher } from '@/utils/fetcher';
+import { fetcher, myAxios } from '@/utils/fetcher';
 import { Box, BoxProps, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Skeleton, Tag, TagCloseButton, TagLabel, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import axios from 'axios';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { generateNodesMarkerForNodeSubs } from '../Maps/marker/MarkerForNodeSubs';
+import qs from 'qs';
 
 interface NodeSubs extends BoxProps {
 	subsInfo:
@@ -29,23 +29,25 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	let apiURL = '';
-	let postDataApiURL = '';
-	let remainingLimitURL = '';
+	// ==========================
 
-	if (subsInfo.type == 'user') {
-		apiURL = `/nodes/available?forUserSubs=${subsInfo.userId}`;
-		postDataApiURL = `${API_URL}/users/${subsInfo.userId}/nodes`;
-		remainingLimitURL = `/users/${subsInfo.userId}/remaining-subs-limit`;
-	} else {
-		apiURL = `/nodes/available?forCompanySubs=${subsInfo.companyData.companyId}`;
-		postDataApiURL = `${API_URL}/companies/${subsInfo.companyData.companyId}/nodes`;
-		remainingLimitURL = `/companies/${subsInfo.companyData.companyId}/remaining-subs-limit`;
-	}
+	const baseURL =
+		subsInfo.type === 'user'
+			? `/users/${subsInfo.userId}`
+			: `/companies/${subsInfo.companyData.companyId}`;
+
+	const urlQuery =
+		subsInfo.type === 'user'
+			? { forUserSubs: subsInfo.userId }
+			: { forCompanySubs: subsInfo.companyData.companyId };
+
+	const apiURL = `/nodes/available?${qs.stringify(urlQuery)}`;
+	const postDataApiURL = `${baseURL}/nodes`;
+	const remainingLimitURL = `${baseURL}/limit`;
 
 	const { data: limit, mutate: mutateLimit } = useSWR<number>(
 		remainingLimitURL,
-		pageDataFetcher
+		fetcher
 	);
 
 	const limitationToast = () =>
@@ -78,7 +80,7 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 
 		setIsSubmiting(true);
 		const nodeIds = selectedNodes.map((e) => e.nodeId);
-		const response = await axios.post(postDataApiURL, { nodeIds });
+		const response = await myAxios.post(postDataApiURL, { nodeIds });
 		mutateLimit((e) => (e || 0) + selectedNodes.length);
 		apiResponseToast(response.data, {
 			onSuccess() {
@@ -112,7 +114,9 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader>Tambahkan node</ModalHeader>
+
 					{!isSubmiting && <ModalCloseButton />}
+
 					<ModalBody py="0">
 						{limit !== undefined ? (
 							<>
@@ -217,13 +221,16 @@ interface FindInMapElement {
 
 function FindInMapElement(props: FindInMapElement) {
 	const { selectedNodes, companyData, onSelectChange, apiURL } = props;
-	const { data } = useSWR(apiURL, apiFetcher);
+	const { data } = useSWR<any>(apiURL, fetcher);
 
 	return (
 		<>
 			<MyMap
 				companiesData={companyData ? [companyData] : []}
-				marker={generateNodesMarkerForNodeSubs(selectedNodes, onSelectChange)}
+				marker={generateNodesMarkerForNodeSubs(
+					selectedNodes,
+					onSelectChange
+				)}
 				data={data ? data.result : []}
 				as={data ? undefined : Skeleton}
 				centerAuto={false}

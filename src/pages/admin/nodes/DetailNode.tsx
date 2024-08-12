@@ -5,8 +5,8 @@ import { CompanyCard } from '@/components/managerCard';
 import { nodeStatusAttr, nodeTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
-import { pageDataFetcher } from '@/utils/fetcher';
-import { Box, Button, Center, Container, Divider, Flex, HStack, Heading, Icon, Stat, StatLabel, StatNumber, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
+import { fetcher } from '@/utils/fetcher';
+import { Box, Center, Container, Divider, Flex, HStack, Heading, Icon, Stat, StatLabel, StatNumber, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconAddressBook, IconCalendar, IconChartBubble, IconCircleDot, IconEdit, IconInfoCircle, IconLock, IconTextCaption } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
@@ -15,16 +15,14 @@ import DTLastDataSent from './DTLastDataSent';
 import UserSubsctiptionsList from './DTUserSubsctiptions';
 import EditNodeProfileButton from './EditNodeProfile';
 import NodePosisionInMap from './NodeCoordinate';
+import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 
 export default function DetailNode() {
 	const { id } = useParams();
 	const { roleIs } = useUser();
 
 	const apiURLEntryPoint = `/nodes/${id}`;
-	const { data, mutate } = useSWR<NodeDataPage>(
-		apiURLEntryPoint,
-		pageDataFetcher
-	);
+	const { data, mutate } = useSWR<NodeDataPage>(apiURLEntryPoint, fetcher);
 
 	if (!data) return <LoadingComponent />;
 
@@ -153,9 +151,11 @@ export default function DetailNode() {
 						</HStack>
 					</Stat>
 				</Flex>
-				
-				{!isPrivateNodePage && <NodePosisionInMap data={data} mutate={mutate} />}
-				
+
+				{!isPrivateNodePage && (
+					<NodePosisionInMap data={data} mutate={mutate} />
+				)}
+
 				{!data.companyId && roleIs('admin') && (
 					<>
 						<CompanySubsctiptionsList data={data} mutate={mutate} />
@@ -172,7 +172,13 @@ export default function DetailNode() {
 				{roleIs('admin') && (
 					<>
 						<SectionTitle IconEl={IconLock}>Lainnya</SectionTitle>
-						<Button colorScheme="red">Hapus Node</Button>
+						<DeleteResourceButton
+							resource="Node"
+							name={data.name}
+							colorScheme="red"
+							deleteApiUrl={'/nodes/' + data.nodeId}
+							redirectPath="/nodes"
+						/>
 					</>
 				)}
 			</Container>

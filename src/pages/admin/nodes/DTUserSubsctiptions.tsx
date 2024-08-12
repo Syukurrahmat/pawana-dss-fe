@@ -2,14 +2,14 @@ import DataTable from '@/components/DataTable';
 import InputSearch from '@/components/Form/inputSearch';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
 import SectionTitle from '@/components/common/SectionTitle';
-import { API_URL } from '@/constants/config';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
+import { usemyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
+import { myAxios } from '@/utils/fetcher';
 import { Button, HStack, IconButton, Link, Spacer, Tag } from '@chakra-ui/react'; //prettier-ignore
 import { IconExternalLink, IconTrash, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table';
-import axios from 'axios';
 import { useMemo } from 'react';
 import { Link as RLink } from 'react-router-dom';
 import { KeyedMutator, mutate } from 'swr';
@@ -17,7 +17,7 @@ import { KeyedMutator, mutate } from 'swr';
 const columnHelper = createColumnHelper<DTNodeUsersSubscription>();
 
 interface UserSubsList {
-	mutate: KeyedMutator<any>;
+	mutate: KeyedMutator<NodeDataPage>;
 	data: NodeDataPage;
 }
 
@@ -27,28 +27,26 @@ export default function UserSubsctiptionsList({
 }: UserSubsList) {
 	let { nodeId, countUserSubscription } = data;
 	const confirmDialog = useConfirmDialog();
-	const { apiResponseToast } = useApiResponseToast();
-	const dataApiURL = `/nodes/${nodeId}/users`;
+	const toast = usemyToasts();
+	const apiURL = `/nodes/${nodeId}/users`;
 
-	const handleDeleteSubs = (subscriptionid: number) => {
+	const handleDeleteSubs = (userId: number) => {
 		confirmDialog({
 			title: 'Hapus Pengguna',
 			message: 'Hapus pengguna dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
-			onConfirm: async () => {
-				return axios
-					.delete(
-						API_URL + dataApiURL + '?subscriptionid=' + subscriptionid
-					)
-					.then(({ data: dt }) =>
-						apiResponseToast(dt, {
-							onSuccess: () => {
-								mutate((e) => e && e[0] == dataApiURL);
-								dataPageMutate();
-							},
-						})
-					);
-			},
+			onConfirm: async () =>
+				myAxios
+					.delete(`${apiURL}/${userId}`)
+					.then(() => {
+						mutate((e) => typeof e == 'string' && e.startsWith(apiURL));
+						dataPageMutate();
+						toast.success('Berhasil menghapus subscription pengguna');
+					})
+					.catch((e) => {
+						console.log(e);
+						toast.error('Gagal menghapus subscription pengguna');
+					}),
 		});
 	};
 	const handleDeleteAllSubs = () => {
@@ -57,18 +55,17 @@ export default function UserSubsctiptionsList({
 			message:
 				'Hapus Semua pengguna dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
-			onConfirm: async () => {
-				return axios
-					.delete(API_URL + dataApiURL + '?all=true')
-					.then(({ data: dt }) =>
-						apiResponseToast(dt, {
-							onSuccess: () => {
-								mutate((e) => e && e[0] == dataApiURL);
-								dataPageMutate();
-							},
-						})
-					);
-			},
+			onConfirm: async () =>
+				myAxios
+					.delete(`${apiURL}`)
+					.then(() => {
+						mutate((e) => typeof e == 'string' && e.startsWith(apiURL));
+						dataPageMutate();
+						toast.success('Berhasil menghapus subscription pengguna');
+					})
+					.catch(() => {
+						toast.error('Gagal menghapus subscription pengguna');
+					}),
 		});
 	};
 
@@ -93,7 +90,7 @@ export default function UserSubsctiptionsList({
 				meta: { sortable: true },
 			}),
 
-			columnHelper.accessor('subscriptionId', {
+			columnHelper.accessor('userId', {
 				header: 'Aksi',
 				cell: (info) => (
 					<HStack>
@@ -104,7 +101,7 @@ export default function UserSubsctiptionsList({
 							aria-label="Hapus"
 							onClick={() => handleDeleteSubs(info.getValue())}
 						/>
-						<RLink to={'/users/' + info.row.original.userId}>
+						<RLink to={'/users/' + info.getValue()}>
 							<Button
 								colorScheme="blue"
 								size="sm"
@@ -128,27 +125,27 @@ export default function UserSubsctiptionsList({
 				</Tag>
 			</SectionTitle>
 
-			<HStack mt="4" justify="space-between">
-				{!!countUserSubscription && (
+			{!!countUserSubscription && (
+				<HStack mt="4" justify="space-between">
 					<Button
 						colorScheme="red"
 						leftIcon={<IconTrash size="18" />}
 						onClick={handleDeleteAllSubs}
 						children="Hapus Semua Pengguna"
 					/>
-				)}
-				<Spacer/>
-				<InputSearch
-					rounded="md"
-					bg="white"
-					placeholder="Cari Pengguna"
-					_onSubmit={null}
-				/>
-			</HStack>
+					<Spacer />
+					<InputSearch
+						rounded="md"
+						bg="white"
+						placeholder="Cari Pengguna"
+						_onSubmit={null}
+					/>
+				</HStack>
+			)}
 
 			<DataTable
 				mt="4"
-				apiUrl={dataApiURL}
+				apiUrl={apiURL}
 				columns={columns}
 				emptyMsg={['Belum ada Pengguna']}
 			/>

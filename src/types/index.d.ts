@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 declare module "*.svg" {
     export default string;
 }
@@ -9,12 +11,9 @@ declare module "*.png" {
     export default string;
 }
 
-
-type UserRole =  'admin' | 'regular' | 'manager' | 'gov';
-
 type ConfirmMessage = {
     title: string,
-    message: string,
+    message: ReactNode,
     onConfirm: () => Promise<void> | null,
     confirmButtonColor?: string,
     confirmText?: string,

@@ -7,13 +7,14 @@ import UserCard from '@/components/managerCard';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate } from '@/utils/dateFormating';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { Box, Button, Container, HStack, Heading, Spacer, Text, } from '@chakra-ui/react'; //prettier-ignore
 import { IconAddressBook, IconCalendar, IconEdit, IconLock, IconTag, IconTextCaption, IconUserHeart } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
 import EditGroupButton from './EditCompany';
+import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 
 export default function DetailCompany() {
 	const { id } = useParams();
@@ -21,7 +22,7 @@ export default function DetailCompany() {
 
 	const { data, mutate } = useSWR<CompanyDataPage>(
 		`/companies/${id}`,
-		pageDataFetcher
+		fetcher
 	);
 
 	if (!data) return <LoadingComponent />;
@@ -77,12 +78,19 @@ export default function DetailCompany() {
 					Deskripsi Usaha
 				</SectionTitle>
 				<Text>{data.description}</Text>
+				
 				<CompanySubscribedNodesList data={data} mutate={mutate} />
 
 				{roleIs(['admin', 'manager']) && (
 					<>
 						<SectionTitle IconEl={IconLock}>Lainnya</SectionTitle>
-						<Button colorScheme="red">Hapus Usaha</Button>
+						<DeleteResourceButton
+							resource="Perusahaan"
+							name={data.name}
+							colorScheme="red"
+							deleteApiUrl={'/companies/' + data.companyId}
+							redirectPath="/companies"
+						/>
 					</>
 				)}
 			</Container>

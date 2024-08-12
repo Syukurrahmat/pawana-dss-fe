@@ -8,7 +8,7 @@ import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
 import { delay } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
-import { pageDataFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import {
 	Box,
 	BoxProps,
@@ -91,7 +91,7 @@ function DetailNote({ eventId, onClose, readOnly }: DetailNote) {
 
 	const { data: event, mutate: eventMutate } = useSWR<DetailEventLog>(
 		entryApiUrl,
-		pageDataFetcher
+		fetcher
 	);
 
 	const mutateAllEvent = () => mutate((e) => typeof e == 'string' && e.startsWith(`/companies/${companyId}/events`) ); // prettier-ignore

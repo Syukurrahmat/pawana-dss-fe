@@ -5,7 +5,12 @@ import usePagination from './usePagination';
 import useSorting from './useSorting';
 import { Pagination } from './Pagination';
 import useSWR from 'swr';
-import { fetcherAPIWithQueries } from "@/utils/fetcher";
+import qs from 'qs';
+import {
+	UrlWithQuery,
+	fetcher,
+	fetcherAPIWithQueries,
+} from '@/utils/fetcher';
 import { useEffect, useRef } from 'react';
 
 interface IDataTable extends BoxProps {
@@ -40,34 +45,34 @@ export default function DataTable({
 	const { sorting, field, order, onSortingChange } = useSorting();
 
 	const itemcount = useRef({
-		totalItems : 0,
-		itemsInPage : 0
-	})
+		totalItems: 0,
+		itemsInPage: 0,
+	});
 
 	const queries = {
 		page: pageIndex + 1,
 		limit: limit,
 		sort: field,
 		order: order,
-		q: searchQuery,
+		search: searchQuery ? searchQuery : undefined,
 	};
 
-	const { data: rawData, isLoading } = useSWR([apiUrl, queries], ([a, b]) =>
-		fetcherAPIWithQueries(a, b)
+	const { data: rawData, isLoading } = useSWR<Paginated>(
+		UrlWithQuery(apiUrl, queries),
+		fetcher
 	);
 
-
-	const data = rawData?.result || [];
+	const data = rawData?.rows || []
 
 	useEffect(() => {
 		if (setDataContext) setDataContext(rawData ? data : rawData);
 	}, [data]);
-	
-	if(rawData) {
+
+	if (rawData) {
 		itemcount.current = {
-			totalItems : rawData?.totalItems,
-			itemsInPage : rawData?.result.length
-		}
+			totalItems: rawData.meta.total,
+			itemsInPage: rawData.rows.length,
+		};
 	}
 
 	const table = useReactTable({
@@ -82,13 +87,13 @@ export default function DataTable({
 		manualSorting: true,
 		onRowSelectionChange: setRowSelection,
 		state: { pagination, sorting, rowSelection },
-		rowCount: itemcount.current.totalItems
+		rowCount: itemcount.current.totalItems,
 	});
 
 	return (
 		<Box {...rest} maxH="inherit" h="fit-content" w="full">
 			<Box shadow="xs" bg="white" rounded="md">
-				{Boolean(searchQuery) && Boolean(rawData?.totalItems) && (
+				{Boolean(searchQuery) && Boolean(rawData?.meta.total) && (
 					<Text
 						px="3"
 						py="2"
@@ -97,7 +102,7 @@ export default function DataTable({
 						borderBottom="1px solid"
 						borderColor="gray.100"
 					>
-						Menampilkan {rawData?.totalItems} Item dari kata kunci "
+						Menampilkan {rawData?.meta.total} Item dari kata kunci "
 						{searchQuery}"
 					</Text>
 				)}
@@ -165,13 +170,16 @@ export default function DataTable({
 
 						<Tbody>
 							{isLoading &&
-								Array.from({ length: itemcount.current.itemsInPage  || 5}, (_, i) => (
-									<Tr key={i}>
-										<Td colSpan={9999}>
-											<Skeleton h="28px" />
-										</Td>
-									</Tr>
-								))}
+								Array.from(
+									{ length: itemcount.current.itemsInPage || 5 },
+									(_, i) => (
+										<Tr key={i}>
+											<Td colSpan={9999}>
+												<Skeleton h="28px" />
+											</Td>
+										</Tr>
+									)
+								)}
 							{!isLoading && !data.length && (
 								<Tr>
 									<Td colSpan={9999}>
@@ -205,7 +213,7 @@ export default function DataTable({
 					</Table>
 				</TableContainer>
 			</Box>
-			
+
 			{!hiddenPagination && (
 				<Pagination
 					px="2"

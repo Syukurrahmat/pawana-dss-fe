@@ -1,6 +1,5 @@
 import useUser from '@/hooks/useUser';
 import { Box, Flex, HStack, Heading, Text } from '@chakra-ui/react'; //prettier-ignore
-import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { SelectUserOrCompanyView } from '../dashboards/informationCard';
 import CreateEventLog from './CreateEventLog';
 import CurrentEventlog from './currentEventlog';
@@ -29,7 +28,7 @@ export default function Notes() {
 						</Box>
 						<CreateEventLog />
 					</HStack>
-					<CurrentEventlog companyId={companyId}/>					
+					<CurrentEventlog companyId={companyId} />
 				</Box>
 			</Box>
 

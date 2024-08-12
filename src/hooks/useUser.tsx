@@ -1,5 +1,5 @@
 import PreLoadScreen from '@/pages/other/preLoadScreen';
-import { apiFetcher } from '@/utils/fetcher';
+import { fetcher } from '@/utils/fetcher';
 import { createContext, useContext } from 'react'; //prettier-ignore
 import useSWR, { KeyedMutator } from 'swr';
 
@@ -56,13 +56,14 @@ export default function useUser() {
 export function UserContextProvider(props: any) {
 	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	const { data: user, mutate: mutateUser } = useSWR<User>(
-		`/me?timezone=${timezone}`,
-		apiFetcher
+		`/app?timezone=${timezone}`,
+		fetcher
 	);
+
 
 	const roleIs: CheckRole = (role) => role.includes(user!.role);
 	const roleIsNot: CheckRole = (role) => !roleIs(role);
-
+	
 	if (!user) return <PreLoadScreen />;
 
 	return (

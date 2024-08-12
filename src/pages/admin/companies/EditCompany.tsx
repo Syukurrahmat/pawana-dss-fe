@@ -1,16 +1,19 @@
+import {
+	compareObjects,
+	trimAllValues,
+	usemyToasts,
+} from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
-import * as Yup from 'yup';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, VStack, FormControl, FormLabel, Input, FormErrorMessage, Textarea, useToast, useDisclosure, ButtonProps} from '@chakra-ui/react'; //prettier-ignore
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useDisclosure, useToast, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
-import { compareObjects, trimAllValues } from '@/utils/common.utils';
+import * as Yup from 'yup';
 
-import { API_URL } from '@/constants/config';
-import { KeyedMutator } from 'swr';
-import axios from 'axios';
 import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { myAxios } from '@/utils/fetcher';
+import { KeyedMutator } from 'swr';
 
 interface IEUModal extends ButtonProps {
-	data: CompanyDataPage
+	data: CompanyDataPage;
 	mutate: KeyedMutator<CompanyDataPage>;
 }
 
@@ -18,7 +21,7 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { apiResponseToast } = useApiResponseToast();
 
-	const toast = useToast();
+	const toast = usemyToasts();
 	const { name, description, address } = data;
 	const initialValues = { name, description, address };
 
@@ -42,29 +45,26 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 
 		onSubmit: (values) => {
 			trimAllValues(values);
-			const filteredData = compareObjects(initialValues, values);
+			const updatedData = compareObjects(initialValues, values);
 
-			if (Object.keys(filteredData).length === 0) {
-				toast({
-					title: `Opss !!!`,
-					description: 'Belum ada yang disunting',
-					status: 'warning',
-				});
+			if (Object.keys(updatedData).length === 0) {
+				toast.opss('Belum ada yang disunting');
 				setSubmitting(false);
 				return;
 			}
 
-			axios
-				.put(`${API_URL}/companies/${data.companyId}`, { ...filteredData })
-				.then(({ data }) => {
+			myAxios
+				.patch(`/companies/${data.companyId}`, { ...updatedData })
+				.then((e) => {
+					toast.success('Berhasil Memperharui data');
+					mutate((e) => (e ? { ...e, ...updatedData } : e));
+				})
+				.catch(() => {
+					toast.error('Gagal Memperharui data');
+				})
+				.finally(() => {
 					setSubmitting(false);
-
-					apiResponseToast(data, {
-						onSuccess() {
-							mutate((e) => (e ? { ...e, ...filteredData } : e));
-							onClose();
-						},
-					});
+					onClose();
 				});
 		},
 	});

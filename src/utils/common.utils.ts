@@ -1,16 +1,17 @@
+import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { IconMoodAnnoyed, IconMoodCheck, IconMoodNervous, IconMoodSmile, IconMoodWrrr } from "@tabler/icons-react";
 
 
 export const compareObjects = <T extends Record<string, any>>(obj1: T, obj2: T) => {
     const uniqueValues = {} as Partial<T>;
 
-    Object.keys(obj1).forEach((key : keyof T) => {
+    Object.keys(obj1).forEach((key: keyof T) => {
         if (obj1[key] !== obj2[key]) {
             uniqueValues[key] = obj1[key];
         }
     });
 
-    Object.keys(obj2).forEach((key : keyof T) => {
+    Object.keys(obj2).forEach((key: keyof T) => {
         if (obj1[key] !== obj2[key]) {
             uniqueValues[key] = obj2[key];
         }
@@ -84,3 +85,42 @@ export const getCO2Properties = (category?: string) => {
 }
 
 export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+
+export const toastSuccessOpt: Partial<UseToastOptions> = {
+    status: 'success',
+    title: 'Berhasil',
+}
+
+export const toastErrorOpt: Partial<UseToastOptions> = {
+    status: 'error',
+    title: 'Gagal'
+}
+
+export const usemyToasts = () => {
+    const toast = useToast();
+    return {
+        success: (description: string, opt?: Partial<UseToastOptions>) =>
+            toast({
+                status: 'success',
+                title: 'Berhasil',
+                description,
+                ...opt,
+            }),
+        error: (description: string, opt?: Partial<UseToastOptions>) =>
+            toast({
+                status: 'error',
+                title: 'Gagal',
+                description,
+                ...opt,
+            }),
+
+        opss: (description: string, opt?: Partial<UseToastOptions>) =>
+            toast({
+                title: `Opss !!!`,
+                status: 'warning',
+                description,
+                ...opt
+            })
+    };
+};
