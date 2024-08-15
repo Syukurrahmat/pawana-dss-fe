@@ -1,9 +1,8 @@
-import { Box, Button} from '@chakra-ui/react'; //prettier-ignore
-import { Container, HStack, Heading, Text } from '@chakra-ui/react';
-import UserSubscribedNodesList from '@/pages/admin/users/DTUserSubscribedNodes';
-import useUser from '@/hooks/useUser';
-import { IconCirclePlus } from '@tabler/icons-react';
 import NodeSubscription from '@/components/common/AddNodeSubscription';
+import useUser from '@/hooks/useUser';
+import UserSubscribedNodesList from '@/pages/admin/Users/DTUserSubscribedNodes';
+import { Box, Button, Container, HStack, Heading, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconCirclePlus } from '@tabler/icons-react';
 
 export default function MySubscribedNodes() {
 	const { user } = useUser();

@@ -6,7 +6,7 @@ import { Alert, Box, Card, CardBody, Center, Flex, Grid, HStack, Icon, Text, VSt
 import idLocale from '@fullcalendar/core/locales/id';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
-import { IconCalendarEvent, IconClipboard, IconClipboardOff, IconNotebook } from '@tabler/icons-react'; //prettier-ignore
+import { IconCalendarEvent, IconClipboardOff, IconNotebook } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useRef } from 'react';
 import { CardEventLog } from '../EventLogs/CardEventLog';

@@ -1,11 +1,11 @@
 
-import { Box, Flex, HStack, Spinner, Switch, Text, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import FilterByDistance from './FilterByDistance';
 import useUser from '@/hooks/useUser';
-import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { useEffect, useState } from 'react';
+import { Box, Flex, HStack, Spinner, Switch, Text, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import { useEffect } from 'react';
+import useSWR from 'swr';
 import { FilterState } from '.';
+import FilterByDistance from './FilterByDistance';
 
 interface AdvanceReportFeature {
 	filterState: StateOf<FilterState>;

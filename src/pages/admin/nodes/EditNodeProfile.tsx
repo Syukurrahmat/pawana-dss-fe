@@ -65,7 +65,7 @@ export default function EditNodeProfileButton({
 
 			myAxios
 				.patch(submitURL, { ...updatedData })
-				.then((e) => {
+				.then(() => {
 					toast.success('Berhasil Memperharui data');
 					mutate((e) => (e ? { ...e, ...updatedData } : e));
 				})

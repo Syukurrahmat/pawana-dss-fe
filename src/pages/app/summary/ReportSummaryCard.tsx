@@ -1,7 +1,7 @@
 import MyMap from '@/components/Maps';
 import MyMarker from '@/components/Maps/marker';
 import { Alert, Card, CardBody, Flex, Grid, HStack, Icon, Select, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import { IconDeviceSpeakerOff, IconSpeakerphone, IconStar } from '@tabler/icons-react';
+import { IconSpeakerphone, IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
 import { RatingIconList } from '../Reports/ReportCard';
 

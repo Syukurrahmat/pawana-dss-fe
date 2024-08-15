@@ -1,5 +1,6 @@
 import LoadingComponent from '@/components/Loading/LoadingComponent';
 import { ButtonViewDashboard } from '@/components/common/ChangeActiveDashButton';
+import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
 import SectionTitle from '@/components/common/SectionTitle';
 import TagWithIcon from '@/components/common/TagWithIcon';
@@ -8,13 +9,12 @@ import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { fetcher } from '@/utils/fetcher';
-import { Box, Button, Container, HStack, Heading, Spacer, Text, } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Container, HStack, Heading, Spacer, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconAddressBook, IconCalendar, IconEdit, IconLock, IconTag, IconTextCaption, IconUserHeart } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
 import EditGroupButton from './EditCompany';
-import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 
 export default function DetailCompany() {
 	const { id } = useParams();

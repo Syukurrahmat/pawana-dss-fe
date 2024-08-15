@@ -53,7 +53,7 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 
 			myAxios
 				.patch(`/companies/${data.companyId}`, { ...updatedData })
-				.then((e) => {
+				.then(() => {
 					toast.success('Berhasil Memperharui data');
 					mutate((e) => (e ? { ...e, ...updatedData } : e));
 				})

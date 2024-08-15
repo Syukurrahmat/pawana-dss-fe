@@ -2,14 +2,12 @@
 import useUser from '@/hooks/useUser';
 import {
 	compareObjects,
-	toastErrorOpt,
-	toastSuccessOpt,
 	trimAndCleanProps,
-	useMyToasts,
+	useMyToasts
 } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
-import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, UseToastOptions, VStack, useDisclosure, useToast } from '@chakra-ui/react'; //prettier-ignore
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
 import { useMatch, useParams } from 'react-router-dom';
 import { KeyedMutator } from 'swr';

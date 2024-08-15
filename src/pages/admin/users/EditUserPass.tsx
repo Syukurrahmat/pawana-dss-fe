@@ -1,5 +1,4 @@
 import InputPassword from '@/components/Form/inputPassword';
-import { API_URL } from '@/constants/config';
 import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
@@ -9,7 +8,7 @@ import { useState } from 'react';
 import * as Yup from 'yup';
 
 import { myAxios } from '@/utils/fetcher';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import PasswordChecklist from 'react-password-checklist';
 
 interface IEUModal extends ButtonProps {

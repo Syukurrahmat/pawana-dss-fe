@@ -35,7 +35,7 @@ const privateNodeValidationSchema = Yup.object().shape({
 });
 
 export default function CreateNode() {
-	const { roleIs, user } = useUser();
+	const { roleIs } = useUser();
 	const location = useLocation();
 
 	const isOnSpesificNode = !useMatch('/nodes/create');

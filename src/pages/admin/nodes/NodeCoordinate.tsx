@@ -2,7 +2,6 @@ import EditInMapInputGroup from '@/components/Form/EditInMapInputGroup';
 import MyMap from '@/components/Maps';
 import SectionTitle from '@/components/common/SectionTitle';
 import { API_URL } from '@/constants/config';
-import useUser from '@/hooks/useUser';
 import { useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import { IconMapCheck } from '@tabler/icons-react'; //prettier-ignore

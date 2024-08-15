@@ -27,7 +27,7 @@ const getFilterQueries = (isOpen: boolean, filter: FilterState) => {
 };
 
 export default function ReportsPage() {
-	const { roleIsNot, roleIs, user } = useUser();
+	const { roleIsNot } = useUser();
 
 	const filterDisclosure = useDisclosure();
 	const showCompaniesDisclosure = useDisclosure();

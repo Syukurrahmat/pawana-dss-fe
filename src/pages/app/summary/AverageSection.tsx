@@ -5,13 +5,11 @@ import {
 	getISPUProperties,
 } from '@/utils/common.utils';
 import { Box, Center, HStack, Icon, Tag, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
+import {
+	IconInfoSquareRounded
+} from '@tabler/icons-react';
 import GaugeChart from 'react-gauge-chart';
 import { CardSection } from '.';
-import {
-	IconInfoSquareRounded,
-	IconMessageCircleQuestion,
-	IconQuestionMark,
-} from '@tabler/icons-react';
 
 interface AverageSection {
 	indoor?: SummaryAverageInsight;

@@ -15,10 +15,7 @@ import { useState } from 'react';
 import * as Yup from 'yup';
 
 export default function CreateCompany() {
-	const [selectedManager, setSelectedManager] = useState<{
-		userId: number;
-		name: string;
-	}>();
+	const [selectedManager, setSelectedManager] = useState<any>();
 	const { user, roleIs } = useUser();
 	const { role, userId } = user;
 

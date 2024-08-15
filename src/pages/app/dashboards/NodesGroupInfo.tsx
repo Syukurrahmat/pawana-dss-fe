@@ -9,8 +9,8 @@ import SingleNodeGRK from './GRK/SingleNodeGRK';
 import MultiNodeISPU from './ISPU/MultiNodeISPU';
 import SingleNodeISPU from './ISPU/SingleNodeISPU';
 
-type SingleISPU = SingleNodeAnalysisItem<[ISPUValueItem, ISPUValueItem]>;
-type MutiISPU = NodeStat<[ISPUValueItem, ISPUValueItem]>;
+type SingleISPU = SingleNodeAnalysisItem<ISPUValue>;
+type MutiISPU = NodeStat<ISPUValue>;
 type SingleGRK = SingleNodeAnalysisItem<GRKValue>;
 type MutiGRK = NodeStat<GRKValue>;
 type NodeGroupType = 'indoor' | 'outdoor' | 'arround';

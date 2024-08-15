@@ -25,7 +25,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 				const ispuValues = e.latestData?.ispu;
 				if (!ispuValues) return { ...e, data: { name: 'ISPU' } };
 				const { datetime, value } = ispuValues;
-				if (!value[0]) return { ...e, data: { name: 'ISPU' } };
+				if (!value || !value[0]) return { ...e, data: { name: 'ISPU' } };
 				const { ispu, category } = value[0];
 
 				return {

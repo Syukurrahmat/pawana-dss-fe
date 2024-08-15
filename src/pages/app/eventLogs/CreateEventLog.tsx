@@ -1,5 +1,4 @@
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
-import { API_URL } from '@/constants/config';
 import { eventLogsTypeAttr } from '@/constants/enumVariable';
 
 import useUser from '@/hooks/useUser';
@@ -8,7 +7,6 @@ import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Switch, Text, Textarea, VStack, useDisclosure, } from '@chakra-ui/react'; //prettier-ignore
 import { IconPlus } from '@tabler/icons-react';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import moment from 'moment';
 import { useEffect, useState } from 'react';

@@ -1,10 +1,9 @@
 import { Box, Divider, Grid, HStack, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import RecomendationCard from './RecomendationCard';
 import {
-	IconBuildingFactory,
 	IconBuildingFactory2,
-	IconTrees,
+	IconTrees
 } from '@tabler/icons-react';
+import RecomendationCard from './RecomendationCard';
 
 interface AverageSection {
 	indoor?: SummaryAverageInsight;

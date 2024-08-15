@@ -1,15 +1,14 @@
+import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
-import * as Yup from 'yup';
-import { API_URL } from '@/constants/config';
 import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Input, RadioGroup, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
-import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
+import * as Yup from 'yup';
 
-import axios, { AxiosError } from 'axios';
+import { BigAlert } from '@/components/common/BigAlert';
 import { MyRadio } from '@/components/common/MyRadio';
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
-import { BigAlert } from '@/components/common/BigAlert';
 import { myAxios } from '@/utils/fetcher';
+import { AxiosError } from 'axios';
 
 export default function CreateUser() {
 	const toast = useMyToasts();
@@ -49,7 +48,7 @@ export default function CreateUser() {
 		onSubmit: (values) => {
 			myAxios
 				.post('/users', trimAndCleanProps(values))
-				.then((e) =>{
+				.then(() =>{
 					setStatus({created : true})
 				})
 				.catch((e: AxiosError<APIResponse>) => {
