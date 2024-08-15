@@ -23,6 +23,7 @@ const LogoutButton = () => {
 			isLoading={isLoading}
 			p="3"
 			loadingText="Logout"
+			color={'gray.600'}
 			justifyContent="left"
 			leftIcon={<IconLogout />}
 			children={'Logout'}
@@ -59,7 +60,7 @@ export default function Sidebar({
 								<Button
 									w="full"
 									p="3"
-									color="gray.900"
+									color={isActive ? 'gray.900' : 'gray.600'}
 									isActive={isActive}
 									leftIcon={<e.Icon />}
 									justifyContent="left"
@@ -78,6 +79,7 @@ export default function Sidebar({
 						<Button
 							w="full"
 							p="3"
+							color={isActive ? 'gray.900' : 'gray.600'}
 							isActive={isActive}
 							justifyContent="left"
 							leftIcon={<IconUser />}

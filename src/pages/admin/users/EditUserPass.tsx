@@ -1,6 +1,6 @@
 import InputPassword from '@/components/Form/inputPassword';
 import { API_URL } from '@/constants/config';
-import { trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
+import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { IconCircleCheck, IconExclamationCircle } from '@tabler/icons-react'; //prettier-ignore
@@ -18,7 +18,7 @@ interface IEUModal extends ButtonProps {
 
 export default function EditPasswordButton({ data, ...rest }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const [passwordIsValid, setPasswordIsValid] = useState(false);
 	const { userId } = data;
 

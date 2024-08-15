@@ -4,7 +4,7 @@ import { TagCompanyType } from '@/components/Tags/index.tags';
 import SectionTitle from '@/components/common/SectionTitle';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
-import { usemyToasts } from '@/utils/common.utils';
+import { useMyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { myAxios } from '@/utils/fetcher';
 import { Button, Center, HStack, Icon, IconButton, Spacer, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
@@ -28,7 +28,7 @@ export default function CompanySubsctiptionsList({
 	let { nodeId, countCompanySubscribtion } = data;
 	const confirmDialog = useConfirmDialog();
 	const apiURL = `/nodes/${nodeId}/companies`;
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 
 	const handleDeleteSubs = (companyId: number) => {
 		confirmDialog({

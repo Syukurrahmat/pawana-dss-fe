@@ -2,7 +2,7 @@ import { API_URL } from '@/constants/config';
 import {
 	compareObjects,
 	trimAndCleanProps,
-	usemyToasts,
+	useMyToasts,
 } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
@@ -23,7 +23,7 @@ export default function EditNodeProfileButton({
 	...rest
 }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const { name, description, address, instalationDate } = data;
 	const initialValues = {
 		name,

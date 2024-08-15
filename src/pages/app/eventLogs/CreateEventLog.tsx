@@ -3,7 +3,7 @@ import { API_URL } from '@/constants/config';
 import { eventLogsTypeAttr } from '@/constants/enumVariable';
 
 import useUser from '@/hooks/useUser';
-import { trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
+import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Switch, Text, Textarea, VStack, useDisclosure, } from '@chakra-ui/react'; //prettier-ignore
@@ -28,7 +28,7 @@ export default function CreateEventLog() {
 	const companyId = user.view?.company?.companyId;
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const [onlyOneDayEvent, setOnlyOneDayEvent] = useState(false);
 	const [withoutEndDate, setWithoutEndDate] = useState(false);
 

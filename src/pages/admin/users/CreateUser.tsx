@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { API_URL } from '@/constants/config';
 import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Input, RadioGroup, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
-import { trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
+import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 
 import axios, { AxiosError } from 'axios';
 import { MyRadio } from '@/components/common/MyRadio';
@@ -12,7 +12,7 @@ import { BigAlert } from '@/components/common/BigAlert';
 import { myAxios } from '@/utils/fetcher';
 
 export default function CreateUser() {
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 
 	const {
 		handleChange,

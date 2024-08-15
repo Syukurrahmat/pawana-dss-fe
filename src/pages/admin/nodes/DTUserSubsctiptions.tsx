@@ -4,7 +4,7 @@ import NameWithAvatar from '@/components/common/NamewithAvatar';
 import SectionTitle from '@/components/common/SectionTitle';
 
 import useConfirmDialog from '@/hooks/useConfirmDialog';
-import { usemyToasts } from '@/utils/common.utils';
+import { useMyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { myAxios } from '@/utils/fetcher';
 import { Button, HStack, IconButton, Link, Spacer, Tag } from '@chakra-ui/react'; //prettier-ignore
@@ -27,7 +27,7 @@ export default function UserSubsctiptionsList({
 }: UserSubsList) {
 	let { nodeId, countUserSubscription } = data;
 	const confirmDialog = useConfirmDialog();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const apiURL = `/nodes/${nodeId}/users`;
 
 	const handleDeleteSubs = (userId: number) => {

@@ -5,7 +5,7 @@ import {
 	toastErrorOpt,
 	toastSuccessOpt,
 	trimAndCleanProps,
-	usemyToasts,
+	useMyToasts,
 } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
@@ -30,7 +30,7 @@ export default function EditUserProfileButton({
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { id } = useParams();
 	const { user } = useUser();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 
 	const userId = useMatch('/account') ? user.userId : id;
 

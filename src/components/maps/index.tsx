@@ -12,6 +12,7 @@ interface IMyMap extends BoxProps {
 	scrollWheelZoom?: boolean;
 	marker?: any;
 	centerAuto?: boolean;
+	focusInOneCompany?: boolean;
 	isEditing?: {
 		coordinate: LatLngExpression | number[];
 		onChange: (x: LatLng) => any;
@@ -28,6 +29,7 @@ export default function MyMap(props: IMyMap) {
 		marker = MyMarker.DetailNodesMarker,
 		mapRef,
 		companiesData,
+		focusInOneCompany,
 		isEditing,
 		circleBoundaryRadius,
 		...rest
@@ -41,7 +43,6 @@ export default function MyMap(props: IMyMap) {
 		const map = useMapEvents({
 			dragend: () => {
 				if (isEditing) {
-					
 					isEditing.onChange(map.getCenter());
 				}
 			},
@@ -73,6 +74,12 @@ export default function MyMap(props: IMyMap) {
 				setShowMarkerPicker(false);
 			}
 		}, [isEditing, isEditing?.coordinate]);
+
+		useEffect(() => {
+			if (focusInOneCompany && companiesData && companiesData[0]) {
+				map.flyTo(companiesData[0].coordinate as LatLngExpression, 17);
+			}
+		}, []);
 
 		return null;
 	};

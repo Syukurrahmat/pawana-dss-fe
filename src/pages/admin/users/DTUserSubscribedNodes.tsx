@@ -4,7 +4,7 @@ import MyMap from '@/components/Maps';
 
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
-import { usemyToasts } from '@/utils/common.utils';
+import { useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import { Box, BoxProps, Skeleton } from '@chakra-ui/react'; //prettier-ignore
 import { useMemo, useState } from 'react';
@@ -22,7 +22,7 @@ export default function UserSubscribedNodesList({
 }: UserSubsList) {
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
 
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const confirmDialog = useConfirmDialog();
 	const { user } = useUser();
 

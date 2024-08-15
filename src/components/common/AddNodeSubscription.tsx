@@ -1,62 +1,49 @@
 import InputSearch from '@/components/Form/inputSearch';
 import MyMap from '@/components/Maps';
-import { API_URL } from '@/constants/config';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { useMyToasts } from '@/utils/common.utils';
 import { fetcher, myAxios } from '@/utils/fetcher';
 import { Box, BoxProps, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Skeleton, Tag, TagCloseButton, TagLabel, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import qs from 'qs';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { generateNodesMarkerForNodeSubs } from '../Maps/marker/MarkerForNodeSubs';
-import qs from 'qs';
 
 interface NodeSubs extends BoxProps {
 	subsInfo:
-		| {
-				type: 'user';
-				userId: number;
-		  }
-		| {
-				type: 'company';
-				companyData: DataWithCoordinate;
-		  };
+		| { type: 'user'; userId: number }
+		| { type: 'company'; companyData: DataWithCoordinate };
 }
 
 type SelectedNode = { nodeId: number; name: string };
 
 export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
-	const { toast, apiResponseToast } = useApiResponseToast();
+	const toast = useMyToasts();
 	const [selectedNodes, setSelectedNodes] = useState<SelectedNode[]>([]);
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	// ==========================
-
-	const baseURL =
+	const postDataApiURL =
 		subsInfo.type === 'user'
-			? `/users/${subsInfo.userId}`
-			: `/companies/${subsInfo.companyData.companyId}`;
+			? `/users/${subsInfo.userId}/nodes`
+			: `/companies/${subsInfo.companyData.companyId}/nodes`;
 
 	const urlQuery =
 		subsInfo.type === 'user'
 			? { forUserSubs: subsInfo.userId }
 			: { forCompanySubs: subsInfo.companyData.companyId };
 
-	const apiURL = `/nodes/available?${qs.stringify(urlQuery)}`;
-	const postDataApiURL = `${baseURL}/nodes`;
-	const remainingLimitURL = `${baseURL}/limit`;
+	const apiURL = `/nodes/subscribeable?${qs.stringify(urlQuery)}`;
+	const limitSubsURL = `${postDataApiURL}/limit`;
 
 	const { data: limit, mutate: mutateLimit } = useSWR<number>(
-		remainingLimitURL,
+		limitSubsURL,
 		fetcher
 	);
 
 	const limitationToast = () =>
-		toast({
-			title: 'Opsss',
-			description:
-				'Node yang diikuti dibatasi maksimal 5 node, \nHapus node yang lain terlebih dahulu untuk menambahkan ',
-			status: 'warning',
-		});
+		toast.opss(
+			'Node yang diikuti dibatasi maksimal 5 node, \nHapus node yang lain terlebih dahulu untuk menambahkan '
+		);
 
 	const nodeSelectedHandler = (s: SelectedNode) => {
 		if (limit === undefined) return;
@@ -71,26 +58,25 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 
 	const submitHandler = async () => {
 		if (!selectedNodes.length) {
-			return toast({
-				title: 'Opss',
-				description: 'Sepertinya Anda belum menambahkan Node',
-				status: 'warning',
-			});
+			return toast.opss('Sepertinya Anda belum menambahkan Node');
 		}
-
 		setIsSubmiting(true);
+
 		const nodeIds = selectedNodes.map((e) => e.nodeId);
-		const response = await myAxios.post(postDataApiURL, { nodeIds });
-		mutateLimit((e) => (e || 0) + selectedNodes.length);
-		apiResponseToast(response.data, {
-			onSuccess() {
-				mutate(
-					(e: any) => e && e[0] == postDataApiURL.replace(API_URL, '')
-				);
-			},
-		});
-		setIsSubmiting(false);
-		onClose();
+		myAxios
+			.post(postDataApiURL, { nodeIds })
+			.then(() => {
+				toast.success(nodeIds.length + ' node publik berhasil ditambahkan');
+				mutate((e) => typeof e == 'string' && e.startsWith(postDataApiURL));
+				mutateLimit((e) => (e || 0) - nodeIds.length);
+			})
+			.catch(() => {
+				toast.success('Node publik gagal ditambahkan');
+			})
+			.finally(() => {
+				setIsSubmiting(false);
+				onClose();
+			});
 	};
 
 	return (
@@ -113,8 +99,7 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 			>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Tambahkan node</ModalHeader>
-
+					<ModalHeader>Tambah Ikuti Node Publik</ModalHeader>
 					{!isSubmiting && <ModalCloseButton />}
 
 					<ModalBody py="0">
@@ -221,17 +206,18 @@ interface FindInMapElement {
 
 function FindInMapElement(props: FindInMapElement) {
 	const { selectedNodes, companyData, onSelectChange, apiURL } = props;
-	const { data } = useSWR<any>(apiURL, fetcher);
+	const { data } = useSWR<NodeData[]>(apiURL, fetcher);
 
 	return (
 		<>
 			<MyMap
+				focusInOneCompany
 				companiesData={companyData ? [companyData] : []}
 				marker={generateNodesMarkerForNodeSubs(
 					selectedNodes,
 					onSelectChange
 				)}
-				data={data ? data.result : []}
+				data={data || []}
 				as={data ? undefined : Skeleton}
 				centerAuto={false}
 			/>

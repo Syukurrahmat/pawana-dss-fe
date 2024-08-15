@@ -62,7 +62,7 @@ export const toastErrorOpt: Partial<UseToastOptions> = {
     title: 'Gagal'
 }
 
-export const usemyToasts = () => {
+export const useMyToasts = () => {
     const toast = useToast();
     return {
         success: (description: string, opt?: Partial<UseToastOptions>) =>

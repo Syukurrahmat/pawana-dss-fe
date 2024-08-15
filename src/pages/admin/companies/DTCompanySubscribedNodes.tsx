@@ -9,7 +9,7 @@ import NodeSubscription from '@/components/common/AddNodeSubscription';
 import SectionTitle from '@/components/common/SectionTitle';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
-import { usemyToasts } from '@/utils/common.utils';
+import { useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import { Box, Button, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconBuilding, IconCirclePlus, IconTrees, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
@@ -23,7 +23,7 @@ interface CompSubscribedNodes {
 }
 
 export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
-	const { data, mutate: dataPageMutate} = props;
+	const { data, mutate: dataPageMutate } = props;
 	const { companyId } = data;
 
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
@@ -33,7 +33,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 
 	const confirmDialog = useConfirmDialog();
 	const navigate = useNavigate();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const { user, roleIs, roleIsNot } = useUser();
 
 	const companyUpdateURL = `/companies/${companyId}`;
@@ -91,6 +91,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 			<SectionTitle IconEl={IconUsersGroup}>
 				Lokasi Usaha dan Node yang dikuti
 			</SectionTitle>
+
 			<Box>
 				<EditInMapInputGroup
 					canEdit={roleIsNot(['gov', 'regular'])}
@@ -102,7 +103,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 				/>
 				<MyMap
 					w="full"
-					my="4"
+					mt="4"
 					h="300px"
 					companiesData={[data]}
 					data={nodesDataCtx || []}
@@ -119,80 +120,83 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 				/>
 			</Box>
 
-			<VStack align="start" spacing="6">
-				<HStack justify="space-between" align="start" w="full">
-					<Box>
-						<HStack>
-							<Icon as={IconBuilding} boxSize="20px" />
-							<Heading size="md" fontWeight="600">
-								Node Indoor
-							</Heading>
-						</HStack>
-						<Text>
-							Daftar sensor yang terdapat di dalam ruangan usaha Anda
-						</Text>
-					</Box>
-					{roleIs(['admin', 'manager']) && (
-						<Button
-							leftIcon={<IconCirclePlus size="18" />}
-							colorScheme="blue"
-							children="Tambah Node Indoor"
-							onClick={() =>
-								navigate('./create-node', {
-									state: {
-										company: {
-											name: data.name,
-											companyId: data.companyId,
-											type: data.type,
-										},
-									},
-								})
-							}
-						/>
-					)}
-				</HStack>
-
-				<DataTable
-					apiUrl={dtNodePrivateURL}
-					columns={nodePrivateColumns}
-					emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}
-					hiddenPagination={true}
-				/>
-
-				<HStack justify="space-between" align="start" w="full">
-					<Box>
-						<HStack>
-							<Icon as={IconTrees} boxSize="20px" />
-							<Heading size="md" fontWeight="600">
-								Node Outdoor
-							</Heading>
-						</HStack>
-						<Text>Daftar sensor luar ruangan yang Anda ikuti</Text>
-					</Box>
-
-					{roleIs(['admin', 'manager']) && (
-						<NodeSubscription
-							subsInfo={{
-								type: 'company',
-								companyData: data,
-							}}
-						>
+			<VStack align="start" spacing="6" mt='6'>
+				<Box w='full'>
+					<HStack justify="space-between" mb='4' align="start" w="full">
+						<Box>
+							<HStack mb="1">
+								<Icon as={IconBuilding} boxSize="20px" />
+								<Heading size="md" fontWeight="600">
+									Node Privat
+								</Heading>
+							</HStack>
+							<Text>
+								Daftar node yang terpasang dilingkungan perusahaan Anda
+							</Text>
+						</Box>
+						{roleIs(['admin', 'manager']) && (
 							<Button
 								leftIcon={<IconCirclePlus size="18" />}
 								colorScheme="blue"
-								children="Tambah Node outdoor"
+								children="Tambah Node Private"
+								onClick={() =>
+									navigate('./create-node', {
+										state: {
+											company: {
+												name: data.name,
+												companyId: data.companyId,
+												type: data.type,
+											},
+										},
+									})
+								}
 							/>
-						</NodeSubscription>
-					)}
-				</HStack>
+						)}
+					</HStack>
 
-				<DataTable
-					apiUrl={dtNodeSubsURL}
-					columns={nodeSubscriptionColumns}
-					setDataContext={setNodeDataCtx}
-					emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}
-					hiddenPagination={true}
-				/>
+					<DataTable
+						apiUrl={dtNodePrivateURL}
+						columns={nodePrivateColumns}
+						emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}
+						hiddenPagination={true}
+					/>
+				</Box>
+				<Box w='full'>
+					<HStack justify="space-between" mb='4' align="start" w="full">
+						<Box>
+							<HStack mb="1">
+								<Icon as={IconTrees} boxSize="20px" />
+								<Heading size="md" fontWeight="600">
+									Node Publik
+								</Heading>
+							</HStack>
+							<Text>Daftar node publik yang diikuti perusahaan ini</Text>
+						</Box>
+
+						{roleIs(['admin', 'manager']) && (
+							<NodeSubscription
+								subsInfo={{
+									type: 'company',
+									companyData: data,
+								}}
+							>
+								<Button
+									leftIcon={<IconCirclePlus size="18" />}
+									colorScheme="blue"
+									children="Tambah Node Publik"
+								/>
+							</NodeSubscription>
+						)}
+					</HStack>
+
+					<DataTable
+						apiUrl={dtNodeSubsURL}
+						columns={nodeSubscriptionColumns}
+						setDataContext={setNodeDataCtx}
+						emptyMsg={['Belum ada Node', 'Tambahkan Node sekarang']}
+						hiddenPagination={true}
+					/>
+				</Box>
 			</VStack>
 		</>
 	);

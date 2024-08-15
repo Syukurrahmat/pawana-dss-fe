@@ -21,7 +21,7 @@ type CompanyDataPage = {
     type: string;
     createdAt: string;
     updatedAt: string;
-    coordinate: number[]
+    coordinate: [number, number]
     countSubscribedNodes: number
     manager: {
         name: string;
@@ -37,11 +37,11 @@ type NodeDataPage = {
     nodeId: number;
     companyId: number;
     name: string;
-    isUptodate : boolean;
+    isUptodate: boolean;
     ownerId: number;
     description: string;
     address: string;
-    coordinate: number[]
+    coordinate: [number, number];
     status: string;
     instalationDate: string | undefined;
     apiKey: string;
@@ -77,7 +77,7 @@ type ReportData = {
     reportId: number;
     rating: number;
     message: string;
-    coordinate: number[]
+    coordinate: [number, number]
     images: string[];
     createdAt: string;
     updatedAt: string;

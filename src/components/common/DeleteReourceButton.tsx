@@ -13,7 +13,7 @@ import {
 	VStack,
 } from '@chakra-ui/react';
 
-import { usemyToasts } from '@/utils/common.utils';
+import { useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import { ButtonProps, Text, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { useRef, useState } from 'react';
@@ -37,7 +37,7 @@ export default function DeleteResourceButton({
 	const [isLoading, setIsLoading] = useState(false);
 	const [inputValue, setInputValue] = useState('');
 	const [step, setStep] = useState(0);
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const navigate = useNavigate();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const cancelRef = useRef<any>();

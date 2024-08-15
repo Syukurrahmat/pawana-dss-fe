@@ -3,7 +3,7 @@ import MyMap from '@/components/Maps';
 import StarRating from '@/components/Rating';
 import { CENTER_OF_MAP } from '@/constants/config';
 import useUser from '@/hooks/useUser';
-import { toBase64, trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
+import { toBase64, trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import { Avatar, Box, Button, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
@@ -24,7 +24,7 @@ const validationSchema = Yup.object().shape({
 export default function CreateReport() {
 	const { user } = useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 
 	const {
 		handleChange,

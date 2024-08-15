@@ -67,7 +67,7 @@ export default function LoginPage() {
 						<Center rounded="lg" boxSize="50px" bg="gray.50">
 							<Image src={logo} />
 						</Center>
-						<Heading size="2xl">AtmosEye</Heading>
+						<Heading size="2xl">Pawana</Heading>
 					</HStack>
 					<Text fontSize="lg" mt="4" maxW="500px">
 						Solusi pemantauan dan pendukung keputusan tentang kualitas

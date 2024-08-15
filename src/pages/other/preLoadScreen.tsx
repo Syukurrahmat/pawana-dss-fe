@@ -23,7 +23,7 @@ export default function PreLoadScreen() {
 					<Image src={logo} />
 				</Center>
 				<Heading size="2xl" color="gray.50">
-					AtmosEye
+					Pawana
 				</Heading>
 			</HStack>
 

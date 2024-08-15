@@ -3,7 +3,7 @@ import MyMap from '@/components/Maps';
 import SectionTitle from '@/components/common/SectionTitle';
 import { API_URL } from '@/constants/config';
 import useUser from '@/hooks/useUser';
-import { usemyToasts } from '@/utils/common.utils';
+import { useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import { IconMapCheck } from '@tabler/icons-react'; //prettier-ignore
 import { useState } from 'react';
@@ -26,7 +26,7 @@ export default function NodePosisionInMap({
 	const [isEditing, setIsEditing] = useState(false);
 
 	const { id: nodeId } = useParams();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 
 	const onSubmitEditedCoordinate = async () => {
 		setIsSubmiting(true);

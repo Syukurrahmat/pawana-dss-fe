@@ -1,7 +1,7 @@
 import { TagEventLogStatus, TagEventLogType } from '@/components/Tags/index.tags'; //prettier-ignore
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
-import { delay, usemyToasts } from '@/utils/common.utils';
+import { delay, useMyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { fetcher, myAxios } from '@/utils/fetcher';
 import { Box, BoxProps, Button, HStack, Heading, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Portal, Skeleton, Spacer, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
@@ -52,7 +52,7 @@ interface DetailNote {
 function DetailNote({ eventId, onClose, readOnly }: DetailNote) {
 	const [isActionRunning, setIsActionRunning] = useState(false);
 	const { user } = useUser();
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const confirmDialog = useConfirmDialog();
 	const companyId = user.view?.company?.companyId;
 

@@ -1,7 +1,7 @@
 import {
 	compareObjects,
 	trimAndCleanProps,
-	usemyToasts,
+	useMyToasts,
 } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useDisclosure, VStack } from '@chakra-ui/react'; //prettier-ignore
@@ -19,7 +19,7 @@ interface IEUModal extends ButtonProps {
 export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const toast = usemyToasts();
+	const toast = useMyToasts();
 	const { name, description, address } = data;
 	const initialValues = { name, description, address };
 

@@ -19,7 +19,7 @@ export default function Page404() {
 						<Center p="1.5" bg="gray.100" rounded="md">
 							<Image src={logo} h="30px" />
 						</Center>
-						<Heading fontSize="3xl">AtmosEye</Heading>
+						<Heading fontSize="3xl">Pawana</Heading>
 					</HStack>
 				</HStack>
 				<Divider />
