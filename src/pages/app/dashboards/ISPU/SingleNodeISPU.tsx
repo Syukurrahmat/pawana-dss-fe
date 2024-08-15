@@ -7,11 +7,11 @@ import { IconHistory } from '@tabler/icons-react';
 import moment from 'moment';
 
 interface SingleNodeISPU {
-	data: SingleNodeAnalysisItem<[ISPUValue, ISPUValue]>;
+	data: SingleNodeAnalysisItem<[ISPUValueItem, ISPUValueItem]>;
 }
 
 export default function SingleNodeISPU({ data }: SingleNodeISPU) {
-	const { latestData : {datetime, value}, tren } = data as SingleNodeAnalysisItem<[ISPUValue,ISPUValue]>; // prettier-ignore
+	const { latestData : {datetime, value}, tren } = data as SingleNodeAnalysisItem<[ISPUValueItem,ISPUValueItem]>; // prettier-ignore
 
 	return (
 		<>
@@ -111,7 +111,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 	);
 }
 
-function EachISPUCard({ value, ...r }: StackProps & { value: ISPUValue }) {
+function EachISPUCard({ value, ...r }: StackProps & { value: ISPUValueItem }) {
 	const { category, ispu, pollutant, pollutantValue } = value;
 	const { colorScheme } = getISPUProperties(category);
 
@@ -146,7 +146,7 @@ function EachISPUCard({ value, ...r }: StackProps & { value: ISPUValue }) {
 export function FinalISPUCard({
 	value,
 	...r
-}: StackProps & { value: ISPUValue }) {
+}: StackProps & { value: ISPUValueItem }) {
 	const { category, ispu, pollutant } = value;
 	const { colorScheme, icon } = getISPUProperties(category);
 

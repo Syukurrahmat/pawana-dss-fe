@@ -1,13 +1,13 @@
 import MyMap from '@/components/Maps';
-import { Alert, Card, CardBody, Center, Flex, Grid, HStack, Icon, Select, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import { IconStar } from '@tabler/icons-react';
+import MyMarker from '@/components/Maps/marker';
+import { Alert, Card, CardBody, Flex, Grid, HStack, Icon, Select, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconDeviceSpeakerOff, IconSpeakerphone, IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
 import { RatingIconList } from '../Reports/ReportCard';
-import MyMarker from '@/components/Maps/marker';
 
 interface ReportSummaryCard {
-	data: SummaryReport;
-	company: CompanyDataSummary;
+	data: ReportSummary;
+	company: CompanyData;
 }
 
 export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
@@ -17,7 +17,7 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 	const ratingIcon = RatingIconList[Math.round(average) - 1];
 
 	return (
-		<Card size="sm" shadow="xs">
+		<Card size="sm" shadow="xs" p="1">
 			<CardBody>
 				{count ? (
 					<Flex gap="4">
@@ -126,11 +126,18 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 						/>
 					</Flex>
 				) : (
-					<Center w="full" py="5">
-						<Text fontWeight="600" color="gray.500" fontSize="xl">
+					<HStack
+						
+						justify="center"
+						py="10"
+						spacing="3"
+						color="gray.500"
+					>
+						<Icon as={IconSpeakerphone} boxSize="45px" />
+						<Text fontSize="xl" fontWeight="500">
 							Tidak Ada Aduan
 						</Text>
-					</Center>
+					</HStack>
 				)}
 			</CardBody>
 		</Card>

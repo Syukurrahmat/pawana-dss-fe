@@ -6,14 +6,14 @@ import { Alert, Box, Card, CardBody, Center, Flex, Grid, HStack, Icon, Text, VSt
 import idLocale from '@fullcalendar/core/locales/id';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
-import { IconCalendarEvent, IconNotebook } from '@tabler/icons-react'; //prettier-ignore
+import { IconCalendarEvent, IconClipboard, IconClipboardOff, IconNotebook } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useRef } from 'react';
 import { CardEventLog } from '../EventLogs/CardEventLog';
 import { eventsMapping, renderEventContent } from '../EventLogs/EventCalendar';
 
 interface EventLogSummaryCard {
-	data: SummaryEventLog;
+	data: EventLogsSummary;
 	periode: string;
 	dateRange: string[];
 }
@@ -28,7 +28,7 @@ export function EventLogSummaryCard({
 	const production = countType.find((e) => e.type == 'production');
 
 	return (
-		<Card size="sm" shadow="xs">
+		<Card size="sm" shadow="xs" p="1">
 			<CardBody gap="4" as={Flex}>
 				{countAll ? (
 					<>
@@ -187,11 +187,12 @@ export function EventLogSummaryCard({
 						</VStack>
 					</>
 				) : (
-					<Center w="full" py="5">
-						<Text fontWeight="600" color="gray.500" fontSize="xl">
+					<HStack justify="center" w='full' py="10" spacing="3" color="gray.500">
+						<Icon as={IconClipboardOff} boxSize="45px" />
+						<Text fontSize="xl" fontWeight="500">
 							Tidak Ada Catatan Aktivitas
 						</Text>
-					</Center>
+					</HStack>
 				)}
 			</CardBody>
 		</Card>

@@ -7,7 +7,6 @@ import EditInMapInputGroup from '@/components/Form/EditInMapInputGroup';
 import MyMap from '@/components/Maps';
 import NodeSubscription from '@/components/common/AddNodeSubscription';
 import SectionTitle from '@/components/common/SectionTitle';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
 import { usemyToasts } from '@/utils/common.utils';
@@ -24,7 +23,7 @@ interface CompSubscribedNodes {
 }
 
 export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
-	const { data, mutate: dataPageMutate } = props;
+	const { data, mutate: dataPageMutate} = props;
 	const { companyId } = data;
 
 	const [nodesDataCtx, setNodeDataCtx] = useState<null | any[]>(null);
@@ -35,7 +34,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 	const confirmDialog = useConfirmDialog();
 	const navigate = useNavigate();
 	const toast = usemyToasts();
-	const { user, roleIs } = useUser();
+	const { user, roleIs, roleIsNot } = useUser();
 
 	const companyUpdateURL = `/companies/${companyId}`;
 	const dtNodeSubsURL = `/companies/${companyId}/nodes`;
@@ -94,7 +93,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 			</SectionTitle>
 			<Box>
 				<EditInMapInputGroup
-					role={user.role}
+					canEdit={roleIsNot(['gov', 'regular'])}
 					coordinate={data.coordinate}
 					isEditingState={[isEditing, setIsEditing]}
 					editedCoordinateState={[editedCoordinate, setEditedCoordinate]}

@@ -1,15 +1,15 @@
-import FormMapPicker from '@/components/Form/FormMapPicker';
-import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { BigAlert } from '@/components/common/BigAlert';
 import CompanyIcon from '@/components/common/CompanyIcon';
-import SelectFromDataTable from '@/components/common/SelectFromDataTable';
+import FormMapPicker from '@/components/Form/FormMapPicker';
+import RequiredIndicator from '@/components/Form/RequiredIndicator';
+import { SelectFromDataTableCompanies } from '@/components/SelectFromDataTable/Sdd';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
-import { trimAllValues } from '@/utils/common.utils';
+import { trimAndCleanProps } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Box, Button, Container, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
-import { IconBuildingFactory2, IconInfoCircle, IconLock, IconWorld } from '@tabler/icons-react'; //prettier-ignore
+import { IconInfoCircle, IconLock, IconWorld } from '@tabler/icons-react'; //prettier-ignore
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useMatch } from 'react-router-dom';
@@ -35,14 +35,16 @@ const privateNodeValidationSchema = Yup.object().shape({
 });
 
 export default function CreateNode() {
-	const { roleIs } = useUser();
+	const { roleIs, user } = useUser();
 	const location = useLocation();
 
 	const isOnSpesificNode = !useMatch('/nodes/create');
-	const showChooseOwnshipNode = !isOnSpesificNode && roleIs('admin');
+	const showChooseNodeOwnship = !isOnSpesificNode && roleIs('admin');
 
-	const [managerInfo, setManagerInfo] = useState<any>({});
-	const [isPrivate, setIsPrivate] = useState(showChooseOwnshipNode ? 0 : 1);
+	const [isPrivateForm, setIsPrivateForm] = useState(
+		showChooseNodeOwnship ? 0 : 1
+	);
+	const [selectedCompany, setSelectedCompany] = useState<any>();
 
 	const currentCompany = location.state?.company;
 
@@ -50,7 +52,7 @@ export default function CreateNode() {
 		return <Navigate to=".." relative="path" />;
 	}
 
-	const validationSchema = isPrivate
+	const validationSchema = isPrivateForm
 		? privateNodeValidationSchema
 		: publicNodeValidationSchema;
 
@@ -59,8 +61,8 @@ export default function CreateNode() {
 		handleBlur,
 		values,
 		touched,
-		status,
-		setStatus,
+		status: createdStatus,
+		setStatus: setCreatedStatus,
 		setFieldValue,
 		resetForm,
 		setSubmitting,
@@ -78,17 +80,28 @@ export default function CreateNode() {
 		},
 		validationSchema,
 		onSubmit: (values) => {
+			let newNodeData: Partial<typeof values> = {};
+
+			if (isPrivateForm) {
+				const { coordinate, address, ...rest } = values;
+				newNodeData = rest;
+			} else {
+				const { companyId, ...rest } = values;
+				newNodeData = rest;
+			}
+
 			myAxios
-				.post(`/nodes`, trimAllValues(values))
-				.then(({ data }) => setStatus(data || false))
-				.catch(() => setStatus(false))
+				.post('/nodes', trimAndCleanProps(newNodeData))
+				.then(({ data }) => {
+					setCreatedStatus({
+						created: true,
+						nodeId: data.data.nodeId,
+					});
+				})
+				.catch(() => setCreatedStatus({ created: false }))
 				.finally(() => setSubmitting(false));
 		},
 	});
-
-	useEffect(() => {
-		setFieldValue('companyId', managerInfo?.companyId);
-	}, [managerInfo]);
 
 	useEffect(() => {
 		setFieldValue('companyId', currentCompany?.companyId || NaN);
@@ -112,10 +125,10 @@ export default function CreateNode() {
 			<Heading size="lg">Buat Sensor</Heading>
 			<Text>Buat sensor untuk menambah akurasi sistem</Text>
 			<Container maxW="container.md" mt="4">
-				{status === undefined && showChooseOwnshipNode && (
+				{createdStatus === undefined && showChooseNodeOwnship && (
 					<Tabs
-						index={isPrivate}
-						onChange={setIsPrivate}
+						index={isPrivateForm}
+						onChange={setIsPrivateForm}
 						variant="soft-rounded"
 						colorScheme="blue"
 					>
@@ -138,58 +151,26 @@ export default function CreateNode() {
 						</TabPanels>
 					</Tabs>
 				)}
-				{status !== undefined ? (
-					status ? (
-						<BigAlert
-							status="success"
-							title="Node berhasil dibuat"
-							description="Node siap untuk digunakan dalam sistem Anda"
-							onCreateAgain={resetForm}
-							itemName="node"
-							detailPageURL={`/nodes/${status?.result.nodeId}`}
-						/>
-					) : (
-						<BigAlert
-							status="warning"
-							title="Node gagal didaftarkan"
-							description="Ada yang salah. Hubungi Administrator"
-							onCreateAgain={resetForm}
-						/>
-					)
-				) : (
+
+				{createdStatus === undefined ? (
 					<Container maxW="container.sm">
 						<form onSubmit={handleSubmit} className="my-form">
 							<VStack mx="auto" spacing="2" maxW="container.sm">
-								{isPrivate &&
+								{isPrivateForm &&
 									(!currentCompany ? (
 										<FormControl>
 											<FormLabel>
 												Pilih Usaha <RequiredIndicator />
 											</FormLabel>
 
-											<SelectFromDataTable
-												leftIcon={
-													<IconBuildingFactory2 size="30" />
-												}
-												itemName="Usaha"
-												apiUrl="/search/companies"
-												selectValue={managerInfo}
-												selectOnChange={setManagerInfo}
-												displayRow={(e) => (
-													<HStack>
-														<CompanyIcon
-															bg="white"
-															type={e.type}
-														/>
-														<Text
-															children={
-																e?.name ||
-																'Node yang Anda ikuti'
-															}
-														/>
-													</HStack>
-												)}
+											<SelectFromDataTableCompanies
+												_value={selectedCompany}
+												_onChange={(e) => {
+													setSelectedCompany(e);
+													setFieldValue('companyId', e?.companyId);
+												}}
 											/>
+
 											<FormErrorMessage>
 												{errors.companyId as string}
 											</FormErrorMessage>
@@ -212,16 +193,18 @@ export default function CreateNode() {
 													size="24px"
 												/>
 												<Box>
-													<Text fontWeight="600" pr="2">
-														{currentCompany.name}
-													</Text>
-													<Text>
-														{
+													<Text
+														fontWeight="600"
+														pr="2"
+														children={currentCompany.name}
+													/>
+													<Text
+														children={
 															companyTypeAttr[
 																currentCompany.type
 															].name
 														}
-													</Text>
+													/>
 												</Box>
 											</HStack>
 										</Box>
@@ -262,7 +245,7 @@ export default function CreateNode() {
 									</FormErrorMessage>
 								</FormControl>
 
-								{!isPrivate && (
+								{!isPrivateForm && (
 									<>
 										<FormControl
 											isInvalid={
@@ -298,7 +281,7 @@ export default function CreateNode() {
 									/>
 								</FormControl>
 
-								{!isPrivate && (
+								{!isPrivateForm && (
 									<FormMapPicker
 										errors={errors.coordinate}
 										touched={touched.coordinate}
@@ -317,6 +300,28 @@ export default function CreateNode() {
 							</VStack>
 						</form>
 					</Container>
+				) : createdStatus.created ? (
+					<BigAlert
+						status="success"
+						title="Node berhasil dibuat"
+						description="Node siap untuk digunakan dalam sistem Anda"
+						onCreateAgain={() => {
+							resetForm();
+							setSelectedCompany(undefined);
+						}}
+						itemName="node"
+						detailPageURL={`/nodes/${createdStatus?.nodeId}`}
+					/>
+				) : (
+					<BigAlert
+						status="warning"
+						title="Node gagal didaftarkan"
+						description="Ada yang salah. Hubungi Administrator"
+						onCreateAgain={() => {
+							resetForm();
+							setSelectedCompany(undefined);
+						}}
+					/>
 				)}
 			</Container>
 		</Box>

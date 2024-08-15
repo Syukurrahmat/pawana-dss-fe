@@ -1,27 +1,29 @@
 type Timeseries<V = number> = { datetime: string, value: V }
 
-type ISPUValue = {
+
+
+type ISPUValue = [ISPUValueItem, ISPUValueItem] | null
+
+type GRKValue = {
+    value: number;
+    category?: string;
+    recomendation?: Recomendation
+}
+
+type Recomendation = {
+    info: string;
+    company: string;
+    public: string;
+}
+
+
+type ISPUValueItem = {
     pollutant: 'PM100' | 'PM25';
     ispu: number;
     ispuFloat: number;
     pollutantValue: number;
     category?: string;
-    recomendation?: {
-        info : string,
-        company : string,
-        public : string
-    }
-}
-
-
-type GRKCategorize = {
-    value: number;
-    category?: string;
-    recomendation?: {
-        info : string,
-        company : string,
-        public : string
-    }
+    recomendation?: Recomendation
 }
 
 
@@ -38,15 +40,15 @@ declare type NodeWLastestData = {
     latestData?: {
         ispu: {
             datetime: string;
-            value: [] | [ISPUValue, ISPUValue];
+            value: ISPUValue;
         };
         ch4: {
             datetime: string;
-            value: GRKCategorize;
+            value: GRKValue;
         };
         co2: {
             datetime: string;
-            value: GRKCategorize;
+            value: GRKValue;
         };
         pm25: {
             datetime: string;
@@ -72,9 +74,9 @@ type SingleNodeAnalysis = {
         lastDataSent: string;
     }
 
-    ispu: SingleNodeAnalysisItem<ISPUValue[]>
-    ch4: SingleNodeAnalysisItem<GRKCategorize>;
-    co2: SingleNodeAnalysisItem<GRKCategorize>;
+    ispu: SingleNodeAnalysisItem<ISPUValue>
+    ch4: SingleNodeAnalysisItem<GRKValue>;
+    co2: SingleNodeAnalysisItem<GRKValue>;
 
 }
 
@@ -95,8 +97,8 @@ type SingleNodeAnalysisItem<V> = {
 
 type ResultOfMultiNodeStats = {
     ispu: NodeStat<ISPUValue[]>;
-    ch4: NodeStat<GRKCategorize>;
-    co2: NodeStat<GRKCategorize>;
+    ch4: NodeStat<GRKValue>;
+    co2: NodeStat<GRKValue>;
 };
 
 type NodeStat<T> = {
@@ -157,4 +159,62 @@ type EventLogs = {
     isCompleted: boolean;
     startDate: string;
     endDate: string;
+}
+
+
+// ===================================================================
+// ===================================================================
+
+type TrenItem = {
+    datetime: string;
+    indoor?: SummaryAverageInsight
+    outdoor?: SummaryAverageInsight
+};
+
+type SummaryAverageInsight = {
+    ispu: ISPUValue;
+    co2: GRKValue;
+    ch4: GRKValue;
+    pm25: number;
+    pm100: number;
+}
+
+type SummaryData = {
+    meta: {
+        company: Companies,
+        startDate: string;
+        endDate: string;
+    },
+    averageData: {
+        indoor?: SummaryAverageInsight;
+        outdoor?: SummaryAverageInsight;
+    };
+    tren: TrenItem[];
+    reports: ReportSummary;
+    eventLogs: EventLogsSummary
+}
+
+type ReportSummary = {
+    average: number;
+    count: number;
+    countPerStar: number[];
+    reports: Reports[];
+}
+
+
+type EventLogsSummary = {
+    count: {
+        all: number;
+        countStatus: {
+            status: string;
+            count: number;
+        }[];
+        countType: {
+            type: string;
+            count: number;
+            days: number
+        }[];
+    };
+    eventIdLongestEvent: number | undefined;
+    eventLogs: DTEventLog[];
 }

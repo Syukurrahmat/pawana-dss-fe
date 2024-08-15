@@ -1,42 +1,11 @@
-import {
-	TagEventLogStatus,
-	TagEventLogType,
-} from '@/components/Tags/index.tags';
-import { API_URL } from '@/constants/config';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { TagEventLogStatus, TagEventLogType } from '@/components/Tags/index.tags'; //prettier-ignore
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import useUser from '@/hooks/useUser';
-import { delay } from '@/utils/common.utils';
+import { delay, usemyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
-import { fetcher } from '@/utils/fetcher';
-import {
-	Box,
-	BoxProps,
-	Button,
-	HStack,
-	Heading,
-	Icon,
-	IconButton,
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuList,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-	Portal,
-	Skeleton,
-	Spacer,
-	Text,
-	VStack,
-	useDisclosure,
-} from '@chakra-ui/react';
+import { fetcher, myAxios } from '@/utils/fetcher';
+import { Box, BoxProps, Button, HStack, Heading, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Portal, Skeleton, Spacer, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import { IconCalendarEvent, IconChecks, IconDotsVertical, IconEdit, IconHourglass, IconMapPin, IconRocket, IconTrash } from '@tabler/icons-react'; //prettier-ignore
-import axios from 'axios';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 
@@ -83,53 +52,65 @@ interface DetailNote {
 function DetailNote({ eventId, onClose, readOnly }: DetailNote) {
 	const [isActionRunning, setIsActionRunning] = useState(false);
 	const { user } = useUser();
-	const { apiResponseToast } = useApiResponseToast();
+	const toast = usemyToasts();
 	const confirmDialog = useConfirmDialog();
-
 	const companyId = user.view?.company?.companyId;
-	const entryApiUrl = `/companies/${companyId}/events/${eventId}`;
+
+	const apiUrl = `/companies/${companyId}/events/${eventId}`;
 
 	const { data: event, mutate: eventMutate } = useSWR<DetailEventLog>(
-		entryApiUrl,
+		apiUrl,
 		fetcher
 	);
 
-	const mutateAllEvent = () => mutate((e) => typeof e == 'string' && e.startsWith(`/companies/${companyId}/events`) ); // prettier-ignore
+	const mutateAllEvent = () =>
+		mutate(
+			(e) =>
+				typeof e == 'string' &&
+				e.startsWith(`/companies/${companyId}/events`)
+		);
 
 	const deleteEventHandler = async () => {
 		onClose();
-
 		await delay(300);
+
 		confirmDialog({
 			title: 'Hapus Kegiatan ini',
 			message: 'Anda yakin hendak menghapus kegiatan ini dari usaha Anda',
 			confirmButtonColor: 'red',
 			onConfirm: () =>
-				axios.delete(API_URL + entryApiUrl).then(({ data: dt }) => {
-					apiResponseToast(dt);
-					mutateAllEvent();
-				}),
+				myAxios
+					.delete(apiUrl)
+					.then(() => {
+						toast.success('Kegiatan berhasil dihapus');
+						mutateAllEvent();
+					})
+					.catch(() => {
+						toast.error('Kegiatan Gagal dihapus');
+					}),
 		});
 	};
 
 	const actionHandler = async (action: 'startnow' | 'endnow') => {
 		setIsActionRunning(true);
 
-		const putEntryApiUrl =
-			action == 'endnow'
-				? `${API_URL + entryApiUrl}/completed`
-				: `${API_URL + entryApiUrl}/startnow`;
+		const putEntryApiUrl = apiUrl + (action == 'endnow' ? '/completed' : '/start-now'); //prettier-ignore
 
-		const resp = await axios.put(putEntryApiUrl);
-		apiResponseToast(resp.data, {
-			onSuccess: () => {
+		myAxios
+			.patch(putEntryApiUrl)
+			.then(() => {
+				toast.success('Kegiatan berhasil diupdate');
+				mutateAllEvent();
 				eventMutate((e) =>
 					e ? { ...e, status: 'isCompleted' } : undefined
 				);
-				mutateAllEvent();
-			},
-		});
-		setIsActionRunning(false);
+			})
+			.catch(() => {
+				toast.error('Kegiatan gagal diupdate');
+			})
+			.finally(() => {
+				setIsActionRunning(false);
+			});
 	};
 
 	return (

@@ -94,10 +94,11 @@ body {
 
 .date-picker {
     width: 100%;
-    font-size: inherit;
+    
 }
 
 .date-picker * {
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -136,27 +137,44 @@ body {
     background-color: var(--chakra-colors-gray-100);
 }
 
-.fc-scroller::-webkit-scrollbar ,
+.fc-scroller::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar {
     width: 12px;
 }
 
-.fc-scroller::-webkit-scrollbar-track ,
+.fc-scroller::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-track {
     background-color: var(--chakra-colors-gray-100);
 }
 
-.fc-scroller::-webkit-scrollbar-thumb ,
+.fc-scroller::-webkit-scrollbar-thumb,
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background-color: var(--chakra-colors-gray-300);
     border-radius: 100px;
 }
 
-.fc-scroller::-webkit-scrollbar-thumb:hover ,
+.fc-scroller::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: var(--chakra-colors-gray-400);
 }
 
 ::-webkit-scrollbar-thumb:active {
     background-color: var(--chakra-colors-gray-500);
+}
+
+.myStepper>* {
+    width: 100%;
+    /* border: 1px solid salmon; */
+}
+
+.myStepper .myStepper-item {
+    flex-grow: 1;
+}
+
+.myStepper .myStepper-item > * {
+    width: 100%;
+}
+
+.myStepper .myStepper-item > button[type="submit"] {
+    width: fit-content;
 }

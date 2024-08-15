@@ -3,14 +3,17 @@ import * as Yup from 'yup';
 import { API_URL } from '@/constants/config';
 import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Input, RadioGroup, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
-import { trimAllValues } from '@/utils/common.utils';
+import { trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { MyRadio } from '@/components/common/MyRadio';
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { BigAlert } from '@/components/common/BigAlert';
+import { myAxios } from '@/utils/fetcher';
 
 export default function CreateUser() {
+	const toast = usemyToasts();
+
 	const {
 		handleChange,
 		handleBlur,
@@ -22,6 +25,7 @@ export default function CreateUser() {
 		values,
 		status,
 		setStatus,
+		setFieldError,
 		errors,
 		handleSubmit,
 	} = useFormik({
@@ -43,10 +47,19 @@ export default function CreateUser() {
 			role: Yup.string().required('Wajib diisi'),
 		}),
 		onSubmit: (values) => {
-			axios
-				.post(API_URL + '/users', trimAllValues(values))
-				.then(({ data }) => setStatus(data.success))
-				.catch(() => setStatus(false))
+			myAxios
+				.post('/users', trimAndCleanProps(values))
+				.then((e) =>{
+					setStatus({created : true})
+				})
+				.catch((e: AxiosError<APIResponse>) => {
+					if (e.response?.status !== 400) return setStatus({created : false})
+					
+					const [field, message] = e.response?.data.message || [];
+					setFieldError(field, message);
+					toast.error(message || 'Ada yang salah')
+
+				})
 				.finally(() => setSubmitting(false));
 		},
 	});
@@ -60,7 +73,7 @@ export default function CreateUser() {
 
 			<Container maxW="container.sm" mt="6">
 				{status !== undefined ? (
-					status ? (
+					status.created ? (
 						<BigAlert
 							status="success"
 							title="Akun berhasil didaftarkan"

@@ -5,7 +5,7 @@ import { FinalISPUCard } from './SingleNodeISPU';
 import moment from 'moment';
 
 interface MultiNodeISPU {
-	data: NodeStat<[ISPUValue, ISPUValue]>;
+	data: NodeStat<[ISPUValueItem, ISPUValueItem]>;
 }
 
 export default function MultiNodeISPU({ data }: MultiNodeISPU) {
@@ -47,7 +47,7 @@ interface NewType {
 		nodeId: number;
 		name: string;
 		lastDataSent: string;
-		data: Timeseries<[ISPUValue, ISPUValue]>;
+		data: Timeseries<[ISPUValueItem, ISPUValueItem]>;
 	};
 	label: string;
 }

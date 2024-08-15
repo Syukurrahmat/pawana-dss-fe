@@ -1,9 +1,10 @@
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { API_URL } from '@/constants/config';
 import { eventLogsTypeAttr } from '@/constants/enumVariable';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+
 import useUser from '@/hooks/useUser';
-import { trimAllValues as trimAll } from '@/utils/common.utils';
+import { trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Switch, Text, Textarea, VStack, useDisclosure, } from '@chakra-ui/react'; //prettier-ignore
 import { IconPlus } from '@tabler/icons-react';
@@ -14,13 +15,20 @@ import { useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import * as Yup from 'yup';
 
+const validationSchema = Yup.object().shape({
+	name: valSchema.name.required('Wajib Diisi'),
+	description: valSchema.description.required('Wajib Diisi'),
+	type: Yup.string().required('Wajib Diisi'),
+	status: Yup.string().required('Wajib Diisi'),
+	location: Yup.string().nullable(),
+});
+
 export default function CreateEventLog() {
 	const { user } = useUser();
 	const companyId = user.view?.company?.companyId;
-	
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { apiResponseToast } = useApiResponseToast();
+	const toast = usemyToasts();
 	const [onlyOneDayEvent, setOnlyOneDayEvent] = useState(false);
 	const [withoutEndDate, setWithoutEndDate] = useState(false);
 
@@ -45,13 +53,7 @@ export default function CreateEventLog() {
 			endDate: moment().format('YYYY-MM-DD') as string | null,
 			isCompleted: false,
 		},
-		validationSchema: Yup.object().shape({
-			name: valSchema.name.required('Wajib Diisi'),
-			description: valSchema.description.required('Wajib Diisi'),
-			type: Yup.string().required('Wajib Diisi'),
-			status: Yup.string().required('Wajib Diisi'),
-			location: Yup.string().nullable(),
-		}),
+		validationSchema,
 		onReset: () => {
 			setOnlyOneDayEvent(false);
 			setWithoutEndDate(false);
@@ -63,19 +65,19 @@ export default function CreateEventLog() {
 				? null
 				: values.endDate;
 
-			trimAll(values);
+			const apiUrl = `/companies/${companyId}/events`;
 
-			const url = `/companies/${companyId}/events`;
-
-			axios.post(API_URL + url, values).then(({ data }) => {
-				apiResponseToast(data, {
-					onSuccess() {
-						mutate((e) => typeof e == 'string' && e.startsWith(url));
-						onClose();
-					},
+			myAxios
+				.post(apiUrl, trimAndCleanProps(values))
+				.then(() => {
+					toast.success('Kegiatan berhasil ditambahkan');
+					mutate((e) => typeof e == 'string' && e.startsWith(apiUrl));
+					onClose();
+					resetForm();
+				})
+				.catch(() => {
+					toast.error('Kegiatan gagal ditambahkan');
 				});
-				resetForm();
-			});
 		},
 	});
 

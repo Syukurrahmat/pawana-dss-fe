@@ -3,7 +3,6 @@ import InputSearch from '@/components/Form/inputSearch';
 import { TagCompanyType } from '@/components/Tags/index.tags';
 import SectionTitle from '@/components/common/SectionTitle';
 import { companyTypeAttr } from '@/constants/enumVariable';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useConfirmDialog from '@/hooks/useConfirmDialog';
 import { usemyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';

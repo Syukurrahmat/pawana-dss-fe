@@ -1,14 +1,13 @@
 import {
 	compareObjects,
-	trimAllValues,
+	trimAndCleanProps,
 	usemyToasts,
 } from '@/utils/common.utils';
 import * as valSchema from '@/utils/validator.utils';
-import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useDisclosure, useToast, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { Button, ButtonProps, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useDisclosure, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import { myAxios } from '@/utils/fetcher';
 import { KeyedMutator } from 'swr';
 
@@ -19,7 +18,6 @@ interface IEUModal extends ButtonProps {
 
 export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { apiResponseToast } = useApiResponseToast();
 
 	const toast = usemyToasts();
 	const { name, description, address } = data;
@@ -44,7 +42,7 @@ export default function EditGroupButton({ data, mutate, ...rest }: IEUModal) {
 		}),
 
 		onSubmit: (values) => {
-			trimAllValues(values);
+			trimAndCleanProps(values);
 			const updatedData = compareObjects(initialValues, values);
 
 			if (Object.keys(updatedData).length === 0) {

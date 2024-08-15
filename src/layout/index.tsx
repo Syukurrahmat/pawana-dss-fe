@@ -1,9 +1,9 @@
+import LoadingComponent from '@/components/Loading/LoadingComponent';
 import { Box, Container } from '@chakra-ui/react';
 import { Suspense, useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './header';
 import Sidebar from './sidebar';
-import LoadingComponent from '@/components/Loading/LoadingComponent';
 
 export default function App({ navbarList }: { navbarList: any[] }) {
 	const { pathname } = useLocation();
@@ -25,11 +25,34 @@ export default function App({ navbarList }: { navbarList: any[] }) {
 				navbarList={navbarList}
 			/>
 			<Header id="header" activeNav={activeNav} />
-			<Box flexDir="row" id="content" px="5" py="3" pb="10" display="flex">
-				<Suspense fallback={<LoadingComponent />}>
-					<Outlet />
-				</Suspense>
-			</Box>
+			{/* <pre>
+				Laporan page : buat rekomendasi section, memperbaiki chart,
+			</pre>
+			<pre>
+				menseragamkan istilah sensor dan usaha
+			</pre>
+			<pre>
+			emty data in laporan page
+			</pre>
+			<pre>
+		summary data type
+			</pre> */}
+
+			<Container maxW="1280px" p="0">
+				<Box
+					w="full"
+					flexDir="row"
+					id="content"
+					px="5"
+					py="3"
+					pb="10"
+					display="flex"
+				>
+					<Suspense fallback={<LoadingComponent />}>
+						<Outlet />
+					</Suspense>
+				</Box>
+			</Container>
 		</Container>
 	);
 }

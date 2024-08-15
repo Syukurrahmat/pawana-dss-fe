@@ -13,8 +13,8 @@ type APIResponse<T = any> = {
     data: T;
 }
 
-type Paginated = {
-    rows: any[],
+type Paginated<T=any> = {
+    rows: T[],
     meta: MetaPaginated
 }
 type MetaPaginated = {

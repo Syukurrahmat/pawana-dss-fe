@@ -2,20 +2,19 @@ import GMapsButton from '@/components/common/GMapsButton';
 import { Box, Button, HStack, Input, Spacer, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconDeviceFloppy, IconEdit, IconMapCancel } from '@tabler/icons-react'; //prettier-ignore
 
-
 interface EditInMapInputGroup {
-	role: UserRole;
 	coordinate: number[];
 	isEditingState: StateOf<boolean>;
 	editedCoordinateState: StateOf<number[]>;
 	isSubmiting: boolean;
+	canEdit: boolean;
 	handleSubmitEditedCoordinate: () => any;
 }
 
 export default function EditInMapInputGroup({
-	role,
 	coordinate,
 	isEditingState,
+	canEdit,
 	editedCoordinateState,
 	isSubmiting,
 	handleSubmitEditedCoordinate,
@@ -32,7 +31,7 @@ export default function EditInMapInputGroup({
 					</GMapsButton>
 					<Spacer />
 
-					{['admin', 'manager'].includes(role) && (
+					{canEdit && (
 						<Button
 							colorScheme="yellow"
 							leftIcon={<IconEdit size="18" />}
@@ -79,7 +78,8 @@ export default function EditInMapInputGroup({
 							</Box>
 						</HStack>
 						<Text fontSize="sm">
-							Atau geser peta dan sesuaikan penanda ke titik yang dimaksud
+							Atau geser peta dan sesuaikan penanda ke titik yang
+							dimaksud
 						</Text>
 					</VStack>
 					<Spacer />

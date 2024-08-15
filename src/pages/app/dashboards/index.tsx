@@ -7,7 +7,7 @@ import { CurrentEventsCard } from './CurrentEvents';
 import DashboardInfo from './DashInfoWithMaps';
 import { NearReport } from './NearReport';
 import NodesGroupInfo from './NodesGroupInfo';
-import { DontHaveCompany, SelectUserOrCompanyView } from './informationCard';
+import { DontHaveCompany, SelectUserOrCompanyView } from '@/components/common/AdminInforCard';
 
 export default function Dashboard() {
 	const { user, roleIs, roleIsNot } = useUser();

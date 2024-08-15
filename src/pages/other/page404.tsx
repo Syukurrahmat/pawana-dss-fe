@@ -1,16 +1,7 @@
-import logo from '@/assets/icon.svg';
 import Logo from '@/components/common/Logo';
 import {
-	Center,
-	Container,
-	Divider,
-	HStack,
-	Heading,
-	Icon,
-	Image,
-	VStack,
+	Container
 } from '@chakra-ui/react';
-import { IconError404 } from '@tabler/icons-react';
 
 export default function Page404() {
 	return (

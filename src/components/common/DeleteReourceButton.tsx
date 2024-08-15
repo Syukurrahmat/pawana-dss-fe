@@ -87,7 +87,7 @@ export default function DeleteResourceButton({
 						<AlertDialogBody>
 							<Tabs size="md" index={step}>
 								<TabPanels>
-									<TabPanel as={VStack} p="0">
+									<TabPanel as={VStack} p="0" align='start'>
 										<Text>
 											Anda yakin hendak menghapus{' '}
 											<Text as="span" fontWeight="600">

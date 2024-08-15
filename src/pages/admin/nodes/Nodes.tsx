@@ -226,11 +226,11 @@ export default function NodeManagement() {
 }
 
 function NodesMapView() {
-	const { data } = useSWR<NodeData[]>('/nodes?all=true', fetcher);
+	const { data } = useSWR<Paginated<NodeData>>('/nodes?all=true', fetcher);
 	if (!data) return 'loading slurr';
 
 	const indoorNodeInCompanies = Object.values(
-		data
+		data.rows
 			.filter((e) => e.companyId && e.owner)
 			.reduce((acc: Record<number, any>, item) => {
 				const { coordinate, owner, ...rest } = item;
@@ -255,7 +255,7 @@ function NodesMapView() {
 			h="100%"
 			minH="350px"
 			companiesData={indoorNodeInCompanies}
-			data={data.filter((e: any) => !e.companyId)}
+			data={data.rows.filter((e) => !e.companyId)}
 		/>
 	);
 }

@@ -1,7 +1,7 @@
 import { API_URL } from '@/constants/config';
 import {
 	compareObjects,
-	trimAllValues,
+	trimAndCleanProps,
 	usemyToasts,
 } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
@@ -54,7 +54,7 @@ export default function EditNodeProfileButton({
 		}),
 
 		onSubmit: (values) => {
-			trimAllValues(values);
+			trimAndCleanProps(values);
 			const updatedData = compareObjects(initialValues, values);
 
 			if (Object.keys(updatedData).length === 0) {

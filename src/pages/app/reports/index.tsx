@@ -2,45 +2,49 @@ import MyMap from '@/components/Maps';
 import MyMarker from '@/components/Maps/marker';
 import useUser from '@/hooks/useUser';
 import { UrlWithQuery, fetcher } from '@/utils/fetcher'; //prettier-ignore
-import { Alert, AlertDescription, AlertIcon, Box, Card, CardBody, Flex, HStack, IconButton, Input, Spinner, Switch, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'; //prettier-ignore
+import { Alert, AlertDescription, AlertIcon, Box, Card, CardBody, Flex, Spinner, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import moment from 'moment';
 import { useRef, useState } from 'react';
 import useSWR from 'swr';
+import AdvanceReportFeature from './AdvanceFeature';
 import CreateReport from './CreateReport';
 import ReportCard from './ReportCard';
-import AdvanceFeature, { distanceList } from './AdvanceFeature';
+import ReportPagination from './ReportPagination';
 
-type FilterState = {
-	company : CompanyData
-	nearCompany: number;
-	distance: number;
+export type FilterState = {
+	company?: any;
+	nearCompany?: number;
+	distance?: number;
+};
 
+const getFilterQueries = (isOpen: boolean, filter: FilterState) => {
+	if (!filter.company || !isOpen) return {};
+
+	return {
+		nearCompany: filter.company.companyId,
+		distance: filter.distance,
+	};
 };
 
 export default function ReportsPage() {
+	const { roleIsNot, roleIs, user } = useUser();
+
 	const filterDisclosure = useDisclosure();
 	const showCompaniesDisclosure = useDisclosure();
+
+	const [filter, setFilters] = useState<FilterState>({ distance: 250 });
+	const [showCompanies, setShowCompanies] = useState<CompanyData[]>([]);
 
 	const currentDate = moment().format('YYYY-MM-DD');
 	const map = useRef<any>();
 
-	const { roleIsNot, roleIs, user } = useUser();
-
 	const [date, setDate] = useState(currentDate);
-	const [filterState, setFilterState] = useState<FilterState>();
 
-	const allCompaniesURL = roleIs(['admin', 'gov'])
-		? `/companies/all=true&view=simple`
-		: `/users/${user.userId}/companies?all=true`;
-	
 	const { data, isLoading } = useSWR<ReportsPerDay>(
-		UrlWithQuery('/reports', { date, ...filterState }),
-		fetcher
-	);
-
-	const { data: allCompanies } = useSWR<CompanyData[]>(
-		showCompaniesDisclosure.isOpen ? allCompaniesURL : null,
+		UrlWithQuery('/reports', {
+			date,
+			...getFilterQueries(filterDisclosure.isOpen, filter),
+		}),
 		fetcher
 	);
 
@@ -69,9 +73,15 @@ export default function ReportsPage() {
 									pagination={data?.pagination}
 									dateState={[date, setDate]}
 								/>
+
 								{roleIsNot('regular') && (
-									<AdvanceFeature
+									<AdvanceReportFeature
+										filterState={[filter, setFilters]}
 										filterDisclosure={filterDisclosure}
+										showCompaniesState={[
+											showCompanies,
+											setShowCompanies,
+										]}
 										showCompaniesDisclosure={showCompaniesDisclosure}
 									/>
 								)}
@@ -109,66 +119,24 @@ export default function ReportsPage() {
 					))}
 				</VStack>
 			</Box>
+
 			<MyMap
 				flex="5 1 0"
 				h="auto"
 				marker={MyMarker.RatingMarker}
 				companiesData={
-					showCompaniesDisclosure.isOpen && allCompanies
-						? allCompanies
-						: filterState
-						? [filterState.company]
+					showCompaniesDisclosure.isOpen
+						? showCompanies
+						: filterDisclosure.isOpen && filter.company
+						? [filter.company]
 						: []
 				}
 				circleBoundaryRadius={
-					filterState
-						? filterState.distance
-						: undefined
+					filterDisclosure.isOpen ? filter.distance : undefined
 				}
 				data={data?.result.map((e) => ({ isReport: true, ...e })) || []}
 				mapRef={map}
 			/>
 		</Flex>
-	);
-}
-
-interface ReportPagination {
-	pagination: ReportsPagination | undefined;
-	dateState: StateOf<string>;
-}
-
-function ReportPagination({ pagination, dateState }: ReportPagination) {
-	const [date, setDate] = dateState;
-
-	const next = pagination?.next;
-	const previous = pagination?.previous;
-	const current = pagination?.current;
-
-	return (
-		<HStack justify="space-between" w="full">
-			<IconButton
-				variant="outline"
-				icon={<IconChevronLeft />}
-				aria-label="previous"
-				isDisabled={!previous}
-				onClick={() => (previous ? setDate(previous) : null)}
-			/>
-			<Input
-				variant="outline"
-				onFocus={(e) => e.target.showPicker()}
-				type="date"
-				textAlign="center"
-				max={moment().format('YYYY-MM-DD')}
-				onChange={(e) => setDate(e.target.value)}
-				value={current || date}
-			/>
-			<IconButton
-				variant="outline"
-				icon={<IconChevronRight />}
-				aria-label="next"
-				isDisabled={!next}
-				onClick={() => (next ? setDate(next) : null)}
-			/>
-		</HStack>
 	);
 }

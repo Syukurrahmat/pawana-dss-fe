@@ -15,7 +15,7 @@ type CompanyData = {
 	companyId: number;
 	managedBy: number;
 	name: string;
-	coordinate : number[],
+	coordinate: number[],
 	address: string;
 	type: string;
 	createdAt: string;
@@ -152,3 +152,10 @@ type CurrentEventLogs = {
 // 		dataLogs: DTDatalog[];
 // 	};
 // }
+
+
+type DownloadDataResponse = {
+	startDate: string;
+	endDate: string;
+	result: any;
+};

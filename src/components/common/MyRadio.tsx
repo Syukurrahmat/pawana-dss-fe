@@ -1,6 +1,6 @@
 import { Radio, Text, Box, BoxProps } from '@chakra-ui/react';
 
-export function MyRadio({ value, children }: BoxProps & { value: string; }) {
+export function MyRadio({ value, children , ...props}: BoxProps & { value: string; }) {
 	return (
 		<Box
 			border="1px solid"
@@ -11,9 +11,10 @@ export function MyRadio({ value, children }: BoxProps & { value: string; }) {
 			as="label"
 			cursor="pointer"
 			bg='white'
+			{...props}
 		>
 			<Radio size="lg" value={value}>
-				<Text pr="2" fontSize="md" children={children} />
+				<Text pr="2" pl='1' fontSize="md" children={children} />
 			</Radio>
 		</Box>
 	);

@@ -7,11 +7,15 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import moment from 'moment';
 
 interface params extends ButtonProps {
-	dateRangeValue : Range,
-	onChangeDateRange : (x:Range) => any
+	dateRangeValue: Range;
+	onChangeDateRange: (x: Range) => any;
 }
 
-export default function SelectDateRange({ dateRangeValue, onChangeDateRange, ...rest }: params) {
+export default function SelectDateRange({
+	dateRangeValue,
+	onChangeDateRange,
+	...rest
+}: params) {
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [value, setValue] = useState(dateRangeValue);
@@ -34,6 +38,7 @@ export default function SelectDateRange({ dateRangeValue, onChangeDateRange, ...
 		<>
 			<Button
 				py="8"
+				px="3"
 				size="lg"
 				fontSize="md"
 				shadow="xs"
@@ -42,19 +47,21 @@ export default function SelectDateRange({ dateRangeValue, onChangeDateRange, ...
 				colorScheme="blue"
 				variant="outline"
 				rightIcon={<IconChevronDown size="20" />}
-				leftIcon={<IconCalendar size="28" />}
+				leftIcon={<IconCalendar style={{ flexGrow: 1 }} size="28" />}
 				onClick={onOpen}
 				{...rest}
 			>
-				<VStack spacing="1" align="start" px="1" w='full'>
+				<VStack spacing="1" align="start" px="1" w="full">
 					<Text textTransform="capitalize" fontSize="sm" color="gray.500">
 						Rentang Tanggal
 					</Text>
-					<Text textTransform="uppercase">
+					<Text >
 						{dateRangeValue
-							? [dateRangeValue.startDate, dateRangeValue.endDate]
-									.map((e) => moment(e).format('DD/MM/yyyy'))
-									.join(' - ')
+							? dateRangeValue.startDate == dateRangeValue.endDate
+								? moment(dateRangeValue.startDate).format('DD MMM yyyy')
+								: [dateRangeValue.startDate, dateRangeValue.endDate]
+										.map((e) => moment(e).format('DD MMM yyyy'))
+										.join(' - ')
 							: '-'}
 					</Text>
 				</VStack>
@@ -72,9 +79,10 @@ export default function SelectDateRange({ dateRangeValue, onChangeDateRange, ...
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader>Pilih Tanggal</ModalHeader>
-					<ModalBody>
+					<ModalBody py="0">
 						<DateRange
 							className="date-picker"
+							showDateDisplay={false}
 							onChange={(item) => setValue(item.selection)}
 							moveRangeOnFirstSelection={false}
 							ranges={[{ ...value, key: 'selection' }]}

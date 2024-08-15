@@ -2,7 +2,6 @@ import EditInMapInputGroup from '@/components/Form/EditInMapInputGroup';
 import MyMap from '@/components/Maps';
 import SectionTitle from '@/components/common/SectionTitle';
 import { API_URL } from '@/constants/config';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
 import useUser from '@/hooks/useUser';
 import { usemyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
@@ -12,20 +11,21 @@ import { useParams } from 'react-router-dom';
 import { KeyedMutator } from 'swr';
 
 interface INodePosisionInMap {
+	canEdit: boolean;
 	mutate: KeyedMutator<NodeDataPage>;
 	data: NodeDataPage;
 }
 
 export default function NodePosisionInMap({
+	canEdit,
 	data,
 	mutate,
 }: INodePosisionInMap) {
 	const [editedCoordinate, setEditedCoordinate] = useState(data.coordinate);
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
-	const { apiResponseToast } = useApiResponseToast();
+
 	const { id: nodeId } = useParams();
-	const { user } = useUser();
 	const toast = usemyToasts();
 
 	const onSubmitEditedCoordinate = async () => {
@@ -51,7 +51,7 @@ export default function NodePosisionInMap({
 		<>
 			<SectionTitle IconEl={IconMapCheck}>Letak Node</SectionTitle>
 			<EditInMapInputGroup
-				role={user.role}
+				canEdit={canEdit}
 				coordinate={data.coordinate}
 				isEditingState={[isEditing, setIsEditing]}
 				editedCoordinateState={[editedCoordinate, setEditedCoordinate]}

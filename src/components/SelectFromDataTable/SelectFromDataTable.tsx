@@ -7,73 +7,61 @@ import { useMemo, useState } from 'react';
 
 const columnHelper = createColumnHelper<searchGroupWithSubsResult>();
 
-type ObjectOfAny = { [key: string]: any };
-type ValToSS = (v: ObjectOfAny) => RowSelectionState;
-type SsToVal = (r: RowSelectionState) => ObjectOfAny;
-
-const sortObjectKeys = (obj: ObjectOfAny = {}) => {
-	const sortedObj = {};
-	const keys = Object.keys(obj);
-	keys.sort();
-	keys.forEach((key) => {
-		// @ts-ignore
-		sortedObj[key] = obj[key];
-	});
-	return sortedObj;
-};
-
-const valueToSelectState: ValToSS = (v) => ({
-	[JSON.stringify(sortObjectKeys(v))]: true,
-});
-
-const selectStateToValue: SsToVal = (r) => {
-	return JSON.parse(Object.keys(r)[0] || '{}');
-};
-
 export interface SelectFromDataTable extends ButtonProps {
 	itemName: string;
 	apiUrl: string;
-	selectValue: ObjectOfAny;
-	selectOnChange: React.Dispatch<React.SetStateAction<ObjectOfAny>>;
+	_value?: Record<string, any>;
+	_onChange: (e: Record<string, any>) => any;
 	displayRow: (e: any) => JSX.Element;
 	hiddenSearchInput?: boolean;
 	hiddenTitleButton?: boolean;
 	dtMaxH?: string;
 }
 
-export default function SelectFromDataTable(props: SelectFromDataTable) {
-	const {
-		itemName,
-		apiUrl,
-		hiddenTitleButton,
-		hiddenSearchInput,
-		displayRow,
-		selectValue,
-		selectOnChange,
-		dtMaxH,
-		leftIcon,
-		children,
-		...rest
-	} = props;
+function rowSelection2Object(r: RowSelectionState) {
+	const value = Object.keys(r)[0];
+	return value ? JSON.parse(value) : undefined;
+}
 
+function object2RowSelection(r: Record<string, any>) {
+	return {
+		[JSON.stringify(r)]: true,
+	};
+}
+
+const SelectFromDataTable = ({
+	itemName,
+	apiUrl,
+	hiddenTitleButton,
+	hiddenSearchInput,
+	displayRow,
+	_onChange,
+	_value,
+	dtMaxH,
+	leftIcon,
+	children,
+	...rest
+}: SelectFromDataTable) => {
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [searchValue, setSearchValue] = useState('');
-	const [rowSelection, setRowSelection] = useState(
-		valueToSelectState(selectValue)
+
+	const [rowSelection, setRowSelection] = useState<RowSelectionState>(
+		_value !== undefined ? object2RowSelection(_value) : {}
 	);
 
 	const title = `Pilih ${itemName}`;
 
 	const submitHandler = async () => {
-		if (!rowSelection) {
+		const value = rowSelection2Object(rowSelection);
+		if (value === undefined) {
 			return toast({
 				title: `Opss`,
 				description: `Belum ada ${itemName} yang dipilih`,
 				status: 'warning',
 			});
 		}
-		selectOnChange(selectStateToValue(rowSelection));
+		if (_onChange) _onChange(value);
 		onClose();
 	};
 
@@ -106,19 +94,15 @@ export default function SelectFromDataTable(props: SelectFromDataTable) {
 				py={leftIcon ? '8' : undefined}
 				colorScheme="blue"
 				variant="outline"
-				bg="white"
+				bg="gray.50"
+				justifyContent="start"
 				rightIcon={<IconChevronDown size={leftIcon ? '20' : '15'} />}
 				onClick={onOpen}
 				leftIcon={leftIcon}
 				{...rest}
 			>
 				{children || (
-					<Box
-						flexGrow="1"
-						maxW="90%"
-						textTransform="capitalize"
-						textAlign="left"
-					>
+					<Box flexGrow="1" textTransform="capitalize" textAlign="left">
 						{!hiddenTitleButton && (
 							<Text mb="1" fontSize="sm" children={itemName} />
 						)}
@@ -126,7 +110,7 @@ export default function SelectFromDataTable(props: SelectFromDataTable) {
 							overflow="hidden"
 							textOverflow="ellipsis"
 							whiteSpace="nowrap"
-							children={selectValue?.name || title}
+							children={_value?.name || title}
 						/>
 					</Box>
 				)}
@@ -164,9 +148,8 @@ export default function SelectFromDataTable(props: SelectFromDataTable) {
 							searchQuery={searchValue}
 							emptyMsg={[`${itemName} tidak ditemukan`]}
 							rowSelection={rowSelection}
-							setRowSelection={setRowSelection}
-							enableMultiRowSelection={false}
-							getRowId={(e: any) => JSON.stringify(sortObjectKeys(e))}
+							onRowSelectionChange={setRowSelection}
+							getRowId={(e) => JSON.stringify(e)}
 						/>
 					</ModalBody>
 					<ModalFooter>
@@ -185,4 +168,6 @@ export default function SelectFromDataTable(props: SelectFromDataTable) {
 			</Modal>
 		</>
 	);
-}
+};
+
+export default SelectFromDataTable;

@@ -1,21 +1,30 @@
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import MyMap from '@/components/Maps';
 import StarRating from '@/components/Rating';
-import { API_URL, CENTER_OF_MAP } from '@/constants/config';
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+import { CENTER_OF_MAP } from '@/constants/config';
 import useUser from '@/hooks/useUser';
-import { toBase64, trimAllValues } from '@/utils/common.utils';
+import { toBase64, trimAndCleanProps, usemyToasts } from '@/utils/common.utils';
+import { myAxios } from '@/utils/fetcher';
 import { Avatar, Box, Button, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
-import axios from 'axios';
 import { useFormik } from 'formik';
 import { mutate } from 'swr';
 import * as Yup from 'yup';
 import { PhotosPicker } from '../../../components/common/PhotosPicker';
 
+const validationSchema = Yup.object().shape({
+	message: Yup.string().max(255, 'Terlalu Panjang').required('Wajib Diisi'),
+	rating: Yup.number().required('Wajib Diisi'),
+	coordinate: Yup.array().test(
+		'',
+		'Anda Belum menentukan titik koordinat',
+		(e) => e && e.filter((e) => e).length == 2
+	),
+});
+
 export default function CreateReport() {
 	const { user } = useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { apiResponseToast } = useApiResponseToast();
+	const toast = usemyToasts();
 
 	const {
 		handleChange,
@@ -32,43 +41,31 @@ export default function CreateReport() {
 		initialValues: {
 			message: '',
 			rating: 0,
-			coordinate: [] as number[],
+			coordinate: [NaN, NaN],
 			images: [null, null, null] as (File | null)[],
 		},
-		validationSchema: Yup.object().shape({
-			message: Yup.string()
-				.max(255, 'Terlalu Panjang')
-				.required('Wajib Diisi'),
-			rating: Yup.number().required('Wajib Diisi'),
-			coordinate: Yup.array().test(
-				'',
-				'Anda Belum menentukan titik koordinat',
-				(e) => e && e.filter((e) => e).length == 2
-			),
-		}),
+		validationSchema,
 		onSubmit: async (values) => {
 			const images = await Promise.all(
 				values.images.filter((e) => e as File).map((e) => toBase64(e))
 			);
-
-			const data = trimAllValues({ ...values, images });
-
-			axios.post(API_URL + '/reports', data).then(({ data }) => {
-				apiResponseToast(data, {
-					onSuccess() {
-						mutate(
-							(e) =>
-								typeof e == 'string' &&
-								e.startsWith(API_URL + '/reports'),
-							null,
-							{ revalidate: true }
-						);
-						onClose();
-					},
+			console.log(trimAndCleanProps({ ...values, images }));
+			myAxios
+				.post('/reports', trimAndCleanProps({ ...values, images }))
+				.then(() => {
+					toast.success('Aduan berhasil dikirim');
+					mutate(
+						(e) => typeof e == 'string' && e.startsWith('/reports'),
+						null,
+						{ revalidate: true }
+					);
+				})
+				.catch(() => toast.success('Ada yang salah, aduan gagal dikirim'))
+				.finally(() => {
+					onClose();
+					setSubmitting(false);
+					resetForm();
 				});
-				setSubmitting(false);
-				resetForm();
-			});
 		},
 	});
 
@@ -166,7 +163,10 @@ export default function CreateReport() {
 										}
 										outlineColor="#E53E3E"
 										isEditing={{
-											coordinate: values.coordinate.filter(e=>e).length ? values.coordinate : CENTER_OF_MAP,
+											coordinate: values.coordinate.filter((e) => e)
+												.length
+												? values.coordinate
+												: CENTER_OF_MAP,
 											onChange: (x) =>
 												setFieldValue('coordinate', [x.lat, x.lng]),
 										}}

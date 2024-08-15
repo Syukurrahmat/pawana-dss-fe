@@ -1,4 +1,4 @@
-import { MAX_CH4, MAX_CO2, TRESHOLD_CH4, TRESHOLD_CO2 } from '@/constants/data';
+import { GAUGE_CHART_COLORS, MAX_CH4, MAX_CO2, TRESHOLD_CH4, TRESHOLD_CO2 } from '@/constants/data';
 import { getCH4Properties, getCO2Properties } from '@/utils/common.utils';
 import { Box, HStack, Icon, Spacer, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconHistory } from '@tabler/icons-react';
@@ -6,8 +6,8 @@ import moment from 'moment';
 import GaugeChart from 'react-gauge-chart';
 
 interface MultiNodeISPU {
-	CH4data: NodeStat<GRKCategorize>;
-	CO2data: NodeStat<GRKCategorize>;
+	CH4data: NodeStat<GRKValue>;
+	CO2data: NodeStat<GRKValue>;
 }
 
 export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
@@ -81,7 +81,7 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 									<GaugeChart
 										style={{ width: '125px' }}
 										arcsLength={threshold}
-										colors={['#5BE12C', '#F5CD19', '#EA4228']}
+										colors={GAUGE_CHART_COLORS}
 										percent={value >= max ? 1 : value / max}
 										arcPadding={0.02}
 										hideText={true}

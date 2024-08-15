@@ -1,27 +1,22 @@
-import { flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'; //prettier-ignore
-import { Table, Thead, Tbody, Tr, Th, Td, chakra, TableContainer, HStack, Text, BoxProps, Skeleton, VStack, Box} from '@chakra-ui/react'; //prettier-ignore
-import { IconArrowsSort, IconSortAscending2, IconSortDescending2} from '@tabler/icons-react'; //prettier-ignore
+import { fetcher, UrlWithQuery } from '@/utils/fetcher';
+import { Box, BoxProps, chakra, HStack, Skeleton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconArrowsSort, IconSortAscending2, IconSortDescending2 } from '@tabler/icons-react'; //prettier-ignore
+import { ColumnDef, flexRender, getCoreRowModel, OnChangeFn, Row, RowSelectionState, useReactTable } from '@tanstack/react-table'; //prettier-ignore
+import { useEffect, useRef } from 'react';
+import useSWR from 'swr';
+import { Pagination } from './Pagination';
 import usePagination from './usePagination';
 import useSorting from './useSorting';
-import { Pagination } from './Pagination';
-import useSWR from 'swr';
-import qs from 'qs';
-import {
-	UrlWithQuery,
-	fetcher,
-	fetcherAPIWithQueries,
-} from '@/utils/fetcher';
-import { useEffect, useRef } from 'react';
 
 interface IDataTable extends BoxProps {
 	apiUrl: string;
-	columns: any[];
+	columns: ColumnDef<any, any>[];
 	enableMultiRowSelection?: boolean;
 	emptyMsg?: string[];
 	setDataContext?: React.Dispatch<any>;
-	getRowId?: any;
-	rowSelection?: any;
-	setRowSelection?: any;
+	getRowId?: (originalRow: any, index: number, parent?: Row<any>) => string;
+	rowSelection?: RowSelectionState;
+	onRowSelectionChange?: OnChangeFn<RowSelectionState>;
 	searchQuery?: string;
 	withHeader?: boolean;
 	hiddenPagination?: boolean;
@@ -34,9 +29,9 @@ export default function DataTable({
 	setDataContext,
 	getRowId,
 	rowSelection,
-	setRowSelection,
+	onRowSelectionChange,
 	searchQuery,
-	enableMultiRowSelection = true,
+	enableMultiRowSelection = false,
 	withHeader = true,
 	hiddenPagination = false,
 	...rest
@@ -62,7 +57,7 @@ export default function DataTable({
 		fetcher
 	);
 
-	const data = rawData?.rows || []
+	const data = rawData?.rows || [];
 
 	useEffect(() => {
 		if (setDataContext) setDataContext(rawData ? data : rawData);
@@ -85,7 +80,7 @@ export default function DataTable({
 		getCoreRowModel: getCoreRowModel(),
 		manualPagination: true,
 		manualSorting: true,
-		onRowSelectionChange: setRowSelection,
+		onRowSelectionChange,
 		state: { pagination, sorting, rowSelection },
 		rowCount: itemcount.current.totalItems,
 	});

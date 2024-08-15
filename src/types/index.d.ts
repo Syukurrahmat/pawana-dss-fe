@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 
 declare module "*.svg" {
     export default string;
@@ -13,7 +12,7 @@ declare module "*.png" {
 
 type ConfirmMessage = {
     title: string,
-    message: ReactNode,
+    message: any,
     onConfirm: () => Promise<void> | null,
     confirmButtonColor?: string,
     confirmText?: string,

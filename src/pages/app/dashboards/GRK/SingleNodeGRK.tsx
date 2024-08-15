@@ -1,5 +1,11 @@
 import MyLineChart from '@/components/Chart/MyLineChart';
-import { MAX_CH4, MAX_CO2, TRESHOLD_CH4, TRESHOLD_CO2 } from '@/constants/data';
+import {
+	GAUGE_CHART_COLORS,
+	MAX_CH4,
+	MAX_CO2,
+	TRESHOLD_CH4,
+	TRESHOLD_CO2,
+} from '@/constants/data';
 import { getCH4Properties, getCO2Properties } from '@/utils/common.utils';
 import { Box, HStack, Icon, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconHistory } from '@tabler/icons-react';
@@ -7,8 +13,8 @@ import moment from 'moment';
 import GaugeChart from 'react-gauge-chart';
 
 interface SingleNodeISPU {
-	CO2data: SingleNodeAnalysisItem<GRKCategorize>;
-	CH4data: SingleNodeAnalysisItem<GRKCategorize>;
+	CO2data: SingleNodeAnalysisItem<GRKValue>;
+	CH4data: SingleNodeAnalysisItem<GRKValue>;
 }
 
 export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
@@ -62,7 +68,7 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								<GaugeChart
 									style={{ width: '125px' }}
 									arcsLength={threshold}
-									colors={['#5BE12C', '#F5CD19', '#EA4228']}
+									colors={GAUGE_CHART_COLORS}
 									percent={value > max ? 1 : value / max}
 									arcPadding={0.02}
 									hideText={true}
@@ -75,7 +81,7 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								<Tag
 									w="full"
 									fontSize="md"
-									py='1'
+									py="1"
 									justifyContent="center"
 									colorScheme={colorScheme}
 									children={category}

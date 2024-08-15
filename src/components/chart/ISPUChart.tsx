@@ -38,19 +38,16 @@ export default function MyISPUChart<T extends { datetime: string }>({
 }: MyISPUChart<T>) {
 	const [{ startIndex, endIndex }, setBrushStartEndIndex] =
 		useState<BrushStartEndIndex>({
-			startIndex:
-				withBrush && data.length / 2 >= 12
-					? Math.floor(data.length / 2)
-					: undefined,
+			startIndex: data.length / 2 < 15 ? 0 : Math.floor(data.length / 2),
 		});
-
-	dataKeyTypeAndFunc = Array.isArray(dataKeyTypeAndFunc)
-		? dataKeyTypeAndFunc
-		: [dataKeyTypeAndFunc];
 
 	data = data.sort(
 		(a, b) => moment(a.datetime).valueOf() - moment(b.datetime).valueOf()
 	);
+
+	dataKeyTypeAndFunc = Array.isArray(dataKeyTypeAndFunc)
+		? dataKeyTypeAndFunc
+		: [dataKeyTypeAndFunc];
 
 	return (
 		<>
@@ -137,7 +134,11 @@ export default function MyISPUChart<T extends { datetime: string }>({
 							key={i}
 							radius={[3, 3, 0, 0]}
 							dataKey={(e) =>  func(e)?.ispu  || null} //prettier-ignore
-							name={envType == 'indoor' ? 'In-site' : 'Out-site'}
+							name={
+								envType == 'indoor'
+									? 'Di dalam perusahaan'
+									: 'Di sekitar perusahaan'
+							}
 						>
 							{data
 								.slice(
@@ -176,12 +177,12 @@ export default function MyISPUChart<T extends { datetime: string }>({
 											<HStack key={i}>
 												<Box
 													boxSize="15px"
-													rounded="md"
+													rounded="sm"
 													border="1px solid"
-													borderColor="gray.700"
+													borderColor="gray.600"
 													bg={
 														i
-															? 'linear-gradient(45deg, #000 25%, transparent 25%, transparent 50%, #000 50%, #000 75%, transparent 75%, #fff)'
+															? 'linear-gradient(45deg, #4a5568 25%, transparent 25%, transparent 50%, #4a5568 50%, #4a5568 75%, transparent 75%, #fff)'
 															: 'white'
 													}
 													backgroundSize="6px 6px"

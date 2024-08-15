@@ -53,10 +53,10 @@ type NodeDataPage = {
     countCompanySubscribtion: number;
     dataLogs: DTDatalog[]
     owner: {
-        userId: number
+        companyId: number
         name: string
-        phone: string
-        profilePicture: string | undefined
+        type: string
+        managedBy: number
     }
 }
 

@@ -2,22 +2,25 @@ import FormMapPicker from '@/components/Form/FormMapPicker';
 import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { BigAlert } from '@/components/common/BigAlert';
 import NameWithAvatar from '@/components/common/NamewithAvatar';
-import SelectFromDataTable from '@/components/common/SelectFromDataTable';
+import SelectFromDataTable from '@/components/SelectFromDataTable/SelectFromDataTable';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
-import { trimAllValues } from '@/utils/common.utils';
+import { trimAndCleanProps } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconUserBolt } from '@tabler/icons-react';
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as Yup from 'yup';
 
 export default function CreateCompany() {
+	const [selectedManager, setSelectedManager] = useState<{
+		userId: number;
+		name: string;
+	}>();
 	const { user, roleIs } = useUser();
 	const { role, userId } = user;
-	const [managerInfo, setManagerInfo] = useState<any>({});
 
 	const defaultManagerId = role == 'manager' ? userId : NaN;
 
@@ -29,8 +32,8 @@ export default function CreateCompany() {
 		touched,
 		errors,
 		values,
-		setStatus,
-		status,
+		setStatus: setCreatedStatus,
+		status: createdStatus,
 		resetForm,
 		setFieldValue,
 		handleSubmit,
@@ -54,43 +57,27 @@ export default function CreateCompany() {
 
 		onSubmit: (values) => {
 			myAxios
-				.post('/companies', trimAllValues(values))
-				.then(({ data }) => setStatus(data || false))
-				.catch(() => setStatus(false))
+				.post('/companies', trimAndCleanProps(values))
+				.then(({ data }) => {
+					setCreatedStatus({
+						created: true,
+						companyId: data.data.companyId,
+					});
+				})
+				.catch(() => setCreatedStatus({ created: false }))
 				.finally(() => setSubmitting(false));
 		},
 	});
 
-	useEffect(() => {
-		if (!defaultManagerId)
-			setFieldValue('managerId', managerInfo?.userId as any);
-	}, [managerInfo]);
-
 	return (
 		<Box>
 			<Heading size="lg">Buat Usaha</Heading>
-			<Text>Buat Usaha dan dapatkan dukungan keputusan untuk perusahaan Anda</Text>
+			<Text>
+				Buat Usaha dan dapatkan dukungan keputusan untuk perusahaan Anda
+			</Text>
 
 			<Container maxW="container.sm" mt="6">
-				{status !== undefined ? (
-					status ? (
-						<BigAlert
-							status="success"
-							title="Usaha berhasil dibuat"
-							description="Tambah Node baik indoor maupun outdoor untuk mendapatkan informasi dan rekomendasi seputar kualiats udara dan emisi gas rumah kaca"
-							onCreateAgain={resetForm}
-							itemName="usaha"
-							detailPageURL={`/companies/${status.result.companyId}`}
-						/>
-					) : (
-						<BigAlert
-							status="warning"
-							title="Usaha gagal didaftarkan"
-							description="Ada yang salah. Hubungi Administrator"
-							onCreateAgain={resetForm}
-						/>
-					)
-				) : (
+				{createdStatus === undefined ? (
 					<form onSubmit={handleSubmit} className="my-form">
 						<VStack mx="auto" spacing="2">
 							{roleIs('admin') && (
@@ -105,9 +92,14 @@ export default function CreateCompany() {
 									<SelectFromDataTable
 										leftIcon={<IconUserBolt size="30" />}
 										itemName="Manager"
-										apiUrl="/search/users?role=manager"
-										selectValue={managerInfo}
-										selectOnChange={setManagerInfo}
+										apiUrl="/users?role=manager&view=simple"
+										_value={selectedManager}
+										_onChange={(e) => {
+											setSelectedManager(e);
+											if (!defaultManagerId) {
+												setFieldValue('managerId', e.userId);
+											}
+										}}
 										displayRow={(e) => (
 											<NameWithAvatar name={e.name} />
 										)}
@@ -209,6 +201,28 @@ export default function CreateCompany() {
 							/>
 						</VStack>
 					</form>
+				) : createdStatus.created ? (
+					<BigAlert
+						status="success"
+						title="Usaha berhasil dibuat"
+						description="Tambah Node baik indoor maupun outdoor untuk mendapatkan informasi dan rekomendasi seputar kualiats udara dan emisi gas rumah kaca"
+						onCreateAgain={() => {
+							resetForm();
+							setSelectedManager(undefined);
+						}}
+						itemName="usaha"
+						detailPageURL={`/companies/${createdStatus.companyId}`}
+					/>
+				) : (
+					<BigAlert
+						status="warning"
+						title="Usaha gagal didaftarkan"
+						description="Ada yang salah. Hubungi Administrator"
+						onCreateAgain={() => {
+							resetForm();
+							setSelectedManager(undefined);
+						}}
+					/>
 				)}
 			</Container>
 		</Box>

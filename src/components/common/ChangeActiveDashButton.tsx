@@ -1,5 +1,5 @@
 import CompanyIcon from '@/components/common/CompanyIcon';
-import SelectFromDataTable from '@/components/common/SelectFromDataTable';
+import SelectFromDataTable from '@/components/SelectFromDataTable/SelectFromDataTable';
 import useUser, { User } from '@/hooks/useUser';
 import { myAxios } from '@/utils/fetcher';
 import { Button, ButtonProps, HStack, Text } from '@chakra-ui/react';
@@ -13,6 +13,7 @@ interface ViewDashboard extends ButtonProps {
 }
 
 type ChangeDash = (m: KeyedMutator<User>, c: number) => any;
+
 export const changeDashboard: ChangeDash = async (mutateUser, companyId) => {
 	myAxios.patch('/app/configure-view', { companyId }).then((resp) => {
 		if (resp.status === 200) {
@@ -47,16 +48,20 @@ export function ButtonViewDashboard({ companyId, ...r }: ViewDashboard) {
 }
 
 export function ChangeActiveDashboard(props: ButtonProps) {
-	const { user, mutateUser } = useUser();
+	const { user, roleIs, mutateUser } = useUser();
+
+	const apiUrl = roleIs(['admin', 'gov'])
+		? `/companies?view=simple`
+		: `/users/${user.userId}/companies?view=simple`;
 
 	return (
 		<SelectFromDataTable
 			dtMaxH="300px"
 			itemName="Usaha"
 			hiddenTitleButton={true}
-			apiUrl={`/users/${user.userId}/companies?view=simple`}
-			selectValue={user.view!.company!}
-			selectOnChange={(e: any) => changeDashboard(mutateUser, e.companyId)}
+			apiUrl={apiUrl}
+			_value={user.view!.company!}
+			_onChange={(e: any) => changeDashboard(mutateUser, e.companyId)}
 			hiddenSearchInput={true}
 			displayRow={(e) => (
 				<HStack>

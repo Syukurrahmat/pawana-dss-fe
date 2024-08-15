@@ -1,14 +1,15 @@
 import useUser from '@/hooks/useUser';
 import { Box, Flex, HStack, Heading, Text } from '@chakra-ui/react'; //prettier-ignore
-import { SelectUserOrCompanyView } from '../dashboards/informationCard';
+
 import CreateEventLog from './CreateEventLog';
 import CurrentEventlog from './currentEventlog';
 import { EventCalendar } from './EventCalendar';
+import { SelectUserOrCompanyView } from '@/components/common/AdminInforCard';
 
 export default function Notes() {
 	const { user } = useUser();
 	const companyId = user.view?.company?.companyId;
-	if (!companyId) return <SelectUserOrCompanyView />;
+	if (!companyId) return <SelectUserOrCompanyView selectCompanyOnly />;
 
 	return (
 		<Flex gap="3">

@@ -1,10 +1,10 @@
-import { useApiResponseToast } from '@/hooks/useApiResponseToast';
+
 import useUser from '@/hooks/useUser';
 import {
 	compareObjects,
 	toastErrorOpt,
 	toastSuccessOpt,
-	trimAllValues,
+	trimAndCleanProps,
 	usemyToasts,
 } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
@@ -54,7 +54,7 @@ export default function EditUserProfileButton({
 		}),
 
 		onSubmit: (values) => {
-			trimAllValues(values);
+			trimAndCleanProps(values);
 			const updatedData = compareObjects(initialValues, values);
 
 			if (Object.keys(updatedData).length === 0) {

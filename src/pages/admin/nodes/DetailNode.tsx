@@ -19,7 +19,7 @@ import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 
 export default function DetailNode() {
 	const { id } = useParams();
-	const { roleIs } = useUser();
+	const { roleIs, user } = useUser();
 
 	const apiURLEntryPoint = `/nodes/${id}`;
 	const { data, mutate } = useSWR<NodeDataPage>(apiURLEntryPoint, fetcher);
@@ -30,6 +30,10 @@ export default function DetailNode() {
 
 	const statusAtt = nodeStatusAttr[data.isUptodate ? 'active' : 'nonactive'];
 	const ownshipAtt = nodeTypeAttr[data.companyId ? 'private' : 'public'];
+
+	const canEdit =
+		roleIs('admin') ||
+		(roleIs('manager') && data.owner?.managedBy == user.userId);
 
 	return (
 		<Box>
@@ -67,7 +71,7 @@ export default function DetailNode() {
 						{data.owner && <CompanyCard mt="3" data={data.owner} />}
 					</Box>
 
-					{roleIs(['admin', 'manager']) && (
+					{canEdit && (
 						<EditNodeProfileButton
 							data={data}
 							mutate={mutate}
@@ -153,7 +157,7 @@ export default function DetailNode() {
 				</Flex>
 
 				{!isPrivateNodePage && (
-					<NodePosisionInMap data={data} mutate={mutate} />
+					<NodePosisionInMap canEdit={canEdit} data={data} mutate={mutate} />
 				)}
 
 				{!data.companyId && roleIs('admin') && (
@@ -169,7 +173,7 @@ export default function DetailNode() {
 					mutate={mutate}
 				/>
 
-				{roleIs('admin') && (
+				{canEdit && (
 					<>
 						<SectionTitle IconEl={IconLock}>Lainnya</SectionTitle>
 						<DeleteResourceButton

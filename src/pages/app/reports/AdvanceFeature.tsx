@@ -1,36 +1,63 @@
-import { Box, HStack, Switch, Text, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 
+import { Box, Flex, HStack, Spinner, Switch, Text, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import FilterByDistance from './FilterByDistance';
+import useUser from '@/hooks/useUser';
+import useSWR from 'swr';
+import { fetcher } from '@/utils/fetcher';
+import { useEffect, useState } from 'react';
+import { FilterState } from '.';
 
-export default function AdvanceFeature({
-	apiUrl,
-	distanceState,
-	companiesState,
+interface AdvanceReportFeature {
+	filterState: StateOf<FilterState>;
+	showCompaniesState: StateOf<CompanyData[]>;
+	filterDisclosure: ReturnType<typeof useDisclosure>;
+	showCompaniesDisclosure: ReturnType<typeof useDisclosure>;
+}
+
+export default function AdvanceReportFeature({
+	filterState,
 	filterDisclosure,
-	showCompaniesDisclosure
-}:{
-	distanceState : StateOf<number>
-	companiesState : StateOf<any>
-	apiUrl : string,
-	filterDisclosure : ReturnType<typeof useDisclosure>
-	showCompaniesDisclosure : ReturnType<typeof useDisclosure>
-}) {
+	showCompaniesState,
+	showCompaniesDisclosure,
+}: AdvanceReportFeature) {
+	const { user, roleIs } = useUser();
+
 	const {
 		isOpen: filterIsOpen,
 		onToggle: onToggleFilter,
 		onClose: onCloseFilter,
 	} = filterDisclosure;
+
 	const {
 		isOpen: showCompanyIsOpen,
 		onToggle: onToggleShowCompany,
 		onClose: onCloseShowCompany,
 	} = showCompaniesDisclosure;
 
+	const allCompaniesURL = roleIs(['admin', 'gov'])
+		? `/companies?all=true&view=simple`
+		: `/users/${user.userId}/companies?all=true&view=simple`;
+
+	const { data: companiesData } = useSWR<Paginated<CompanyData>>(
+		showCompaniesDisclosure.isOpen ? allCompaniesURL : null,
+		fetcher
+	);
+
+	useEffect(() => {
+		showCompaniesState[1](companiesData?.rows || []);
+	}, [companiesData]);
+
 	return (
 		<Box w="full">
 			<HStack w="full" justify="space-between">
-				<Text fontWeight="500" alignSelf="start">
-					Tampilkan Lokasi Usaha
-				</Text>
+				<Flex align="center">
+					<Text fontWeight="500" alignSelf="start">
+						Tampilkan Lokasi Usaha
+					</Text>
+					{showCompanyIsOpen && !companiesData && (
+						<Spinner size="sm" ml="2" color="gray.500" />
+					)}
+				</Flex>
 
 				<Switch
 					onChange={(e) => {
@@ -42,6 +69,7 @@ export default function AdvanceFeature({
 					isChecked={showCompanyIsOpen}
 				/>
 			</HStack>
+
 			<HStack w="full" justify="space-between" mt="4">
 				<Text fontWeight="500" alignSelf="start">
 					Filter aduan di sekitar usaha Anda
@@ -55,85 +83,12 @@ export default function AdvanceFeature({
 					isChecked={filterIsOpen}
 				/>
 			</HStack>
+
 			<FilterByDistance
 				isOpen={filterIsOpen}
-				apiUrl={apiUrl}
-				distanceState={distanceState}
-				companiesState={companiesState}
+				apiUrl={allCompaniesURL}
+				filterState={filterState}
 			/>
-		</Box>
-	);
-}
-
-import CompanyIcon from '@/components/common/CompanyIcon';
-import SelectFromDataTable from '@/components/common/SelectFromDataTable';
-import { Collapse, Select } from '@chakra-ui/react';
-
-interface FilterDist {
-	isOpen: boolean;
-	apiUrl: string;
-	distanceState: StateOf<number>;
-	companiesState: StateOf<CompanyData| undefined>;
-}
-
-export const distanceList = [
-	{ distance: 250, label: '250 m' },
-	{ distance: 500, label: '500 m' },
-	{ distance: 1000, label: '1 km' },
-	{ distance: 2500, label: '2,5 km' },
-];
-
-function FilterByDistance({
-	isOpen,
-	distanceState,
-	apiUrl,
-	companiesState,
-}: FilterDist) {
-	const [companyId, setCompanyId] = companiesState;
-	const [distance, setDistance] = distanceState;
-
-	return (
-		<Box w="full">
-			<Collapse in={isOpen} animateOpacity>
-				<HStack spacing="3" mt="4">
-					<Box as="label" flexGrow="1">
-						<Text mb="1">Usaha</Text>
-
-						<SelectFromDataTable
-							w="200px"
-							fontWeight="400"
-							itemName="Usaha"
-							hiddenTitleButton={true}
-							apiUrl={apiUrl}
-							selectValue={companyId as any}
-							selectOnChange={setCompanyId as any}
-							hiddenSearchInput={true}
-							borderColor="gray.200"
-							color="gray.700"
-							displayRow={(e: any) => (
-								<HStack>
-									<CompanyIcon bg="white" type={e.type} />
-									<Text children={e?.name || 'Node yang Anda ikuti'} />
-								</HStack>
-							)}
-						/>
-					</Box>
-					<Box as="label" flexGrow="1">
-						<Text mb="1">Jarak</Text>
-						<Select
-							value={distance}
-							onChange={(e) => setDistance(parseInt(e.target.value))}
-							children={distanceList.map((e) => (
-								<option
-									value={e.distance}
-									key={e.distance}
-									children={e.label}
-								/>
-							))}
-						/>
-					</Box>
-				</HStack>
-			</Collapse>
 		</Box>
 	);
 }
