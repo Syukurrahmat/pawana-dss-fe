@@ -89,7 +89,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 	return (
 		<>
 			<SectionTitle IconEl={IconUsersGroup}>
-				Lokasi Usaha dan Node yang dikuti
+				Lokasi Perusahaan dan Node yang dikuti
 			</SectionTitle>
 
 			<Box>

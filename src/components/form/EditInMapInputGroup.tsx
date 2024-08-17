@@ -27,7 +27,7 @@ export default function EditInMapInputGroup({
 			{!isEditing && (
 				<>
 					<GMapsButton size="md" coordinate={coordinate}>
-						Buka lokasi Usaha di Gmaps
+						Buka lokasi Perusahaan di Gmaps
 					</GMapsButton>
 					<Spacer />
 
@@ -35,7 +35,7 @@ export default function EditInMapInputGroup({
 						<Button
 							colorScheme="yellow"
 							leftIcon={<IconEdit size="18" />}
-							children="Sunting lokasi usaha"
+							children="Sunting lokasi perusahaan"
 							onClick={() => setIsEditing(true)}
 						/>
 					)}

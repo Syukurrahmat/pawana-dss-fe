@@ -32,7 +32,7 @@ export default function CompanySubsctiptionsList({
 
 	const handleDeleteSubs = (companyId: number) => {
 		confirmDialog({
-			title: 'Hapus Usaha',
+			title: 'Hapus Perusahaan',
 			message: 'Hapus pengguna dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
 			onConfirm: async () =>
@@ -52,8 +52,8 @@ export default function CompanySubsctiptionsList({
 
 	const handleDeleteAllSubs = () => {
 		confirmDialog({
-			title: 'Hapus Semua Usaha',
-			message: 'Hapus semua usaha dari daftar pelanggan node ' + data.name,
+			title: 'Hapus Semua Perusahaan',
+			message: 'Hapus semua perusahaan dari daftar pelanggan node ' + data.name,
 			confirmButtonColor: 'red',
 			onConfirm: async () =>
 				myAxios
@@ -121,7 +121,7 @@ export default function CompanySubsctiptionsList({
 								colorScheme="blue"
 								size="sm"
 								leftIcon={<IconExternalLink size="16" />}
-								children="Lihat Usaha"
+								children="Lihat Perusahaan"
 							/>
 						</RLink>
 					</HStack>
@@ -134,7 +134,7 @@ export default function CompanySubsctiptionsList({
 	return (
 		<>
 			<SectionTitle IconEl={IconBuildingFactory2}>
-				Daftar usaha yang mensubscribe
+				Daftar perusahaan yang mensubscribe
 				<Tag colorScheme="blue" ml="2">
 					{countCompanySubscribtion || 0}
 				</Tag>
@@ -146,13 +146,13 @@ export default function CompanySubsctiptionsList({
 						colorScheme="red"
 						leftIcon={<IconTrash size="18" />}
 						onClick={handleDeleteAllSubs}
-						children="Hapus Semua Usaha"
+						children="Hapus Semua Perusahaan"
 					/>
 					<Spacer />
 					<InputSearch
 						rounded="md"
 						bg="white"
-						placeholder="Cari Usaha"
+						placeholder="Cari Perusahaan"
 						_onSubmit={null}
 					/>
 				</HStack>
@@ -162,7 +162,7 @@ export default function CompanySubsctiptionsList({
 				mt="4"
 				apiUrl={apiURL}
 				columns={columns}
-				emptyMsg={['Belum ada Usaha']}
+				emptyMsg={['Belum ada Perusahaan']}
 			/>
 		</>
 	);

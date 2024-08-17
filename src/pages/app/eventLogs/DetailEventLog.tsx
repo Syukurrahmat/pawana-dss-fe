@@ -76,7 +76,7 @@ function DetailNote({ eventId, onClose, readOnly }: DetailNote) {
 
 		confirmDialog({
 			title: 'Hapus Kegiatan ini',
-			message: 'Anda yakin hendak menghapus kegiatan ini dari usaha Anda',
+			message: 'Anda yakin hendak menghapus kegiatan ini dari perusahaan Anda',
 			confirmButtonColor: 'red',
 			onConfirm: () =>
 				myAxios

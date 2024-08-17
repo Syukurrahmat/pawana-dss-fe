@@ -11,7 +11,7 @@ export default function CompanyMarker({ properties, ...rest }: any) {
 		<Marker icon={getCompanyMarker(type)} {...rest}>
 			<Popup className="map-popup" offset={[0, -16]}>
 				<VStack align="start" spacing="1">
-					<Text fontSize="sm">Lokasi Usaha</Text>
+					<Text fontSize="sm">Lokasi Perusahaan</Text>
 					<Heading size="sm">{name}</Heading>
 					{indoorNodeValue ? (
 						<>

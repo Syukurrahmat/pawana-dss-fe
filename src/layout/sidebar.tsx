@@ -1,7 +1,7 @@
 import { HOST_URL } from '@/constants/config';
-import { myAxios } from '@/utils/fetcher';
 import { BoxProps, Button, Divider, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconLogout, IconUser } from '@tabler/icons-react'; // prettier-ignore
+import axios from 'axios';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Logo from '../components/common/Logo';
@@ -11,7 +11,7 @@ const LogoutButton = () => {
 
 	const onClickHandle = async () => {
 		setIsLoading(true);
-		const res = await myAxios.delete(HOST_URL + '/auth/logout');
+		const res = await axios.delete(HOST_URL + '/auth/logout');
 		setIsLoading(false);
 		if (res.statusText == 'OK') {
 			window.location.href = '/login';

@@ -2,6 +2,7 @@ import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconF
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
+import LoginPage from '@/pages/other/login';
 
 const ReportsPage = lazy(() => import('@/pages/app/Reports'));
 const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
@@ -28,6 +29,11 @@ const routers = [
 		element: <DetailUser />,
 		role: ['all'],
 	},
+	{
+		path: '/login',
+		element: <LoginPage />,
+		role: ['all'],
+	},
 
 	// REGULAR
 
@@ -47,7 +53,7 @@ const routers = [
 	},
 	{
 		path: '/nodes',
-		label: 'Sensor',
+		label: 'Node',
 		Icon: IconCircleDot,
 		element: <MySubscribedNodes />,
 		role: ['regular'],
@@ -73,14 +79,14 @@ const routers = [
 	},
 	{
 		path: '/companies',
-		label: 'Usaha Saya',
+		label: 'Perusahaan Saya',
 		Icon: IconBuildingFactory2,
 		element: <MyCompanies />,
 		role: ['manager'],
 	},
 	{
 		path: '/nodes',
-		label: 'Sensor Saya',
+		label: 'Node Saya',
 		Icon: IconCircleDot,
 		element: <MyPrivateNode />,
 		role: ['manager'],
@@ -107,7 +113,7 @@ const routers = [
 
 	{
 		path: '/companies',
-		label: 'Kelola Usaha',
+		label: 'Kelola Perusahaan',
 		Icon: IconBuildingFactory2,
 		element: <CompaniesManagement />,
 		role: ['admin', 'gov'],
@@ -129,7 +135,7 @@ const routers = [
 	},
 	{
 		path: '/nodes',
-		label: 'Kelola Sensor',
+		label: 'Kelola Node',
 		Icon: IconCircleDot,
 		element: <NodeManagement />,
 		role: ['admin', 'gov'],

@@ -1,17 +1,27 @@
 import { getISPUProperties } from '@/utils/common.utils';
 import { HStack, Icon, Spacer, Stack, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconCircleDot, IconHistory } from '@tabler/icons-react';
-import { FinalISPUCard } from './SingleNodeISPU';
+import { FinalISPUCard, ISPUCannotAnalize } from './SingleNodeISPU';
 import moment from 'moment';
 
 interface MultiNodeISPU {
-	data: NodeStat<[ISPUValueItem, ISPUValueItem]>;
+	data: NodeStat<ISPUValue>;
 }
 
 export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 	const { highest, lowest, average } = data;
 
+	const highestIspuData = highest.data.value?.[0];
+	const lowestIspuData = lowest.data.value?.[0];
+
 	const { value, datetime } = average.data;
+
+	if (!value || !highestIspuData || !lowestIspuData) return <ISPUCannotAnalize/>;
+
+	const minMaxValues = [
+		{ nodeName: highest.name, ispuData: highestIspuData },
+		{ nodeName: lowest.name, ispuData: lowestIspuData },
+	];
 
 	return (
 		<>
@@ -23,7 +33,7 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 				w="full"
 				justifyContent="space-evenly"
 			>
-				{[highest, lowest].map((e, i) => (
+				{minMaxValues.map((e, i) => (
 					<MinMaxISPU
 						data={e}
 						key={i}
@@ -42,18 +52,16 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 	);
 }
 
-interface NewType {
+interface MinMaxISPU {
 	data: {
-		nodeId: number;
-		name: string;
-		lastDataSent: string;
-		data: Timeseries<[ISPUValueItem, ISPUValueItem]>;
+		nodeName: string;
+		ispuData: ISPUValueItem;
 	};
 	label: string;
 }
 
-function MinMaxISPU({ data, label }: NewType) {
-	const { category, ispu } = data.data.value[0];
+function MinMaxISPU({ data, label }: MinMaxISPU) {
+	const { category, ispu } = data.ispuData;
 	const { colorScheme } = getISPUProperties(category);
 
 	return (
@@ -78,7 +86,12 @@ function MinMaxISPU({ data, label }: NewType) {
 			</HStack>
 			<HStack spacing="1">
 				<IconCircleDot size="16" />
-				<Text w="full" noOfLines={1} fontSize="sm" children={data.name} />
+				<Text
+					w="full"
+					noOfLines={1}
+					fontSize="sm"
+					children={data.nodeName}
+				/>
 			</HStack>
 		</VStack>
 	);

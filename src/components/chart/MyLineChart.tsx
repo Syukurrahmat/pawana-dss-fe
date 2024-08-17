@@ -20,7 +20,6 @@ export default function MyLineChart<T extends { datetime: string }>({
 	dataKeyTypeAndFunc = [],
 	tickFormat = 'HH:MM',
 }: LineChartData<T>) {
-	
 	dataKeyTypeAndFunc = Array.isArray(dataKeyTypeAndFunc)
 		? dataKeyTypeAndFunc
 		: [dataKeyTypeAndFunc];
@@ -102,7 +101,7 @@ export default function MyLineChart<T extends { datetime: string }>({
 							dataKey={func}
 							fillOpacity={0.8}
 							stroke={envType == 'indoor' ? '#82ca9d' : '#8884d8'}
-							fill={`url(#colorId-${envType})`}
+							fill={`url(#colorId-${envType || 'outdoor'})`}
 							name={
 								envType == 'indoor'
 									? 'Di dalam perusahaan'

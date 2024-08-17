@@ -29,7 +29,7 @@ export default function App({ navbarList }: { navbarList: any[] }) {
 				Laporan page : buat rekomendasi section, memperbaiki chart,
 			</pre>
 			<pre>
-				menseragamkan istilah sensor dan usaha
+				menseragamkan istilah node dan perusahaan
 			</pre>
 			<pre>
 			emty data in laporan page

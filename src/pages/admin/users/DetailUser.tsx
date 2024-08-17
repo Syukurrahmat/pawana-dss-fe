@@ -78,7 +78,7 @@ export default function DetailUser() {
 						{data.role == 'manager' && (
 							<>
 								<SectionTitle IconEl={IconUsersGroup}>
-									Usaha Anda
+									Perusahaan Anda
 									<Tag colorScheme="blue" ml="2">
 										{data.countManagedCompany || 0}
 									</Tag>
@@ -89,7 +89,7 @@ export default function DetailUser() {
 										<Button
 											colorScheme="blue"
 											leftIcon={<IconCirclePlus size="18" />}
-											children="Tambahkan Usaha"
+											children="Tambahkan Perusahaan"
 										/>
 									</Rlink>
 								)}

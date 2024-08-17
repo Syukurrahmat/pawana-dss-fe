@@ -11,8 +11,8 @@ export default function MySubscribedNodes() {
 		<Box>
 			<HStack justify="space-between">
 				<Box>
-					<Heading size="lg">Sensor Saya</Heading>
-					<Text>Daftar sensor yang Anda ikuti</Text>
+					<Heading size="lg">Node Saya</Heading>
+					<Text>Daftar node yang Anda ikuti</Text>
 				</Box>
 				<NodeSubscription
 					subsInfo={{

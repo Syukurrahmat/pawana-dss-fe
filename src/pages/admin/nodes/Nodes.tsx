@@ -66,7 +66,7 @@ export const columPrivateNodeTable = [
 	...columnsPublicNodeTable.slice(0, 2),
 
 	columnHelper.accessor('owner', {
-		header: 'Usaha',
+		header: 'Perusahaan',
 		cell: (info) => (
 			<RLink to={'/companies/' + info.getValue()!.companyId}>
 				<HStack>

@@ -96,7 +96,7 @@ type SingleNodeAnalysisItem<V> = {
 
 
 type ResultOfMultiNodeStats = {
-    ispu: NodeStat<ISPUValue[]>;
+    ispu: NodeStat<ISPUValue>;
     ch4: NodeStat<GRKValue>;
     co2: NodeStat<GRKValue>;
 };

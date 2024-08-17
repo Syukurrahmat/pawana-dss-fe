@@ -26,7 +26,7 @@ export function NearReport({ data, ...rest }: NearReport) {
 			</CardHeader>
 			<CardBody >
 				<Text mb="4">
-					Aduan dalam radius 250 meter dari lokasi usaha Anda dalam
+					Aduan dalam radius 250 meter dari lokasi perusahaan Anda dalam
 					24 jam terakhir
 				</Text>
 				<VStack align="stretch">

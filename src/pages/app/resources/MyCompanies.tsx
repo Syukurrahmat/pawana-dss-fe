@@ -11,14 +11,14 @@ export default function MyCompanies() {
 		<Box>
 			<HStack justify="space-between">
 				<Box>
-					<Heading size="lg">Usaha saya</Heading>
-					<Text>Daftar usaha yang Anda Buat</Text>
+					<Heading size="lg">Perusahaan saya</Heading>
+					<Text>Daftar perusahaan yang Anda Buat</Text>
 				</Box>
 				<Link to={'/companies/create'}>
 					<Button
 						colorScheme="blue"
 						leftIcon={<IconCirclePlus size="18" />}
-						children='Tambahkan Usaha'
+						children='Tambahkan Perusahaan'
 					/>
 				</Link>
 			</HStack>

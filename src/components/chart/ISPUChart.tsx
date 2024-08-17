@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Bar, BarChart, Brush, CartesianGrid, Cell, Legend, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'; //prettier-ignore
 
 export type DatakeyFunc<T> = {
-	envType: 'indoor' | 'outdoor';
+	envType?: 'indoor' | 'outdoor';
 	func: (e: T) => any;
 };
 

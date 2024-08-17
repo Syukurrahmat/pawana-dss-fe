@@ -91,7 +91,7 @@ export default function CompaniesManagement() {
 	return (
 		<Flex gap="2" flexDir="column">
 			<HStack w="full" spacing="4" align="start">
-				<HeadingWithIcon Icon={<IconUsersGroup />} text="Daftar Usaha" />
+				<HeadingWithIcon Icon={<IconUsersGroup />} text="Daftar Perusahaan" />
 				<Spacer />
 				<InputSearch
 					_onSubmit={null}
@@ -104,7 +104,7 @@ export default function CompaniesManagement() {
 						<Button
 							leftIcon={<IconPlus size="20px" />}
 							colorScheme="green"
-							children="Tambah Usaha"
+							children="Tambah Perusahaan"
 						/>
 					</RLink>
 				)}
@@ -119,7 +119,7 @@ export default function CompaniesManagement() {
 					flex="1 0 180px"
 					icon={IconBuildingFactory2}
 					count={data.all}
-					label="Total Usaha"
+					label="Total Perusahaan"
 					variant="solid"
 				/>
 
@@ -153,7 +153,7 @@ export default function CompaniesManagement() {
 				isLazy
 			>
 				<TabList>
-					<Tab>Daftar Usaha</Tab>
+					<Tab>Daftar Perusahaan</Tab>
 					<Tab>Lihat Dalam Maps</Tab>
 				</TabList>
 				<TabPanels flexGrow="1">

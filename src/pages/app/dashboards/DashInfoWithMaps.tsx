@@ -180,7 +180,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 						{!!companyId && (
 							<Link to={`/companies/${companyId}`}>
 								<Button colorScheme="blue" ml="2">
-									Detail Usaha
+									Detail Perusahaan
 								</Button>
 							</Link>
 						)}

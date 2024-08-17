@@ -116,14 +116,14 @@ export default function CreateNode() {
 		{
 			icon: IconLock,
 			name: 'Node Private',
-			note: 'Membuat node private hanya suatu usaha spesifik',
+			note: 'Membuat node private hanya suatu perusahaan spesifik',
 		},
 	];
 
 	return (
 		<Box>
-			<Heading size="lg">Buat Sensor</Heading>
-			<Text>Buat sensor untuk menambah akurasi sistem</Text>
+			<Heading size="lg">Buat Node</Heading>
+			<Text>Buat node untuk menambah akurasi sistem</Text>
 			<Container maxW="container.md" mt="4">
 				{createdStatus === undefined && showChooseNodeOwnship && (
 					<Tabs
@@ -160,7 +160,7 @@ export default function CreateNode() {
 									(!currentCompany ? (
 										<FormControl>
 											<FormLabel>
-												Pilih Usaha <RequiredIndicator />
+												Pilih Perusahaan <RequiredIndicator />
 											</FormLabel>
 
 											<SelectFromDataTableCompanies
@@ -178,7 +178,7 @@ export default function CreateNode() {
 									) : (
 										<Box alignSelf="start">
 											<Text fontWeight="600">
-												Buat Node Untuk Usaha
+												Buat Node Untuk Perusahaan
 											</Text>
 											<HStack
 												mt="2"

@@ -29,7 +29,7 @@ export default function DetailCompany() {
 
 	return (
 		<Box>
-			<HeadingWithIcon Icon={<IconUserHeart />} text="Detail Usaha" />
+			<HeadingWithIcon Icon={<IconUserHeart />} text="Detail Perusahaan" />
 			<Container mt="8" maxW="container.md">
 				<HStack justify="space-between">
 					<Box>
@@ -66,7 +66,7 @@ export default function DetailCompany() {
 							colorScheme="blue"
 							alignSelf="start"
 							leftIcon={<IconEdit size="16" />}
-							children={'Sunting Usaha'}
+							children={'Sunting Perusahaan'}
 						/>
 					)}
 				</HStack>
@@ -75,7 +75,7 @@ export default function DetailCompany() {
 				<Text>{data.address}</Text>
 
 				<SectionTitle IconEl={IconTextCaption}>
-					Deskripsi Usaha
+					Deskripsi Perusahaan
 				</SectionTitle>
 				<Text>{data.description}</Text>
 				

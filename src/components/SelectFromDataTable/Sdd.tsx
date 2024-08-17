@@ -23,7 +23,7 @@ export function SelectFromDataTableCompanies({
 	return (
 		<SelectFromDataTable
 			leftIcon={<IconBuildingFactory2 size="30" />}
-			itemName="Usaha"
+			itemName="Perusahaan"
 			_value={_value}
 			_onChange={_onChange}
 			apiUrl={findCompaniesURL}

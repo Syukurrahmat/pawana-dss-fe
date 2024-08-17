@@ -68,9 +68,9 @@ export default function CreateCompany() {
 
 	return (
 		<Box>
-			<Heading size="lg">Buat Usaha</Heading>
+			<Heading size="lg">Buat Perusahaan</Heading>
 			<Text>
-				Buat Usaha dan dapatkan dukungan keputusan untuk perusahaan Anda
+				Buat Perusahaan dan dapatkan dukungan keputusan untuk perusahaan Anda
 			</Text>
 
 			<Container maxW="container.sm" mt="6">
@@ -111,7 +111,7 @@ export default function CreateCompany() {
 								isInvalid={Boolean(errors.name) && touched.name}
 							>
 								<FormLabel>
-									Nama Usaha <RequiredIndicator />
+									Nama Perusahaan <RequiredIndicator />
 								</FormLabel>
 								<Input
 									id="name"
@@ -127,7 +127,7 @@ export default function CreateCompany() {
 								isInvalid={Boolean(errors.type) && touched.type}
 							>
 								<FormLabel>
-									Jenis Usaha <RequiredIndicator />
+									Jenis Perusahaan <RequiredIndicator />
 								</FormLabel>
 								<Select
 									id="type"
@@ -201,19 +201,19 @@ export default function CreateCompany() {
 				) : createdStatus.created ? (
 					<BigAlert
 						status="success"
-						title="Usaha berhasil dibuat"
+						title="Perusahaan berhasil dibuat"
 						description="Tambah Node baik indoor maupun outdoor untuk mendapatkan informasi dan rekomendasi seputar kualiats udara dan emisi gas rumah kaca"
 						onCreateAgain={() => {
 							resetForm();
 							setSelectedManager(undefined);
 						}}
-						itemName="usaha"
+						itemName="perusahaan"
 						detailPageURL={`/companies/${createdStatus.companyId}`}
 					/>
 				) : (
 					<BigAlert
 						status="warning"
-						title="Usaha gagal didaftarkan"
+						title="Perusahaan gagal didaftarkan"
 						description="Ada yang salah. Hubungi Administrator"
 						onCreateAgain={() => {
 							resetForm();

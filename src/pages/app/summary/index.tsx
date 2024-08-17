@@ -173,10 +173,10 @@ export default function Summary() {
 						company={data.meta.company}
 					/>
 
-					{/* ==== Catatan Kegiatan Usaha ==== */}
+					{/* ==== Catatan Kegiatan Perusahaan ==== */}
 
 					<TitleSection
-						title="Catatan Kegiatan Usaha"
+						title="Catatan Kegiatan Perusahaan"
 						colorScheme="purple"
 						icon={IconClipboardText}
 					/>

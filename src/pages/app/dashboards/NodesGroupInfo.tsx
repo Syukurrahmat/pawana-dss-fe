@@ -2,18 +2,19 @@ import opssImage from '@/assets/opss.png';
 
 import NodeSubscription from '@/components/common/AddNodeSubscription';
 import useUser from '@/hooks/useUser';
-import { Alert, AlertTitle, Box, Button, Card, CardBody, CardHeader, Center, HStack, Heading, Icon, Image, Spacer, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconBuilding, IconCircleDot, IconCirclePlus, IconCircleX, IconReceipt, IconTrees, IconZzz } from '@tabler/icons-react'; // prettier-ignore
+import { Box, Button, Card, CardBody, CardHeader, Center, HStack, Heading, Icon, Image, Stack, StackDivider, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { IconBuilding, IconCircleDot, IconCirclePlus, IconCircleX, IconTrees, IconZzz } from '@tabler/icons-react'; // prettier-ignore
 import MultiNodeGRK from './GRK/MultiNodeGRK';
 import SingleNodeGRK from './GRK/SingleNodeGRK';
 import MultiNodeISPU from './ISPU/MultiNodeISPU';
 import SingleNodeISPU from './ISPU/SingleNodeISPU';
+import RecomendationSection from './RecomendationSection';
 
-type SingleISPU = SingleNodeAnalysisItem<ISPUValue>;
-type MutiISPU = NodeStat<ISPUValue>;
-type SingleGRK = SingleNodeAnalysisItem<GRKValue>;
-type MutiGRK = NodeStat<GRKValue>;
-type NodeGroupType = 'indoor' | 'outdoor' | 'arround';
+export type SingleISPU = SingleNodeAnalysisItem<ISPUValue>;
+export type MutiISPU = NodeStat<ISPUValue>;
+export type SingleGRK = SingleNodeAnalysisItem<GRKValue>;
+export type MutiGRK = NodeStat<GRKValue>;
+export type NodeGroupType = 'indoor' | 'outdoor' | 'arround';
 
 interface ISPUCard {
 	data: NodesGroup;
@@ -67,7 +68,7 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 									<Text>
 										{isSingleNode
 											? (data as SingleNodeAnalysis).node.name
-											: `Rerata dari ${countNodes.active} sensor`}
+											: `Rerata dari ${countNodes.active} node`}
 									</Text>
 								</HStack>
 								{!!countNonActiveNode && (
@@ -117,89 +118,11 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 							</VStack>
 						</Stack>
 
-						<Alert
-							mt="6"
-							status="info"
-							variant="left-accent"
-							rounded="md"
-							alignItems="start"
-						>
-							<Icon
-								as={IconReceipt}
-								boxSize="7"
-								color="blue.600"
-								mt="2"
-							/>
-
-							<Box ml="3">
-								{(() => {
-									const recomendationIspu = isSingleNode
-											? (data.ispu as SingleISPU).latestData.value[0].recomendation //prettier-ignore
-											: (data.ispu as MutiISPU).average.data.value[0].recomendation //prettier-ignore
-
-									const recomendationCH4 = isSingleNode
-											? (data.ch4 as SingleGRK).latestData.value.recomendation //prettier-ignore
-											: (data.ch4 as MutiGRK).average.data.value.recomendation //prettier-ignore
-
-									const recomendationCO2 = isSingleNode
-											? (data.co2 as SingleGRK).latestData.value.recomendation //prettier-ignore
-											: (data.co2 as MutiGRK).average.data.value.recomendation //prettier-ignore
-
-									const contents = [
-										{ recomendation: recomendationIspu },
-										{ recomendation: recomendationCO2 },
-										{ recomendation: recomendationCH4 },
-									];
-
-									return (
-										<Tabs variant="soft-rounded" colorScheme="gray">
-											<TabList as={HStack}>
-												<AlertTitle m="0">Rekomendasi</AlertTitle>
-												<Spacer />
-												<Tab rounded="lg">Kualitas Udara</Tab>
-												<Tab rounded="lg">Emisi Karbondioksida</Tab>
-												<Tab rounded="lg">Emisi Metana</Tab>
-											</TabList>
-
-											<TabPanels pb="2">
-												{contents.map(({ recomendation }, i) => (
-													<TabPanel
-														px="0"
-														py="2"
-														key={i}
-														as={VStack}
-														align="start"
-													>
-														<Text
-															textIndent="40px"
-															fontSize="md"
-															textAlign="justify"
-														>
-															{recomendation?.info}
-														</Text>
-														<Text
-															fontSize="md"
-															textAlign="justify"
-														>
-															<span
-																style={{
-																	fontWeight: 600,
-																}}
-															>
-																Saran :{' '}
-															</span>
-															{type == 'indoor'
-																? recomendation?.company
-																: recomendation?.public}
-														</Text>
-													</TabPanel>
-												))}
-											</TabPanels>
-										</Tabs>
-									);
-								})()}
-							</Box>
-						</Alert>
+						<RecomendationSection
+							type={type}
+							isSingleNode={isSingleNode}
+							data={data}
+						/>
 					</>
 				) : (
 					<NoDataDisplay data={dt} type={type} />

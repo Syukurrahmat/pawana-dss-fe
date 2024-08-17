@@ -3,25 +3,34 @@ import MyLineChart from '@/components/Chart/MyLineChart';
 import { UNIT_PM } from '@/constants/data';
 import { getISPUProperties } from '@/utils/common.utils';
 import { Box, Flex, HStack, Heading, Icon, Spacer, StackDivider, StackProps, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconHistory } from '@tabler/icons-react';
+import { IconDatabaseX, IconHistory } from '@tabler/icons-react';
 import moment from 'moment';
 
 interface SingleNodeISPU {
-	data: SingleNodeAnalysisItem<[ISPUValueItem, ISPUValueItem]>;
+	data: SingleNodeAnalysisItem<ISPUValue>;
 }
 
 export default function SingleNodeISPU({ data }: SingleNodeISPU) {
-	const { latestData : {datetime, value}, tren } = data as SingleNodeAnalysisItem<[ISPUValueItem,ISPUValueItem]>; // prettier-ignore
+	const {
+		latestData: { datetime, value },
+		tren,
+	} = data;
 
 	return (
 		<>
-			<FinalISPUCard value={value[0]} />
+			{value ? (
+				<>
+					<FinalISPUCard value={value[0]} />
 
-			<HStack justify="space-evenly" w="full">
-				{value.map((e, i) => (
-					<EachISPUCard value={e} key={i} />
-				))}
-			</HStack>
+					<HStack justify="space-evenly" w="full">
+						{value.map((e, i) => (
+							<EachISPUCard value={e} key={i} />
+						))}
+					</HStack>
+				</>
+			) : (
+				<ISPUCannotAnalize />
+			)}
 
 			{/* TREN  */}
 
@@ -42,9 +51,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								withoutLegend
 								data={tren}
 								dataKeyTypeAndFunc={{
-									envType: 'outdoor',
-									func: (e) =>
-										e.value.find((f) => f.pollutant == 'PM25')!,
+									func: (e) => (e.value || []).find((f) => f.pollutant == 'PM25')!, //prettier-ignore
 								}}
 							/>
 						</Box>
@@ -56,9 +63,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								withoutLegend
 								data={tren}
 								dataKeyTypeAndFunc={{
-									envType: 'outdoor',
-									func: (e) =>
-										e.value.find((f) => f.pollutant == 'PM100')!,
+									func: (e) => (e.value || []).find((f) => f.pollutant == 'PM100')!, //prettier-ignore
 								}}
 							/>
 						</Box>
@@ -75,10 +80,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								withoutLegend
 								data={tren}
 								dataKeyTypeAndFunc={{
-									envType: 'outdoor',
-									func: (e) =>
-										e.value.find((e) => e.pollutant == 'PM25')!
-											.pollutantValue,
+									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM25')?.pollutantValue || 0, //prettier-ignore
 								}}
 							/>
 						</Box>
@@ -90,10 +92,7 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								withoutLegend
 								data={tren}
 								dataKeyTypeAndFunc={{
-									envType: 'outdoor',
-									func: (e) =>
-										e.value.find((e) => e.pollutant == 'PM100')!
-											.pollutantValue,
+									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM100')?.pollutantValue || 0, //prettier-ignore
 								}}
 							/>
 						</Box>
@@ -101,12 +100,14 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 				</TabPanels>
 			</Tabs>
 			<Spacer />
-			<HStack justify="end" w="full">
-				<Icon as={IconHistory} boxSize="18px" />
-				<Text>
-					ISPU Pukul {moment(datetime).format('HH:mm DD MMM YYYY')}
-				</Text>
-			</HStack>
+			{!!value && (
+				<HStack justify="end" w="full">
+					<Icon as={IconHistory} boxSize="18px" />
+					<Text>
+						ISPU Pukul {moment(datetime).format('HH:mm DD MMM YYYY')}
+					</Text>
+				</HStack>
+			)}
 		</>
 	);
 }
@@ -189,6 +190,18 @@ export function FinalISPUCard({
 				color={colorScheme + '.400'}
 				as={icon}
 			/>
+		</HStack>
+	);
+}
+
+export function ISPUCannotAnalize() {
+	return (
+		<HStack flexGrow='1' w="full" spacing="4" px="2" py='8' rounded="5" color='gray.500'>
+			<Icon boxSize="60px"  strokeWidth="1.5px" as={IconDatabaseX} />
+			<Box>
+			<Text fontWeight='600' fontSize='xl' color='gray.600'>ISPU Terkini tidak dapat dikalkulasi</Text>
+			<Text>Data tidak mencukupi, tunggu sensor mengirimkan data tambahan. </Text>
+			</Box>
 		</HStack>
 	);
 }

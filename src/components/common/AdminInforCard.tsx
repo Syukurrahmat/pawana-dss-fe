@@ -14,7 +14,7 @@ export function SelectUserOrCompanyView({
 }: SelectUserOrCompanyView) {
 	return (
 		<Box as={withCard ? InformationCard : undefined}>
-			<Text>Pilih Pengguna publik atau usaha yang ingin Anda Lihat</Text>
+			<Text>Pilih Pengguna publik atau perusahaan yang ingin Anda Lihat</Text>
 			<HStack mt="4">
 				<ChangeActiveDashboard>Pilih Perusahaan</ChangeActiveDashboard>
 				{!selectCompanyOnly && (
@@ -45,20 +45,20 @@ export function DontHaveCompany({ role }: { role: UserRole }) {
 						boxSize="30px"
 					/>
 					<Heading size="lg" color="gray.500" fontWeight="600" pr="2">
-						{pronouns} belum memiliki Usaha
+						{pronouns} belum memiliki Perusahaan
 					</Heading>
 				</HStack>
 				{role !== 'gov' && (
 					<>
 						<Text maxW="md">
-							Tambahkan Usaha sekarang untuk mendapatkan rekomendasi
-							keputusan untuk usaha {pronouns}
+							Tambahkan Perusahaan sekarang untuk mendapatkan rekomendasi
+							keputusan untuk perusahaan {pronouns}
 						</Text>
 						<Link to="/companies/create">
 							<Button
 								leftIcon={<IconPlus size="20px" />}
 								colorScheme="green"
-								children="Tambah Usaha"
+								children="Tambah Perusahaan"
 							/>
 						</Link>
 					</>

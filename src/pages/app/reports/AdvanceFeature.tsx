@@ -52,7 +52,7 @@ export default function AdvanceReportFeature({
 			<HStack w="full" justify="space-between">
 				<Flex align="center">
 					<Text fontWeight="500" alignSelf="start">
-						Tampilkan Lokasi Usaha
+						Tampilkan Lokasi Perusahaan
 					</Text>
 					{showCompanyIsOpen && !companiesData && (
 						<Spinner size="sm" ml="2" color="gray.500" />
@@ -72,7 +72,7 @@ export default function AdvanceReportFeature({
 
 			<HStack w="full" justify="space-between" mt="4">
 				<Text fontWeight="500" alignSelf="start">
-					Filter aduan di sekitar usaha Anda
+					Filter aduan di sekitar perusahaan Anda
 				</Text>
 
 				<Switch

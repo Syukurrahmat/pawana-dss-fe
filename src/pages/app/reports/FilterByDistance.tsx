@@ -29,12 +29,12 @@ export default function FilterByDistance({
 			<Collapse in={isOpen} animateOpacity>
 				<HStack spacing="3" mt="4">
 					<Box as="label" flexGrow="1">
-						<Text mb="1">Usaha</Text>
+						<Text mb="1">Perusahaan</Text>
 
 						<SelectFromDataTable
 							w="200px"
 							fontWeight="400"
-							itemName="Usaha"
+							itemName="Perusahaan"
 							hiddenTitleButton={true}
 							apiUrl={apiUrl}
 							_value={filter.company}

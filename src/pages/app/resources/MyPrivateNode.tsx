@@ -13,8 +13,8 @@ export default function MyPrivateNode() {
 		<Box>
 			<HStack justify="space-between">
 				<Box>
-					<Heading size="lg">Sensor Saya</Heading>
-					<Text>Daftar sensor private di usaha-usaha Anda</Text>
+					<Heading size="lg">Node Saya</Heading>
+					<Text>Daftar node private di perusahaan-perusahaan Anda</Text>
 				</Box>
 
 				<Link to="./create">

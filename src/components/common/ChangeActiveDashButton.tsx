@@ -57,7 +57,7 @@ export function ChangeActiveDashboard(props: ButtonProps) {
 	return (
 		<SelectFromDataTable
 			dtMaxH="300px"
-			itemName="Usaha"
+			itemName="Perusahaan"
 			hiddenTitleButton={true}
 			apiUrl={apiUrl}
 			_value={user.view!.company!}
