@@ -1,11 +1,11 @@
-import logo from '@/assets/icon.svg';
+import logo from '@/assets/icon-white.svg';
 import {
-    Center,
-    Container,
-    HStack,
-    Heading,
-    Image,
-    Progress,
+	Center,
+	Container,
+	HStack,
+	Heading,
+	Image,
+	Progress,
 } from '@chakra-ui/react';
 
 export default function PreLoadScreen() {
@@ -18,17 +18,10 @@ export default function PreLoadScreen() {
 			bg="#378CE7"
 			minH="100vh"
 		>
-			<HStack>
-				<Center rounded="lg" boxSize="50px" bg="gray.50">
-					<Image src={logo} />
-				</Center>
-				<Heading size="2xl" color="gray.50">
-					Pawana
-				</Heading>
-			</HStack>
+			<Image src={logo}  h='70px'/>
 
 			<Progress
-				mt="8"
+				mt="6"
 				outline="3px solid"
 				outlineColor="gray.100"
 				w="300px"

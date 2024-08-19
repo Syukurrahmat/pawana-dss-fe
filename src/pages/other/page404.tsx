@@ -1,35 +1,57 @@
-import Logo from '@/components/common/Logo';
+import logo from '@/assets/icon-white.svg';
 import {
-	Container
+	Button,
+	Card,
+	CardBody,
+	CardHeader,
+	Container,
+	Divider,
+	Heading,
+	HStack,
+	Icon,
+	Image,
+	Spacer,
+	Text,
+	VStack,
 } from '@chakra-ui/react';
+import { IconError404 } from '@tabler/icons-react';
+import { useNavigate, useRouteError } from 'react-router-dom';
 
-export default function Page404() {
+export default function ErrorPage() {
+	let navigate = useNavigate();
+
 	return (
-		<Container
-			maxW="full"
-			bg="#378CE7"
-			p='6'
-			flexDir="column"
-			minH="100vh"
-		>
-			<Logo mb='4'/>
-			{/* <Container as={VStack} spacing="0">
-				<HStack>
-					<HStack mb="4" px="2" color="gray.100">
-						<Center p="1.5" bg="gray.100" rounded="md">
-							<Image src={logo} h="30px" />
-						</Center>
-						<Heading fontSize="3xl">Pawana</Heading>
-					</HStack>
-				</HStack>
-				<Divider />
-				<VStack spacing="0">
-					<Icon as={IconError404} boxSize="200px" color="gray.100" />
-					<Heading size="xl" color="gray.100">
-						Halaman tidak ditemukan
-					</Heading>
-				</VStack>
-			</Container> */}
+		<Container maxW="full" bg="#378CE7" flexDir="column" minH="100vh">
+			<Container as={VStack} maxW="container.sm" h="100vh" p="4">
+				<Image src={logo} h="40px" />
+				<Spacer />
+				<Card rounded="md">
+					<CardHeader
+						as={HStack}
+						spacing="4"
+						align="center"
+						justify="center"
+						pb='0'
+					>
+						<Icon as={IconError404} boxSize="125px" />
+						<Heading size="lg">
+							Opss.... <br /> Halaman tidak ditemukan.
+						</Heading>
+					</CardHeader>
+					<Divider borderColor='gray.400'/>
+					<CardBody as={VStack} align="start" w="full">
+						<Text fontSize="lg">
+							Kami tidak dapat menemukan halaman yang Anda cari. Coba
+							periksa URL atau kembali ke beranda
+						</Text>
+						<Button mt='2' colorScheme='blue' onClick={() => navigate('/')}>
+							Kembali ke Dasbor
+						</Button>
+					</CardBody>
+				</Card>
+				<Spacer />
+				<Spacer />
+			</Container>
 		</Container>
 	);
 }

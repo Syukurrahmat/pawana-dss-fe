@@ -22,7 +22,9 @@ export default function DetailNode() {
 	const { roleIs, user } = useUser();
 
 	const apiURLEntryPoint = `/nodes/${id}`;
-	const { data, mutate } = useSWR<NodeDataPage>(apiURLEntryPoint, fetcher);
+	const { data, mutate, error } = useSWR<NodeDataPage>(apiURLEntryPoint, fetcher);
+
+	if(error) throw error
 
 	if (!data) return <LoadingComponent />;
 

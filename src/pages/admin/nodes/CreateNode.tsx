@@ -295,7 +295,7 @@ export default function CreateNode() {
 									mt="4"
 									colorScheme="green"
 									type="submit"
-									children="Buat Akun"
+									children="Buat Node"
 								/>
 							</VStack>
 						</form>

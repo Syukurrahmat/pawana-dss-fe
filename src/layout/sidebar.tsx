@@ -1,10 +1,10 @@
 import { HOST_URL } from '@/constants/config';
-import { BoxProps, Button, Divider, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { Box, BoxProps, Button, Divider, Image, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconLogout, IconUser } from '@tabler/icons-react'; // prettier-ignore
 import axios from 'axios';
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import Logo from '../components/common/Logo';
+import { Link, NavLink } from 'react-router-dom';
+import logo from '@/assets/icon.svg';
 
 const LogoutButton = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +49,9 @@ export default function Sidebar({
 }: SidebarProps) {
 	return (
 		<VStack p="5" align="stretch" minH="100vh" bg="gray.100" {...props}>
-			<Logo mb="4" />
+			<Box as={Link} to="/" mb="4" ml="2">
+				<Image src={logo} h="40px" />
+			</Box>
 
 			<VStack as="nav" align="stretch">
 				{navbarList

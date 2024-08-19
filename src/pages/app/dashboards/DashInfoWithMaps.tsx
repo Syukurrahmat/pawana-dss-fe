@@ -7,16 +7,16 @@ import TagWithIcon from '@/components/common/TagWithIcon';
 import useUser from '@/hooks/useUser';
 import { getISPUProperties } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
-import { Box, Button, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { Alert, Box, Button, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconCalendar, IconCircleDot } from '@tabler/icons-react'; // prettier-ignore
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 	const { dashboardInfo, nodes } = data;
-	const { name, type, coordinate, countNodes, companyId, createdAt } = dashboardInfo; //prettier-ignore
+	const { name, type, coordinate, countNodes, companyId, userId, createdAt } = dashboardInfo; //prettier-ignore
 	const [selectedParam, setSelectedParam] = useState<null | number>(null);
-	const { roleIsNot } = useUser();
+	const { roleIsNot, roleIs, user } = useUser();
 
 	const airParamsData = (x: 'indoor' | 'outdoor' = 'outdoor') => [
 		{
@@ -111,7 +111,9 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 			? airParamsData()[selectedParam].currentData
 			: nodes.outdoor;
 
-	if (type == 'regular' && countNodes == 0) return null;
+	const dashboardName = name
+		? name
+		: 'Dasbor ' + (roleIs(['admin', 'gov']) ? user.view?.user?.name : 'Anda');
 
 	return (
 		<Card size="sm" w="full">
@@ -131,7 +133,11 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 				<VStack align="start" p="1" flexGrow="1">
 					<HStack mt="6">
 						<CompanyIcon type={type} />
-						<Heading size="md" fontWeight="600" children={name} />
+						<Heading
+							size="md"
+							fontWeight="600"
+							children={dashboardName}
+						/>
 					</HStack>
 					<HStack mt="2">
 						{!!createdAt && (
@@ -151,30 +157,50 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 					</HStack>
 
 					<Spacer />
-					<Box>
-						<Text>Tampilkan nilai dari parameter : </Text>
-						<Flex flexWrap="wrap" gap="3" mt="1">
-							{airParamsData().map((e, i) => (
-								<Button
-									key={i}
-									size="sm"
-									colorScheme="teal"
-									border="1px solid"
-									borderColor="teal.500"
-									variant={selectedParam == i ? 'solid' : 'outline'}
-									onClick={() =>
-										setSelectedParam((e) => (e != i ? i : null))
-									}
-									children={e.name}
-								/>
-							))}
-						</Flex>
-					</Box>
+					{countNodes > 0 ? (
+						<Box>
+							<Text>Tampilkan nilai dari parameter : </Text>
+							<Flex flexWrap="wrap" gap="3" mt="1">
+								{airParamsData().map((e, i) => (
+									<Button
+										key={i}
+										size="sm"
+										colorScheme="teal"
+										border="1px solid"
+										borderColor="teal.500"
+										variant={selectedParam == i ? 'solid' : 'outline'}
+										onClick={() =>
+											setSelectedParam((e) => (e != i ? i : null))
+										}
+										children={e.name}
+									/>
+								))}
+							</Flex>
+						</Box>
+					) : (
+						<Alert fontSize="md" status="warning" rounded="md">
+							<Text >
+								Tidak ada node yang dapat dianalisis. 
+								<br/>Tambahkan node
+								untuk memulai memantau kualitas udara
+							</Text>
+						</Alert>
+					)}
 					<HStack justify="end" w="full" mt="4">
 						{roleIsNot('regular') && (
-							<ChangeActiveDashboard colorScheme="blue">
+							<ChangeActiveDashboard
+								colorScheme="blue"
+								selectCompanyOnly={roleIsNot(['admin', 'gov'])}
+							>
 								Ganti Dashboard
 							</ChangeActiveDashboard>
+						)}
+						{roleIs(['admin', 'gov']) && type == 'regular' && (
+							<Link to={`/users/${userId}`}>
+								<Button colorScheme="blue" ml="2">
+									Detail Pengguna
+								</Button>
+							</Link>
 						)}
 
 						{!!companyId && (

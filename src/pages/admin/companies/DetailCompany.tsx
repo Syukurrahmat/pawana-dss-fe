@@ -20,11 +20,12 @@ export default function DetailCompany() {
 	const { id } = useParams();
 	const { user, roleIs } = useUser();
 
-	const { data, mutate } = useSWR<CompanyDataPage>(
+	const { data, mutate, error } = useSWR<CompanyDataPage>(
 		`/companies/${id}`,
 		fetcher
 	);
 
+	if(error) throw error
 	if (!data) return <LoadingComponent />;
 
 	return (

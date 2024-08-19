@@ -12,9 +12,16 @@ export default function App({ navbarList }: { navbarList: any[] }) {
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
-		setActiveNav(
-			navbarList.find((e) => e.path == '/' + location.pathname.split('/')[1]) || {} //prettier-ignore
+		const activeNav = navbarList.find(
+			(e) => e.path == '/' + location.pathname.split('/')[1]
 		);
+		setActiveNav(activeNav || {});
+		if (activeNav?.label) {
+			document.title =
+				activeNav.label == 'Dasbor'
+					? 'Pawana'
+					: activeNav?.label + ' - Pawana';
+		}
 	}, [pathname]);
 
 	return (

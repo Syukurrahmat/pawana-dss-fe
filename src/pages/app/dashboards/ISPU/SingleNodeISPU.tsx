@@ -48,8 +48,8 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								Tren ISPU PM2.5
 							</Text>
 							<MyISPUChart
-								withoutLegend
 								data={tren}
+								isSimple
 								dataKeyTypeAndFunc={{
 									func: (e) => (e.value || []).find((f) => f.pollutant == 'PM25')!, //prettier-ignore
 								}}
@@ -60,8 +60,8 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								Tren ISPU PM10
 							</Text>
 							<MyISPUChart
-								withoutLegend
 								data={tren}
+								isSimple
 								dataKeyTypeAndFunc={{
 									func: (e) => (e.value || []).find((f) => f.pollutant == 'PM100')!, //prettier-ignore
 								}}
@@ -196,11 +196,23 @@ export function FinalISPUCard({
 
 export function ISPUCannotAnalize() {
 	return (
-		<HStack flexGrow='1' w="full" spacing="4" px="2" py='8' rounded="5" color='gray.500'>
-			<Icon boxSize="60px"  strokeWidth="1.5px" as={IconDatabaseX} />
+		<HStack
+			flexGrow="1"
+			w="full"
+			spacing="4"
+			px="2"
+			py="8"
+			rounded="5"
+			color="gray.500"
+		>
+			<Icon boxSize="60px" strokeWidth="1.5px" as={IconDatabaseX} />
 			<Box>
-			<Text fontWeight='600' fontSize='xl' color='gray.600'>ISPU Terkini tidak dapat dikalkulasi</Text>
-			<Text>Data tidak mencukupi, tunggu sensor mengirimkan data tambahan. </Text>
+				<Text fontWeight="600" fontSize="xl" color="gray.600">
+					ISPU Terkini tidak dapat dikalkulasi
+				</Text>
+				<Text>
+					Data tidak mencukupi, tunggu sensor mengirimkan data tambahan.{' '}
+				</Text>
 			</Box>
 		</HStack>
 	);

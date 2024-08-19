@@ -30,12 +30,12 @@ const iconAndTitle = {
 	outdoor: {
 		icon: IconTrees,
 		color: 'green',
-		title: 'Kualitas udara di sekitar perusahaan Anda',
+		title: 'Kualitas udara di sekitar perusahaan',
 	},
 	arround: {
 		icon: IconTrees,
 		color: 'green',
-		title: 'Kualitas udara di sekitar Anda',
+		title: 'Kualitas udara di sekitar',
 	},
 };
 
@@ -134,7 +134,7 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 
 function NoDataDisplay({ data, type }: ISPUCard) {
 	const { all, active } = data.countNodes;
-	const { user } = useUser();
+	const { user, roleIs } = useUser();
 
 	const nonActiveCount = all - active;
 
@@ -145,35 +145,39 @@ function NoDataDisplay({ data, type }: ISPUCard) {
 				{!all ? (
 					<>
 						<Heading size="md" mb="2">
-							Anda Belum Menambahkan Node {type == 'arround' ? '' : type}
+							Belum Menambahkan Node {type == 'arround' ? '' : type}
 						</Heading>
 
-						{type == 'arround' ? (
-							<NodeSubscription
-								subsInfo={{
-									type: 'user',
-									userId: user.userId,
-								}}
-							>
-								<Button
-									colorScheme="blue"
-									leftIcon={<IconCirclePlus size="18" />}
-									children="Tambahkan Node"
-								/>
-							</NodeSubscription>
-						) : (
-							<NodeSubscription
-								subsInfo={{
-									type: 'company',
-									companyData: user.view?.company!,
-								}}
-							>
-								<Button
-									colorScheme="blue"
-									leftIcon={<IconCirclePlus size="18" />}
-									children="Tambahkan Node"
-								/>
-							</NodeSubscription>
+						{!roleIs('gov') && (
+							<>
+								{type == 'arround' ? (
+									<NodeSubscription
+										subsInfo={{
+											type: 'user',
+											userId: user.view?.user?.userId || user.userId,
+										}}
+									>
+										<Button
+											colorScheme="blue"
+											leftIcon={<IconCirclePlus size="18" />}
+											children="Tambahkan Node"
+										/>
+									</NodeSubscription>
+								) : (
+									<NodeSubscription
+										subsInfo={{
+											type: 'company',
+											companyData: user.view?.company!,
+										}}
+									>
+										<Button
+											colorScheme="blue"
+											leftIcon={<IconCirclePlus size="18" />}
+											children="Tambahkan Node"
+										/>
+									</NodeSubscription>
+								)}
+							</>
 						)}
 					</>
 				) : (

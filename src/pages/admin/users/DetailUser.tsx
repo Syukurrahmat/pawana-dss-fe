@@ -22,8 +22,9 @@ export default function DetailUser() {
 	const isProfilePage = location.pathname == '/account';
 	const id = isProfilePage ? user.userId : useParams().id;
 
-	const { data, mutate } = useSWR<UserDataPage>(`/users/${id}`, fetcher);
+	const { data, mutate, error } = useSWR<UserDataPage>(`/users/${id}`, fetcher);
 
+	if(error) throw error
 	if (!data) return <LoadingComponent />;
 
 	return (

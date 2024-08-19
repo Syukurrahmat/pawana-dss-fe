@@ -129,6 +129,7 @@ declare type DashboardDataType = {
         countNodes: number
         coordinate: number[]
         companyId?: number;
+        userId?: number;
         managedBy?: number;
         createdAt?: string;
     };

@@ -194,7 +194,7 @@ export default function CreateCompany() {
 								mt="4"
 								colorScheme="green"
 								type="submit"
-								children="Buat Akun"
+								children="Buat Perusahaan"
 							/>
 						</VStack>
 					</form>

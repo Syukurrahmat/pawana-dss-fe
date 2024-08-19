@@ -15,7 +15,8 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				app: '/index.app.html',
-				login: '/index.login.html'
+				login: '/index.login.html',
+				verify: '/index.verify'
 			}
 		}
 	},

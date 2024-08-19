@@ -22,10 +22,13 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 	const [isSubmiting, setIsSubmiting] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const postDataApiURL =
+	const baseUrl =
 		subsInfo.type === 'user'
-			? `/users/${subsInfo.userId}/nodes`
-			: `/companies/${subsInfo.companyData.companyId}/nodes`;
+			? `/users/${subsInfo.userId}`
+			: `/companies/${subsInfo.companyData.companyId}`;
+
+	const patchDataApiURL = baseUrl + '/nodes';
+	const dashboardURL = baseUrl + '/dashboard';
 
 	const urlQuery =
 		subsInfo.type === 'user'
@@ -33,7 +36,7 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 			: { forCompanySubs: subsInfo.companyData.companyId };
 
 	const apiURL = `/nodes/subscribeable?${qs.stringify(urlQuery)}`;
-	const limitSubsURL = `${postDataApiURL}/limit`;
+	const limitSubsURL = `${patchDataApiURL}/limit`;
 
 	const { data: limit, mutate: mutateLimit } = useSWR<number>(
 		limitSubsURL,
@@ -64,14 +67,17 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 
 		const nodeIds = selectedNodes.map((e) => e.nodeId);
 		myAxios
-			.post(postDataApiURL, { nodeIds })
+			.patch(patchDataApiURL, { nodeIds })
 			.then(() => {
 				toast.success(nodeIds.length + ' node publik berhasil ditambahkan');
-				mutate((e) => typeof e == 'string' && e.startsWith(postDataApiURL));
+				mutate(
+					(e) => typeof e == 'string' && e.startsWith(patchDataApiURL)
+				);
+				mutate((e) => typeof e == 'string' && e.startsWith(dashboardURL));
 				mutateLimit((e) => (e || 0) - nodeIds.length);
 			})
 			.catch(() => {
-				toast.success('Node publik gagal ditambahkan');
+				toast.error('Node publik gagal ditambahkan');
 			})
 			.finally(() => {
 				setIsSubmiting(false);

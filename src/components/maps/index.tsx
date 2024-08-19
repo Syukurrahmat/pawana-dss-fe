@@ -52,9 +52,8 @@ export default function MyMap(props: IMyMap) {
 					isEditing.onChange(latlng);
 				}
 			},
+			 
 		});
-
-		if (mapRef) mapRef.current = map;
 
 		useEffect(() => {
 			if ( ['ValueMarker', 'NodesMarkerWithSubs'].includes(marker.name) || isEditing) return; //prettier-ignore
@@ -76,6 +75,7 @@ export default function MyMap(props: IMyMap) {
 		}, [isEditing, isEditing?.coordinate]);
 
 		useEffect(() => {
+			if (mapRef) mapRef.current = map;
 			if (focusInOneCompany && companiesData && companiesData[0]) {
 				map.flyTo(companiesData[0].coordinate as LatLngExpression, 17);
 			}
@@ -98,6 +98,7 @@ export default function MyMap(props: IMyMap) {
 			)}
 
 			<MapContainer
+				key={2}
 				className="my-map-container"
 				zoom={13}
 				center={centerAuto ? CENTER_OF_MAP : undefined}

@@ -3,6 +3,7 @@ import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
 import LoginPage from '@/pages/other/login';
+import ErrorPage from '@/pages/other/page404';
 
 const ReportsPage = lazy(() => import('@/pages/app/Reports'));
 const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
@@ -27,11 +28,6 @@ const routers = [
 		path: '/account',
 		label: 'Akun',
 		element: <DetailUser />,
-		role: ['all'],
-	},
-	{
-		path: '/login',
-		element: <LoginPage />,
 		role: ['all'],
 	},
 
@@ -174,7 +170,7 @@ const generateAppRouter = (role: string) => {
 			path: '/',
 			element: <App navbarList={navlist} />,
 			children: routerList,
-			// errorElement: <Page404 />,
+			// errorElement: <ErrorPage />,
 		},
 	]);
 };

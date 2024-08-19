@@ -8,18 +8,14 @@ export const fetcher = async <T = any>(url: string, options?: RequestInit) => {
         .then(e => e.json())
         .then((e: APIResponse<T>) => {
             if (e.error) throw Error(e.error)
+                
             return e.data
+        })
+        .catch((e)=>{
+            throw Error(e)
         })
 }
 
-export const baseFetcher = async <T = any>(url: string, options?: RequestInit) => {
-    return await fetch(url, options)
-        .then(e => e.json())
-        .then((e: APIResponse<T>) => {
-            if (e.error) throw Error(e.error)
-            return e.data
-        })
-}
 
 export function UrlWithQuery(baseUrl: string, additionalParams: Record<string, any>): string {
     const [urlPath, existingQuery] = baseUrl.split('?');
@@ -29,64 +25,6 @@ export function UrlWithQuery(baseUrl: string, additionalParams: Record<string, a
     return `${urlPath}?${queryString}`;
 }
 
-export const fetcherAPIWithQueries = async (baseURL: string, queries: Record<string, string | number | undefined>) => {
-    const params = new URLSearchParams();
-
-    for (const key in queries) {
-        if (Object.prototype.hasOwnProperty.call(queries, key)) {
-            const value = queries[key];
-            if (value !== undefined && value !== null) {
-                params.append(key, value.toString());
-            }
-        }
-    }
-
-    baseURL = API_URL + baseURL;
-
-    const hasQuery = new URL(baseURL).search.length > 0;
-    const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
-
-    const res = await fetch(url);
-    return await res.json();
-};
-
-export const fetcherWithQueries = async (baseURL: string, queries: Record<string, string | number | undefined>) => {
-    const params = new URLSearchParams();
-
-    for (const key in queries) {
-        if (Object.prototype.hasOwnProperty.call(queries, key)) {
-            const value = queries[key];
-            if (value !== undefined && value !== null) {
-                params.append(key, value.toString());
-            }
-        }
-    }
-
-    const hasQuery = new URL(baseURL).search.length > 0;
-    const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
-
-
-    const res = await fetch(url);
-    return await res.json();
-};
-
-export const buildQueriesURL = (baseURL: string, queries: Record<string, string | number | undefined>) => {
-    const params = new URLSearchParams();
-
-    for (const key in queries) {
-        if (Object.prototype.hasOwnProperty.call(queries, key)) {
-            const value = queries[key];
-            if (value !== undefined && value !== null) {
-                params.append(key, value.toString());
-            }
-        }
-    }
-
-    const hasQuery = new URL(baseURL, window.location.origin).search.length > 0;
-    const url = `${baseURL}${hasQuery ? "&" : "?"}${params.toString()}`;
-
-    return url;
-};
 
 
 export const myAxios = axios.create({

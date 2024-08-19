@@ -10,61 +10,18 @@ interface SelectUserOrCompanyView {
 
 export function SelectUserOrCompanyView({
 	withCard = true,
-	selectCompanyOnly,
+	selectCompanyOnly = true,
 }: SelectUserOrCompanyView) {
 	return (
 		<Box as={withCard ? InformationCard : undefined}>
-			<Text>Pilih Pengguna publik atau perusahaan yang ingin Anda Lihat</Text>
-			<HStack mt="4">
-				<ChangeActiveDashboard>Pilih Perusahaan</ChangeActiveDashboard>
-				{!selectCompanyOnly && (
-					<ChangeActiveDashboard>
-						Pilih Pengguna Publik
-					</ChangeActiveDashboard>
-				)}
-			</HStack>
+			<Text>
+				Pilih perusahaan {selectCompanyOnly ? 'atau Pengguna publik' : ''}{' '}
+				yang ingin Anda Lihat
+			</Text>
+			<ChangeActiveDashboard mt="4" selectCompanyOnly={selectCompanyOnly}>
+				{selectCompanyOnly ? 'Pilih Perusahaan' : 'Pilih Dasbor'}
+			</ChangeActiveDashboard>
 		</Box>
-	);
-}
-
-export function DontHaveCompany({ role }: { role: UserRole }) {
-	const pronouns = role == 'manager' ? 'Anda ' : 'Pengguna Ini ';
-
-	return (
-		<InformationCard>
-			<VStack align="start">
-				<HStack
-					border="2px solid"
-					borderColor="gray.200"
-					p="2"
-					rounded="md"
-				>
-					<Icon
-						as={IconBuildingFactory2}
-						color="gray.500"
-						boxSize="30px"
-					/>
-					<Heading size="lg" color="gray.500" fontWeight="600" pr="2">
-						{pronouns} belum memiliki Perusahaan
-					</Heading>
-				</HStack>
-				{role !== 'gov' && (
-					<>
-						<Text maxW="md">
-							Tambahkan Perusahaan sekarang untuk mendapatkan rekomendasi
-							keputusan untuk perusahaan {pronouns}
-						</Text>
-						<Link to="/companies/create">
-							<Button
-								leftIcon={<IconPlus size="20px" />}
-								colorScheme="green"
-								children="Tambah Perusahaan"
-							/>
-						</Link>
-					</>
-				)}
-			</VStack>
-		</InformationCard>
 	);
 }
 
