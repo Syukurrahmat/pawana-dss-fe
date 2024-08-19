@@ -49,7 +49,8 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 							</Text>
 							<MyISPUChart
 								data={tren}
-								isSimple
+								simple
+								tooltipLabel="ISPU PM2.5"
 								dataKeyTypeAndFunc={{
 									func: (e) => (e.value || []).find((f) => f.pollutant == 'PM25')!, //prettier-ignore
 								}}
@@ -61,7 +62,8 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 							</Text>
 							<MyISPUChart
 								data={tren}
-								isSimple
+								tooltipLabel="ISPU PM10"
+								simple
 								dataKeyTypeAndFunc={{
 									func: (e) => (e.value || []).find((f) => f.pollutant == 'PM100')!, //prettier-ignore
 								}}
@@ -77,10 +79,11 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								Tren Pencemar PM2.5
 							</Text>
 							<MyLineChart
-								withoutLegend
+								simple
+								gasType='PM2.5'
 								data={tren}
 								dataKeyTypeAndFunc={{
-									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM25')?.pollutantValue || 0, //prettier-ignore
+									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM25')
 								}}
 							/>
 						</Box>
@@ -89,10 +92,11 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 								Tren Pencemar PM10
 							</Text>
 							<MyLineChart
-								withoutLegend
+								simple
+								gasType='PM10'
 								data={tren}
 								dataKeyTypeAndFunc={{
-									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM100')?.pollutantValue || 0, //prettier-ignore
+									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM100')
 								}}
 							/>
 						</Box>

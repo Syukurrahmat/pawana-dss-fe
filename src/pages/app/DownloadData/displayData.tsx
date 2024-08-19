@@ -1,23 +1,8 @@
 import MyLineChart from '@/components/Chart/MyLineChart';
 import TagWithIcon from '@/components/common/TagWithIcon';
 import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
-import {
-	Box,
-	Button,
-	Divider,
-	Heading,
-	HStack,
-	Icon,
-	Spacer,
-	Spinner,
-	Tab,
-	TabList,
-	TabPanel,
-	TabPanels,
-	Tabs,
-	Text,
-} from '@chakra-ui/react';
-import { IconCalendar, IconChartAreaLine, IconClick, IconDatabaseX, IconDownload } from '@tabler/icons-react'; //prettier-ignore
+import { Box, Button, Divider, Heading, HStack, Icon, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconCalendar, IconCaretRightFilled, IconClick, IconDatabaseX, IconDownload } from '@tabler/icons-react'; //prettier-ignore
 import { Link } from 'react-router-dom';
 
 interface DisplayData {
@@ -34,17 +19,12 @@ const airParamsList = [
 
 export default function DisplayData({ data, isLoading }: DisplayData) {
 	return (
-		<Box w="full" rounded="md" shadow="xs" mt="6" bg='white'>
+		<Box w="full" rounded="md" shadow="xs" mt="6" bg="white">
 			{isLoading ? (
 				<LoadingElement />
 			) : data ? (
 				<Box>
-					<HStack
-						justify="space-between"
-						align="start"
-						w="full"
-						p="4"
-					>
+					<HStack justify="space-between" align="start" w="full" p="4">
 						<Box>
 							<Heading fontWeight="600" size="lg">
 								{data.result.name}
@@ -62,13 +42,13 @@ export default function DisplayData({ data, isLoading }: DisplayData) {
 							<Button colorScheme="blue">Detail Node</Button>
 						</Link>
 					</HStack>
-					<Divider/>
+					<Divider />
 
-					<Box mt="6">
+					<Box mt="6" px="4">
 						{data.result.dataLogs.length ? (
 							<>
-								<HStack>
-									<Icon as={IconChartAreaLine} boxSize="20px" />
+								<HStack spacing='1'>
+									<Icon as={IconCaretRightFilled} boxSize="22px" />
 									<Text fontWeight="500">
 										Menampilkan data
 										{data.startDate == data.endDate
@@ -98,15 +78,15 @@ export default function DisplayData({ data, isLoading }: DisplayData) {
 										{airParamsList.map((e) => (
 											<TabPanel key={e.key} h="350px" px="0">
 												<MyLineChart
+													simple
 													withBrush={true}
+													gasType={e.label as any}
 													data={data.result.dataLogs}
 													dataKeyTypeAndFunc={{
-														envType: 'outdoor',
 														//@ts-ignore
-														func: (f) => f[e.key],
+														func: (f) => ({ value: f[e.key] }),
 													}}
 													tickFormat="DD MMM YYYY HH:mm"
-													withoutLegend
 												/>
 											</TabPanel>
 										))}
@@ -127,7 +107,14 @@ export default function DisplayData({ data, isLoading }: DisplayData) {
 
 function PlaceholderElement() {
 	return (
-		<HStack mx="auto" py="20" color="gray.500" spacing="5" justify="center">
+		<HStack
+			mx="auto"
+			py="20"
+			px="2"
+			color="gray.500"
+			spacing="5"
+			justify="center"
+		>
 			<Icon boxSize="50px" as={IconClick} />
 			<Text fontSize="xl" fontWeight="600">
 				Pilih node yang hendak Anda unduh datanya
@@ -138,7 +125,7 @@ function PlaceholderElement() {
 
 function LoadingElement() {
 	return (
-		<HStack mx="auto" py="20" spacing="5" justify="center">
+		<HStack mx="auto" py="20" px="2" spacing="5" justify="center">
 			<Spinner
 				thickness="4px"
 				speed="0.65s"

@@ -16,7 +16,6 @@ type Recomendation = {
     public: string;
 }
 
-
 type ISPUValueItem = {
     pollutant: 'PM100' | 'PM25';
     ispu: number;

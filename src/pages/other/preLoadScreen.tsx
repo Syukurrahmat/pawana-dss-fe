@@ -2,10 +2,8 @@ import logo from '@/assets/icon-white.svg';
 import {
 	Center,
 	Container,
-	HStack,
-	Heading,
 	Image,
-	Progress,
+	Progress
 } from '@chakra-ui/react';
 
 export default function PreLoadScreen() {

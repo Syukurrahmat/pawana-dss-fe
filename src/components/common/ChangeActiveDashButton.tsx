@@ -14,8 +14,7 @@ import {
 } from '@chakra-ui/react';
 import {
 	IconChartBar,
-	IconChevronDown,
-	IconChevronRight,
+	IconChevronDown
 } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

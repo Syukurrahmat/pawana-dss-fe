@@ -1,7 +1,6 @@
 import { ChangeActiveDashboard } from '@/components/common/ChangeActiveDashButton';
-import { Box, Button, Card, CardBody, CardHeader, CardProps, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import { IconBuildingFactory2, IconInfoHexagon, IconPlus } from '@tabler/icons-react'; //prettier-ignore
-import { Link } from 'react-router-dom';
+import { Box, Card, CardBody, CardHeader, CardProps, HStack, Heading, Icon, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconInfoHexagon } from '@tabler/icons-react'; //prettier-ignore
 
 interface SelectUserOrCompanyView {
 	withCard?: boolean;

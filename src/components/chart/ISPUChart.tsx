@@ -1,19 +1,10 @@
 import { eventLogsTypeAttr } from '@/constants/enumVariable';
 import { ISPUColor, getISPUProperties } from '@/utils/common.utils';
-import {
-	Box,
-	HStack,
-	List,
-	ListIcon,
-	ListItem,
-	Tag,
-	Text,
-	UnorderedList,
-	VStack,
-} from '@chakra-ui/react';
+import { Box, HStack, Text } from '@chakra-ui/react'; //prettier-ignore
 import moment from 'moment';
 import { useState } from 'react';
 import { Bar, BarChart, Brush, CartesianGrid, Cell, Legend, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'; //prettier-ignore
+import { MultipleTrenTooltip, SingleTrenTooltip } from './customTooltip';
 
 export type DatakeyFunc<T> = {
 	envType?: 'indoor' | 'outdoor';
@@ -28,7 +19,8 @@ interface MyISPUChart<T> {
 	events?: DTEventLog[];
 	tickFormat?: string;
 	offsetDomain?: moment.unitOfTime.DurationConstructor;
-	isSimple?: boolean;
+	simple?: boolean;
+	tooltipLabel?: string;
 }
 
 interface BrushStartEndIndex {
@@ -38,8 +30,9 @@ interface BrushStartEndIndex {
 
 export default function MyISPUChart<T extends { datetime: string }>({
 	data,
+	tooltipLabel,
 	events = [],
-	isSimple,
+	simple,
 	dataKeyTypeAndFunc = [],
 	tickFormat = 'HH:mm',
 	offsetDomain = 'hour',
@@ -118,11 +111,23 @@ export default function MyISPUChart<T extends { datetime: string }>({
 
 					<Tooltip
 						content={
-							// @ts-ignore
-							<MultipleTrenTooltip
-								tickFormat={tickFormat}
-								dataKeyTypeAndFunc={dataKeyTypeAndFunc}
-							/>
+							simple ? (
+								// @ts-ignore
+								<SingleTrenTooltip
+									tickFormat={tickFormat}
+									dataKeyTypeAndFunc={dataKeyTypeAndFunc}
+									tooltipLabel={tooltipLabel}
+									getPropertiesFunc={getISPUProperties}
+								/>
+							) : (
+								// @ts-ignore
+								<MultipleTrenTooltip
+									tickFormat={tickFormat}
+									dataKeyTypeAndFunc={dataKeyTypeAndFunc}
+									tooltipLabel={tooltipLabel}
+									getPropertiesFunc={getISPUProperties}
+								/>
+							)
 						}
 					/>
 
@@ -177,7 +182,7 @@ export default function MyISPUChart<T extends { datetime: string }>({
 						</Bar>
 					))}
 
-					{!isSimple && (
+					{!simple && (
 						<Legend
 							verticalAlign="top"
 							height={36}
@@ -209,7 +214,7 @@ export default function MyISPUChart<T extends { datetime: string }>({
 							}}
 						/>
 					)}
-					{!isSimple && (
+					{!simple && (
 						<Brush
 							onChange={(e) => setBrushStartEndIndex(e)}
 							dataKey="datetime"
@@ -232,84 +237,3 @@ export default function MyISPUChart<T extends { datetime: string }>({
 	);
 }
 
-function singleTrenTooltip({
-	active,
-	payload,
-	label,
-	tickFormat,
-	isAverageValue,
-	dataKeyTypeAndFunc,
-}: {
-	dataKeyTypeAndFunc: any[];
-	tickFormat: string;
-	active: boolean;
-	payload: any;
-	isAverageValue: boolean;
-	label: string;
-}) {
-	if (active && payload && payload.length) {
-		return (
-			<VStack align="stretch" bg="white" shadow="xs" rounded="sm" p="3">
-				<Text fontWeight="600">{moment(label).format(tickFormat)}</Text>
-				<UnorderedList spacing="1">
-					{payload.map((e: any, i: number) => {
-						const category = dataKeyTypeAndFunc[i].func(e.payload)?.category; //prettier-ignore
-						const { colorScheme } = getISPUProperties(category);
-
-						return (
-							<ListItem ml="2">
-								<Text>
-									ISPU {isAverageValue ? 'rata-rata ' : ''}{' '}
-									{e.name.toLowerCase()}
-								</Text>
-								<HStack mt="1">
-									<Tag colorScheme={colorScheme}>{e.value}</Tag>
-									<Tag colorScheme={colorScheme}>{category}</Tag>
-								</HStack>
-							</ListItem>
-						);
-					})}
-				</UnorderedList>
-			</VStack>
-		);
-	}
-}
-
-function MultipleTrenTooltip({
-	active,
-	payload,
-	label,
-	tickFormat,
-	dataKeyTypeAndFunc,
-}: {
-	dataKeyTypeAndFunc: any[];
-	tickFormat: string;
-	active: boolean;
-	payload: any;
-	isAverageValue: boolean;
-	label: string;
-}) {
-	if (active && payload && payload.length) {
-		return (
-			<VStack align="stretch" bg="white" shadow="xs" rounded="sm" p="3">
-				<Text fontWeight="600">{moment(label).format(tickFormat)}</Text>
-				<UnorderedList spacing="1">
-					{payload.map((e: any, i: number) => {
-						const category = dataKeyTypeAndFunc[i].func(e.payload)?.category; //prettier-ignore
-						const { colorScheme } = getISPUProperties(category);
-
-						return (
-							<ListItem ml="2">
-								<Text>ISPU rata-rata {e.name.toLowerCase()}</Text>
-								<HStack mt="1">
-									<Tag colorScheme={colorScheme}>{e.value}</Tag>
-									<Tag colorScheme={colorScheme}>{category}</Tag>
-								</HStack>
-							</ListItem>
-						);
-					})}
-				</UnorderedList>
-			</VStack>
-		);
-	}
-}

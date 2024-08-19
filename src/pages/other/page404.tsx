@@ -15,7 +15,7 @@ import {
 	VStack,
 } from '@chakra-ui/react';
 import { IconError404 } from '@tabler/icons-react';
-import { useNavigate, useRouteError } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function ErrorPage() {
 	let navigate = useNavigate();

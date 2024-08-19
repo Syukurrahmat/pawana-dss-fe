@@ -2,7 +2,7 @@ import MyLineChart from '@/components/Chart/MyLineChart';
 import SectionTitle from '@/components/common/SectionTitle';
 import { toFormatedDatetime } from '@/utils/dateFormating';
 import { Box, Center, Flex, HStack, Skeleton, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
-import { IconDatabase, IconInnerShadowTop, IconTrendingUp } from '@tabler/icons-react'; 
+import { IconDatabase, IconInnerShadowTop, IconTrendingUp } from '@tabler/icons-react';  //prettier-ignore
 import { KeyedMutator } from 'swr';
 
 interface LastDatalogs {
@@ -78,11 +78,10 @@ export default function DTLastDataSent({ data, lastDataSent }: LastDatalogs) {
 										{!!data && (
 											<MyLineChart
 												data={data}
-												withoutLegend
+												simple
 												dataKeyTypeAndFunc={{
-													envType: 'outdoor',
 													//@ts-ignore
-													func: (e) => e[key],
+													func: (e) => ({ value: e[key] }),
 												}}
 											/>
 										)}

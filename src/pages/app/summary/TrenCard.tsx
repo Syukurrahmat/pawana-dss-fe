@@ -71,6 +71,7 @@ export function TrenCard({ title, tren, paramList }: TrenCard) {
 										{param.type == 'bar' ? (
 											<MyISPUChart
 												data={tren || []}
+												tooltipLabel={param.name}
 												tickFormat="DD MMM YYYY"
 												offsetDomain="day"
 												dataKeyTypeAndFunc={mappedViews.map((t) =>
@@ -81,6 +82,7 @@ export function TrenCard({ title, tren, paramList }: TrenCard) {
 											<MyLineChart
 												data={tren || []}
 												tickFormat="DD MMM YYYY"
+												gasType={param.name as any}
 												dataKeyTypeAndFunc={mappedViews.map((t) =>
 													param.dataKeyTypeAndFunc(t)
 												)}

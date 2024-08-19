@@ -36,7 +36,7 @@ export const airQualityTrenList: AirParamList[] = [
 		type: 'line',
 		name: 'PM2.5',
 		dataKeyTypeAndFunc: (envType) => ({
-			func: (e) => e[envType]?.pm25,
+			func: (e) => ({value : e[envType]?.pm25}),
 			envType,
 		}),
 	},
@@ -44,7 +44,7 @@ export const airQualityTrenList: AirParamList[] = [
 		type: 'line',
 		name: 'PM10',
 		dataKeyTypeAndFunc: (envType) => ({
-			func: (e) => e[envType]?.pm100,
+			func: (e) => ({value : e[envType]?.pm100}),
 			envType,
 		}),
 	},
@@ -54,7 +54,7 @@ export const gassEmissionTrenList: AirParamList[] = [
 		type: 'line',
 		name: 'CH4',
 		dataKeyTypeAndFunc: (envType) => ({
-			func: (e) => e[envType]?.ch4.value,
+			func: (e) => e[envType]?.ch4,
 			envType,
 		}),
 	},
@@ -62,7 +62,7 @@ export const gassEmissionTrenList: AirParamList[] = [
 		type: 'line',
 		name: 'CO2',
 		dataKeyTypeAndFunc: (envType) => ({
-			func: (e) => e[envType]?.co2.value,
+			func: (e) => e[envType]?.co2,
 			envType,
 		}),
 	},

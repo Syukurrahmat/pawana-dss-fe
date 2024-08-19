@@ -1,7 +1,14 @@
 import { eventLogsTypeAttr } from '@/constants/enumVariable';
 import moment from 'moment';
-import { Area, AreaChart, Brush, CartesianGrid, Legend, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'; // prettier-ignore
+import { Area, AreaChart, Brush, CartesianGrid, Legend, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'; //prettier-ignore
+import { MultipleTrenTooltip, SingleTrenTooltip } from './customTooltip';
+import {
+	getCH4Properties,
+	getCO2Properties,
+	getISPUProperties,
+} from '@/utils/common.utils';
 import { DatakeyFunc } from './ISPUChart';
+import { UNIT_CH4, UNIT_CO2, UNIT_PM } from '@/constants/data';
 
 interface LineChartData<T> {
 	data: T[];
@@ -9,20 +16,47 @@ interface LineChartData<T> {
 	events?: DTEventLog[];
 	dataKeyTypeAndFunc?: DatakeyFunc<T> | DatakeyFunc<T>[];
 	tickFormat?: string;
-	withoutLegend?: boolean;
+	simple?: boolean;
+	gasType?: 'PM2.5' | 'PM10' | 'CH4' | 'CO2';
 }
 
 export default function MyLineChart<T extends { datetime: string }>({
 	data,
-	withBrush,
 	events = [],
-	withoutLegend,
 	dataKeyTypeAndFunc = [],
 	tickFormat = 'HH:MM',
+	simple,
+	withBrush,
+	gasType,
 }: LineChartData<T>) {
 	dataKeyTypeAndFunc = Array.isArray(dataKeyTypeAndFunc)
 		? dataKeyTypeAndFunc
 		: [dataKeyTypeAndFunc];
+
+	const tooltipGetPropertiesFunc =
+		gasType == 'PM2.5' || gasType == 'PM10'
+			? getISPUProperties
+			: gasType == 'CH4'
+			? getCH4Properties
+			: gasType == 'CO2'
+			? getCO2Properties
+			: undefined;
+
+	const tooltipLabel = gasType
+		? gasType.startsWith('PM')
+			? 'Pencemar ' + gasType
+			: gasType == 'CH4'
+			? 'Metana'
+			: 'Karbondioksida'
+		: undefined;
+
+	const unit = gasType
+		? gasType.startsWith('PM')
+			? UNIT_PM
+			: gasType == 'CH4'
+			? UNIT_CH4
+			: UNIT_CO2
+		: undefined;
 
 	return (
 		<>
@@ -66,7 +100,30 @@ export default function MyLineChart<T extends { datetime: string }>({
 					/>
 					<YAxis width={30} />
 					<CartesianGrid strokeDasharray="3 3" />
-					<Tooltip labelFormatter={(e) => moment(e).format(tickFormat)} />
+
+					<Tooltip
+						content={
+							simple ? (
+								// @ts-ignore
+								<SingleTrenTooltip
+									tickFormat={tickFormat}
+									dataKeyTypeAndFunc={dataKeyTypeAndFunc}
+									tooltipLabel={tooltipLabel}
+									getPropertiesFunc={tooltipGetPropertiesFunc}
+									unit={unit}
+								/>
+							) : (
+								// @ts-ignore
+								<MultipleTrenTooltip
+									tickFormat={tickFormat}
+									dataKeyTypeAndFunc={dataKeyTypeAndFunc}
+									tooltipLabel={tooltipLabel}
+									getPropertiesFunc={tooltipGetPropertiesFunc}
+									unit={unit}
+								/>
+							)
+						}
+					/>
 
 					{!!events.length &&
 						events.map((event) => (
@@ -84,7 +141,7 @@ export default function MyLineChart<T extends { datetime: string }>({
 							/>
 						))}
 
-					{!withoutLegend && (
+					{!simple && (
 						<Legend
 							verticalAlign="top"
 							height={36}
@@ -98,7 +155,9 @@ export default function MyLineChart<T extends { datetime: string }>({
 							key={i}
 							animateNewValues={false}
 							type="monotone"
-							dataKey={func}
+							dataKey={(e) =>
+								func(e)?.value || func(e)?.pollutantValue || null
+							}
 							fillOpacity={0.8}
 							stroke={envType == 'indoor' ? '#82ca9d' : '#8884d8'}
 							fill={`url(#colorId-${envType || 'outdoor'})`}
@@ -110,7 +169,7 @@ export default function MyLineChart<T extends { datetime: string }>({
 						/>
 					))}
 
-					{withBrush && (
+					{(!simple || withBrush) && (
 						<Brush
 							dataKey="datetime"
 							tickFormatter={(e) => moment(e).format(tickFormat)}

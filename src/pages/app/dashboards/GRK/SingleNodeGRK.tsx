@@ -102,11 +102,11 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								Tren Gas Metana (CH4)
 							</Text>
 							<MyLineChart
-								withoutLegend
+								simple
 								data={CH4data.tren}
+								gasType='CH4'
 								dataKeyTypeAndFunc={{
-									envType: 'outdoor',
-									func: (e) => e.value.value,
+									func: (e) => e.value,
 								}}
 							/>
 						</Box>
@@ -115,11 +115,11 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 								Tren Karbondioksida (CO2)
 							</Text>
 							<MyLineChart
-								withoutLegend
+								simple
+								gasType='CO2'
 								data={CO2data.tren}
 								dataKeyTypeAndFunc={{
-									envType: 'outdoor',
-									func: (e) => e.value.value,
+									func: (e) => e.value,
 								}}
 							/>
 						</Box>
