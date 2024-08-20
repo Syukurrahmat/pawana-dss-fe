@@ -43,7 +43,7 @@ export default function UserSubsctiptionsList({
 						dataPageMutate();
 						toast.success('Berhasil menghapus subscription pengguna');
 					})
-					.catch((e) => {
+					.catch(() => {
 						toast.error('Gagal menghapus subscription pengguna');
 					}),
 		});

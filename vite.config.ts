@@ -8,13 +8,11 @@ export default defineConfig({
 		react(),
 	],
 	build: {
-
 		rollupOptions: {
 			input: {
 				app: '/index.app.html',
 				login: '/index.login.html',
-				'verify-success': '/index.verify-success.html',
-				'verify-failed': '/index.verify-failed.html'
+				verify: '/index.verify.html',
 			}
 		}
 	},

@@ -1,33 +1,83 @@
 import logo from '@/assets/icon.svg';
-import { Card, CardBody, CardHeader, Center, Container, Divider, Heading, HStack, Icon, Image, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconAlertTriangle, IconChecks } from '@tabler/icons-react';
-
-export default function VerifyPage({ failed }: { failed?: boolean }) {
+import { HOST_URL } from '@/constants/config';
+import { Box, Card, CardBody, CardHeader, Center, Container, Divider, Heading, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import {
+	IconAlertTriangle,
+	IconChecks,
+	IconCircleCheck,
+} from '@tabler/icons-react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+export default function VerifyPage() {
 	const data = {
+		loading: {
+			color: 'blue',
+			icon: <Spinner thickness="2px" />,
+			title: 'Memverifikasi ...',
+			subtitle: 'Harap Tunggu sebentar',
+			note: 'Kami sedang memproses data Anda. Pastikan koneksi internet Anda stabil.',
+		},
 		success: {
 			color: 'green',
-			icon: IconChecks,
+			icon: <IconChecks size="100%" />,
 			title: 'Verifikasi Berhasil',
 			subtitle: 'Kata sandi akun akan segera dikirim ke email terdaftar',
 			note: 'Jika Anda tidak menerima email dalam beberapa menit, harap cek folder spam, atau hubungi admin untuk bantuan lebih lanjut',
 		},
-		error: {
+
+		verified: {
+			color: 'green',
+			icon: <IconCircleCheck size="100%" />,
+			title: 'Akun sudah terverifikasi',
+			subtitle: 'Akun Anda sudah terverifikasi sebelumnya',
+			note: 'Jika Anda yakin ini adalah kesalahan, hubungi admin untuk bantuan lebih lanjut.',
+		},
+
+		expired: {
+			color: 'orange',
+			icon: <IconAlertTriangle size="100%" />,
+			title: 'Verifikasi Kedaluarsa',
+			subtitle: 'Verifikasi telah melewati batas waktu',
+			note: 'Verifikasi akun Anda tidak dapat diselesaikan karena sudah melewati batas waktu 7 hari setelah Email didaftarkan. Harap hubungi admin agar akun Anda dapat didaftarkan ulang',
+		},
+
+		inValid: {
 			color: 'red',
-			icon: IconAlertTriangle,
-			title: 'Verifikasi Gagal',
-			subtitle: 'Kami tidak dapat memverifikasi akun Anda saat ini.',
-			note: 'Untuk menyelesaikan masalah ini, harap hubungi admin agar akun Anda dapat didaftarkan ulang',
+			icon: <IconAlertTriangle size="100%" />,
+			title: 'Verifikasi tidak valid',
+			subtitle: 'Kami tidak dapat memproses verifikasi',
+			note: 'Pastikan Anda mengakses halaman ini melalui email yang telah kami kirimkan. Harap hubungi admin untuk mendapatkan bantuan lebih lanjut',
 		},
 	};
 
-	const { color, icon, title, subtitle, note } =
-		data[failed ? 'error' : 'success'];
+	const [state, setState] = useState<keyof typeof data>('loading');
+	const { color, icon, title, subtitle, note } = data[state];
+
+	useEffect(() => {
+		const token = window.location.pathname.split('/')[2];
+		if (!token) {
+			setState('inValid');
+			return;
+		}
+
+		axios
+			.post(HOST_URL + '/auth/verify', { token })
+			.then(() => setState('success'))
+			.catch(({ response }) => {
+				response.status === 409
+					? setState('verified')
+					: response.status === 401
+					? setState('expired')
+					: setState('inValid');
+			});
+	}, []);
 
 	return (
 		<Container
 			maxW="full"
 			bg="#378CE7"
 			minH="100vh"
+			pb="5%"
 			as={VStack}
 			justify="center"
 		>
@@ -38,7 +88,7 @@ export default function VerifyPage({ failed }: { failed?: boolean }) {
 					</CardHeader>
 					<Divider borderColor="gray.400" />
 					<CardBody as={VStack}>
-						<HStack>
+						<HStack spacing="4">
 							<Center
 								p="2"
 								color={color + '.800'}
@@ -46,18 +96,26 @@ export default function VerifyPage({ failed }: { failed?: boolean }) {
 								boxSize="45px"
 								rounded="md"
 							>
-								<Icon as={icon} boxSize="100%" />
+								{icon}
 							</Center>
 							<Heading size="lg" fontWeight="600">
 								{title}
 							</Heading>
 						</HStack>
-						<Text maxW="md" fontWeight="600" fontSize="lg">
-							{subtitle}
-						</Text>
-						<Text maxW="md" mt="4" fontSize="sm" color="gray.600">
-							{note}
-						</Text>
+
+						<Box mt="4">
+							<Text
+								maxW="md"
+								color="gray.600"
+								fontWeight="600"
+								fontSize="lg"
+							>
+								{subtitle}
+							</Text>
+							<Text maxW="md" mt="1" fontSize="sm" color="gray.600">
+								{note}
+							</Text>
+						</Box>
 					</CardBody>
 				</Card>
 			</Container>

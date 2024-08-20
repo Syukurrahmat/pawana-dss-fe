@@ -54,7 +54,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 							(e) => typeof e === 'string' && e.startsWith(dtNodeSubsURL)
 						);
 					})
-					.catch((e) => {
+					.catch(() => {
 						toast.success('Node gagal di-unsubcribe');
 					}),
 		});
