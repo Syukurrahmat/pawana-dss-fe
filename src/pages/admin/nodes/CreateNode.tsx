@@ -5,7 +5,7 @@ import RequiredIndicator from '@/components/Form/RequiredIndicator';
 import { SelectFromDataTableCompanies } from '@/components/SelectFromDataTable/Sdd';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
-import { trimAndCleanProps } from '@/utils/common.utils';
+import { trimAndCleanProps, useMyToasts } from '@/utils/common.utils';
 import { myAxios } from '@/utils/fetcher';
 import * as valSchema from '@/utils/validator.utils';
 import { Box, Button, Container, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack } from '@chakra-ui/react'; //prettier-ignore
@@ -37,6 +37,7 @@ const privateNodeValidationSchema = Yup.object().shape({
 export default function CreateNode() {
 	const { roleIs } = useUser();
 	const location = useLocation();
+	const toast = useMyToasts()
 
 	const isOnSpesificNode = !useMatch('/nodes/create');
 	const showChooseNodeOwnship = !isOnSpesificNode && roleIs('admin');
@@ -64,6 +65,7 @@ export default function CreateNode() {
 		status: createdStatus,
 		setStatus: setCreatedStatus,
 		setFieldValue,
+		setFieldError,
 		resetForm,
 		setSubmitting,
 		isSubmitting,
@@ -98,7 +100,15 @@ export default function CreateNode() {
 						nodeId: data.data.nodeId,
 					});
 				})
-				.catch(() => setCreatedStatus({ created: false }))
+				.catch((e) => {
+					if (e.response?.status !== 400) {
+						return setCreatedStatus({ created: false });
+					}
+
+					const [field, message] = e.response?.data.message || [];
+					setFieldError(field, message);
+					toast.error(message || 'Ada yang salah');
+				})
 				.finally(() => setSubmitting(false));
 		},
 	});

@@ -55,7 +55,6 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 						);
 					})
 					.catch((e) => {
-						console.log(e);
 						toast.success('Node gagal di-unsubcribe');
 					}),
 		});
@@ -120,9 +119,9 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 				/>
 			</Box>
 
-			<VStack align="start" spacing="6" mt='6'>
-				<Box w='full'>
-					<HStack justify="space-between" mb='4' align="start" w="full">
+			<VStack align="start" spacing="6" mt="6">
+				<Box w="full">
+					<HStack justify="space-between" mb="4" align="start" w="full">
 						<Box>
 							<HStack mb="1">
 								<Icon as={IconBuilding} boxSize="20px" />
@@ -161,8 +160,8 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 						hiddenPagination={true}
 					/>
 				</Box>
-				<Box w='full'>
-					<HStack justify="space-between" mb='4' align="start" w="full">
+				<Box w="full">
+					<HStack justify="space-between" mb="4" align="start" w="full">
 						<Box>
 							<HStack mb="1">
 								<Icon as={IconTrees} boxSize="20px" />

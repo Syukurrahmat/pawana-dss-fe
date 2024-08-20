@@ -49,7 +49,7 @@ export default function CreateReport() {
 			const images = await Promise.all(
 				values.images.filter((e) => e as File).map((e) => toBase64(e))
 			);
-			console.log(trimAndCleanProps({ ...values, images }));
+
 			myAxios
 				.post('/reports', trimAndCleanProps({ ...values, images }))
 				.then(() => {

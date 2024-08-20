@@ -44,7 +44,6 @@ export default function CompanySubsctiptionsList({
 						toast.success('Berhasil menghapus subscription pengguna');
 					})
 					.catch((e) => {
-						console.log(e);
 						toast.error('Gagal menghapus subscription pengguna');
 					}),
 		});

@@ -63,7 +63,6 @@ export function UserContextProvider(props: any) {
 
 	const roleIs: CheckRole = (role) => role.includes(user!.role);
 	const roleIsNot: CheckRole = (role) => !roleIs(role);
-	
 	if (!user) return <PreLoadScreen />;
 
 	return (

@@ -38,6 +38,7 @@ export default function EditNodeProfileButton({
 		handleChange,
 		values,
 		errors,
+		setFieldError,
 		handleSubmit,
 		handleBlur,
 		resetForm,
@@ -68,13 +69,19 @@ export default function EditNodeProfileButton({
 				.then(() => {
 					toast.success('Berhasil Memperharui data');
 					mutate((e) => (e ? { ...e, ...updatedData } : e));
+					onClose();
 				})
-				.catch(() => {
-					toast.error('Gagal Memperharui data');
+				.catch((e) => {
+					if (e.response?.status !== 400) {
+						toast.error('Gagal Memperharui data');
+					}
+
+					const [field, message] = e.response?.data.message || [];
+					setFieldError(field, message);
+					toast.error(message || 'Ada yang salah');
 				})
 				.finally(() => {
 					setSubmitting(false);
-					onClose();
 				});
 		},
 	});

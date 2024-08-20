@@ -10,6 +10,10 @@ declare module "*.png" {
     export default string;
 }
 
+declare module "*.jpg" {
+    export default string;
+}
+
 type ConfirmMessage = {
     title: string,
     message: any,

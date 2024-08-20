@@ -1,14 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-import checker from 'vite-plugin-checker'
-
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
 		react(),
-		// checker({ typescript: true }),
 	],
 	build: {
 
@@ -16,7 +13,8 @@ export default defineConfig({
 			input: {
 				app: '/index.app.html',
 				login: '/index.login.html',
-				verify: '/index.verify'
+				'verify-success': '/index.verify-success.html',
+				'verify-failed': '/index.verify-failed.html'
 			}
 		}
 	},

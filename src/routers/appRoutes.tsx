@@ -1,13 +1,12 @@
-import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconFileReport, IconNotebook, IconSpeakerphone, IconUser } from '@tabler/icons-react'; // prettier-ignore
+import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconFileReport, IconInfoSquareRounded, IconNotebook, IconSpeakerphone, IconUser } from '@tabler/icons-react'; // prettier-ignore
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../layout';
-import LoginPage from '@/pages/other/login';
 import ErrorPage from '@/pages/other/page404';
 
 const ReportsPage = lazy(() => import('@/pages/app/Reports'));
 const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
-const Dashboard = lazy(() => import('@/pages/app/dashboards/index'));
+const Dashboard = lazy(() => import('@/pages/app/Dashboards/index'));
 const DetailNode = lazy(() => import('@/pages/admin/Nodes/DetailNode'));
 const CompaniesManagement = lazy(()=> import ('@/pages/admin/Companies/Companies')) // prettier-ignore
 const CreateCompany = lazy(()=> import ('@/pages/admin/Companies/CreateCompany')) // prettier-ignore
@@ -22,6 +21,7 @@ const MySubscribedNodes = lazy(() => import('@/pages/app/Resources/MySubscribedN
 const MyPrivateNode = lazy(() => import('@/pages/app/Resources/MyPrivateNode'));
 const Summary = lazy(() => import('@/pages/app/Summary'));
 const Data = lazy(() => import('@/pages/app/DownloadData'));
+const Info = lazy(() => import('@/pages/app/Info'));
 
 const routers = [
 	{
@@ -154,6 +154,14 @@ const routers = [
 		element: <Data />,
 		role: ['manager', 'admin', 'gov'],
 	},
+
+	{
+		path: '/info',
+		label: 'Info',
+		Icon: IconInfoSquareRounded,
+		element: <Info />,
+		role: ['all'],
+	},
 ];
 
 const generateAppRouter = (role: string) => {
@@ -170,7 +178,7 @@ const generateAppRouter = (role: string) => {
 			path: '/',
 			element: <App navbarList={navlist} />,
 			children: routerList,
-			// errorElement: <ErrorPage />,
+			errorElement: <ErrorPage />,
 		},
 	]);
 };

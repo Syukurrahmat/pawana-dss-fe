@@ -175,7 +175,6 @@ export default function CompaniesManagement() {
 
 function NodesMapView() {
 	const { data } = useSWR<Paginated<CompanyData>>('/companies?all=true', fetcher);
-	console.log(data)
 	if (!data) return 'loading slurr';
 
 	return <MyMap h="100%" minH="350px" scrollWheelZoom={false} data={data.rows} />;

@@ -3,7 +3,7 @@ import axios from "axios";
 import qs from "qs";
 
 export const fetcher = async <T = any>(url: string, options?: RequestInit) => {
-    console.log(API_URL + url)
+
     return await fetch(API_URL + url, options)
         .then(e => e.json())
         .then((e: APIResponse<T>) => {

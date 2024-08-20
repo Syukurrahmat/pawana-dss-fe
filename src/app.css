@@ -94,7 +94,7 @@ body {
 
 .date-picker {
     width: 100%;
-    
+
 }
 
 .date-picker * {
@@ -171,10 +171,22 @@ body {
     flex-grow: 1;
 }
 
-.myStepper .myStepper-item > * {
+.myStepper .myStepper-item>* {
     width: 100%;
 }
 
-.myStepper .myStepper-item > button[type="submit"] {
+.myStepper .myStepper-item>button[type="submit"] {
     width: fit-content;
+}
+
+
+.info-page p {
+
+    font-size: 15px;
+    line-height: 1.75em;
+    text-align: justify;
+}
+
+.info-page p strong {
+    color: var(--chakra-colors-blue-700)
 }

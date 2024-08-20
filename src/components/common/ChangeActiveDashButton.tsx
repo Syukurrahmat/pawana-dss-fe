@@ -32,9 +32,7 @@ type ChangeDash = (
 ) => any;
 
 export const changeDashboard: ChangeDash = async (mutateUser, data) => {
-	console.log(22222,data);
 	myAxios.patch('/app/configure-view', data).then((resp) => {
-		console.log(resp);
 		if (resp.status === 200) {
 			mutateUser((e) => ({ ...e, ...resp.data.data }));
 		}
@@ -127,7 +125,6 @@ export function ChangeActiveDashboard({
 			apiUrl="/users?role=regular&view=simple"
 			_value={user.view!.user!}
 			_onChange={(e: any) => {
-				console.log('shshshsh');
 				changeDashboard(mutateUser, { userId: e.userId });
 			}}
 			hiddenSearchInput={true}
