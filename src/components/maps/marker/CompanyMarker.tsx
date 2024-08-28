@@ -18,7 +18,7 @@ export default function CompanyMarker({ properties, ...rest }: any) {
 							<Divider />
 							<VStack>
 								{indoorNodeValue.map((e: any, i: number) => (
-									<VStack key={i} align="end" spacing="1">
+									<VStack key={i} align='stretch' w='full' spacing="1">
 										<HStack>
 											<Text
 												fontWeight="600"
