@@ -15,8 +15,8 @@ export default function SelectNodeType({
 				{[
 					{ label: 'Node Publik', key: 'public' },
 					{ label: 'Node Private', key: 'private' },
-				].map((e) => (
-					<MyRadio value={e.key} children={e.label} />
+				].map((e,i) => (
+					<MyRadio key={i} value={e.key} children={e.label} />
 				))}
 			</RadioGroup>
 		</HStack>
