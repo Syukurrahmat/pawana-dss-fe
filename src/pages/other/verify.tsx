@@ -54,7 +54,9 @@ export default function VerifyPage() {
 	const { color, icon, title, subtitle, note } = data[state];
 
 	useEffect(() => {
-		const token = window.location.pathname.split('/')[2];
+		const params = new URLSearchParams(window.location.search);
+		const token = params.get('token');
+
 		if (!token) {
 			setState('inValid');
 			return;
