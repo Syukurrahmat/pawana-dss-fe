@@ -32,19 +32,6 @@ export default function App({ navbarList }: { navbarList: any[] }) {
 				navbarList={navbarList}
 			/>
 			<Header id="header" activeNav={activeNav} />
-			{/* <pre>
-				Laporan page : buat rekomendasi section, memperbaiki chart,
-			</pre>
-			<pre>
-				menseragamkan istilah node dan perusahaan
-			</pre>
-			<pre>
-			emty data in laporan page
-			</pre>
-			<pre>
-		summary data type
-			</pre> */}
-
 			<Container maxW="1280px" p="0">
 				<Box
 					w="full"
