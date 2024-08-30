@@ -4,10 +4,8 @@ import {
 	getCO2Properties,
 	getISPUProperties,
 } from '@/utils/common.utils';
-import { Box, Center, HStack, Icon, Tag, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
-import {
-	IconInfoSquareRounded
-} from '@tabler/icons-react';
+import { Box, Center, Flex, HStack, Icon, Tag, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconInfoSquareRounded } from '@tabler/icons-react';
 import GaugeChart from 'react-gauge-chart';
 import { CardSection } from '.';
 
@@ -47,8 +45,11 @@ export function ISPUAverageSection({ indoor, outdoor }: AverageSection) {
 
 	return (
 		<>
-			<HStack align="stretch" gap="4">
-				<CardSection title="Rerata Indeks Standar Pencemar Udara (ISPU)">
+			<Flex flexWrap="wrap" align="stretch" gap="4">
+				<CardSection
+					flexGrow="1"
+					title="Rerata Indeks Standar Pencemar Udara (ISPU)"
+				>
 					{ispuList.map(({ label, data }, i) => (
 						<Box key={i} flex="1 1 0">
 							<Tag
@@ -93,38 +94,44 @@ export function ISPUAverageSection({ indoor, outdoor }: AverageSection) {
 					))}
 				</CardSection>
 
-				{polutantList.map(({ label, data }, i) => (
-					<CardSection title={label} key={i}>
-						{data.map(({ label, data }, i) => (
-							<Box key={i} flex="1 1 0">
-								<Tag
-									mb="2"
-									variant="outline"
-									colorScheme={i ? 'green' : 'blue'}
-									children={label}
-								/>
-								{data ? (
-									<Center
-										alignContent="baseline"
-										rounded="md"
-										p="2"
-										bg={'gray.100'}
-									>
-										<Text
-											fontSize="xl"
-											fontWeight="700"
-											children={data.toFixed(2)}
-										/>
-										<Text ml="1" fontSize="sm" children={UNIT_PM} />
-									</Center>
-								) : (
-									<InsufficientData />
-								)}
-							</Box>
-						))}
-					</CardSection>
-				))}
-			</HStack>
+				<Flex flexGrow="1" flexWrap="wrap" align="stretch" gap="4">
+					{polutantList.map(({ label, data }, i) => (
+						<CardSection title={label} key={i}>
+							{data.map(({ label, data }, i) => (
+								<Box key={i} flex="1 1 0">
+									<Tag
+										mb="2"
+										variant="outline"
+										colorScheme={i ? 'green' : 'blue'}
+										children={label}
+									/>
+									{data ? (
+										<Center
+											alignContent="baseline"
+											rounded="md"
+											p="2"
+											bg={'gray.100'}
+										>
+											<Text
+												fontSize="xl"
+												fontWeight="700"
+												children={data.toFixed(2)}
+											/>
+											<Text
+												ml="1"
+												fontSize="sm"
+												children={UNIT_PM}
+											/>
+										</Center>
+									) : (
+										<InsufficientData />
+									)}
+								</Box>
+							))}
+						</CardSection>
+					))}
+				</Flex>
+			</Flex>
 		</>
 	);
 }
@@ -156,7 +163,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 	];
 
 	return (
-		<HStack align="stretch" gap="4">
+		<Flex align="stretch" flexDir={{ base: 'column', lg: 'row' }} gap="4">
 			{gassEmissionList.map(({ label, data, unit, threshold, max, key }) => (
 				<CardSection title={label}>
 					{data.map(({ label, data }, i) => {
@@ -175,8 +182,8 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 								/>
 
 								{data ? (
-									<HStack>
-										<VStack spacing="1">
+									<HStack justify="center">
+										<VStack spacing="1" align="stretch">
 											<Center
 												alignContent="baseline"
 												rounded="md"
@@ -204,7 +211,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 										</VStack>
 
 										<GaugeChart
-											style={{ width: '125px' }}
+											style={{ width: '130px' }}
 											arcsLength={threshold}
 											colors={GAUGE_CHART_COLORS}
 											percent={
@@ -222,7 +229,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 					})}
 				</CardSection>
 			))}
-		</HStack>
+		</Flex>
 	);
 }
 

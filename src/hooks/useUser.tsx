@@ -1,7 +1,8 @@
 import PreLoadScreen from '@/pages/other/preLoadScreen';
 import { fetcher } from '@/utils/fetcher';
-import { createContext, useContext } from 'react'; //prettier-ignore
+import { createContext, useContext, useEffect } from 'react'; //prettier-ignore
 import useSWR, { KeyedMutator } from 'swr';
+import useConfirmDialog from './useConfirmDialog';
 
 type CheckRole = (role: UserRole | UserRole[]) => boolean;
 
@@ -52,14 +53,28 @@ export default function useUser() {
 	return useContext(UserContext);
 }
 
-
 export function UserContextProvider(props: any) {
 	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const confirmDialog = useConfirmDialog();
 	const { data: user, mutate: mutateUser } = useSWR<User>(
 		`/app?timezone=${timezone}`,
 		fetcher
 	);
 
+	useEffect(() => {
+		const sudah = window.localStorage.getItem('mobile-compatible-warn');
+		if (!sudah && window.screen.availWidth <= 768) {
+			confirmDialog({
+				title: 'Peringatan',
+				message:
+					'Sistem belum sepenuhnya kompatible dengan perangkat mobile,\n Gunakan komputer atau laptop untuk pengalaman yang lebih optimal',
+				onConfirm() {
+					window.localStorage.setItem('mobile-compatible-warn', '1');
+				},
+				withoutCancelButton: true,
+			});
+		}
+	}, []);
 
 	const roleIs: CheckRole = (role) => role.includes(user!.role);
 	const roleIsNot: CheckRole = (role) => !roleIs(role);

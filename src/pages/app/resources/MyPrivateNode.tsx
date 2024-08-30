@@ -11,7 +11,7 @@ export default function MyPrivateNode() {
  
 	return (
 		<Box>
-			<HStack justify="space-between">
+			<HStack flexWrap='wrap' justify="space-between">
 				<Box>
 					<Heading size="lg">Node Saya</Heading>
 					<Text>Daftar node private di perusahaan-perusahaan Anda</Text>
@@ -25,7 +25,7 @@ export default function MyPrivateNode() {
 					/>
 				</Link>
 			</HStack>
-			<Container maxW="container.md" mt="6">
+			<Container maxW="container.md" px='0' mt="6">
 				<DataTable
 					mt="4"
 					flexGrow="1"

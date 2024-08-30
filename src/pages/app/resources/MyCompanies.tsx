@@ -9,7 +9,7 @@ export default function MyCompanies() {
 
 	return (
 		<Box>
-			<HStack justify="space-between">
+			<HStack flexWrap='wrap' justify="space-between">
 				<Box>
 					<Heading size="lg">Perusahaan saya</Heading>
 					<Text>Daftar perusahaan yang Anda Buat</Text>
@@ -22,7 +22,7 @@ export default function MyCompanies() {
 					/>
 				</Link>
 			</HStack>
-			<Container maxW="container.md" mt="6">
+			<Container px='0' maxW="container.md" mt="6">
 				<ManagedCompaniesList data={user} />
 			</Container>
 		</Box>

@@ -11,6 +11,7 @@ import { ConfirmDialogProvider } from './hooks/useConfirmDialog.tsx';
 import useUser, { UserContextProvider } from './hooks/useUser.tsx';
 import generateAppRouter from './routers/appRoutes.tsx';
 
+moment.locale('id')
 const toastOptions: ToastProviderProps = {
 	defaultOptions: {
 		isClosable: true,
@@ -32,13 +33,11 @@ const RouterProviderRoleBase = () => {
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<ChakraProvider cssVarsRoot={undefined} toastOptions={toastOptions}>
-			<UserContextProvider>
-				<ConfirmDialogProvider>
+			<ConfirmDialogProvider>
+				<UserContextProvider>
 					<RouterProviderRoleBase />
-				</ConfirmDialogProvider>
-			</UserContextProvider>
+				</UserContextProvider>
+			</ConfirmDialogProvider>
 		</ChakraProvider>
 	</React.StrictMode>
 );
-
-

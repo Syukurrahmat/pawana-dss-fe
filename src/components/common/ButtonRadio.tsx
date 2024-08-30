@@ -1,7 +1,7 @@
 import {
 	Box,
 	Button,
-	HStack,
+	ButtonGroup,
 	UseRadioGroupProps,
 	useRadio,
 	useRadioGroup,
@@ -16,19 +16,16 @@ function RadioCard(props: any) {
 	const checkbox = getRadioProps();
 
 	return (
-		<Box as="label">
+		<Button
+			onClick={() => ref.current?.click()}
+			as="label"
+			borderColor='teal.400'
+			variant={state.isChecked ? 'solid' : 'outline'}
+		>
 			<input {...input} />
 			<Box {...checkbox} ref={ref as any} display="none" />
-			<Button
-				onClick={() => ref.current?.click()}
-				border="1px solid"
-				borderColor="teal.500"
-				size="sm"
-				variant={state.isChecked ? 'solid' : 'outline'}
-				colorScheme="teal"
-				children={props.children}
-			/>
-		</Box>
+			{props.children}
+		</Button>
 	);
 }
 
@@ -44,7 +41,15 @@ export default function MyButtonRadio({
 	const group = getRootProps();
 
 	return (
-		<HStack {...group}>
+		<ButtonGroup
+			size="sm"
+			isAttached
+			rowGap='2'
+			flexWrap="wrap"
+			colorScheme="teal"
+			variant="outline"
+			{...group}
+		>
 			{options.map((value) => {
 				const radio = getRadioProps({ value });
 				return (
@@ -53,6 +58,6 @@ export default function MyButtonRadio({
 					</RadioCard>
 				);
 			})}
-		</HStack>
+		</ButtonGroup>
 	);
 }

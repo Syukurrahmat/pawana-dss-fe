@@ -49,13 +49,15 @@ function MyConfirmDialog({ messageContext }: MyConfirmDialog) {
 					</AlertDialogHeader>
 					<AlertDialogBody>{alertMessage?.message}</AlertDialogBody>
 					<AlertDialogFooter>
-						<Button
-							ref={cancelRef.current}
-							isDisabled={isLoading}
-							onClick={onClose}
-						>
-							Batal
-						</Button>
+						{!alertMessage?.withoutCancelButton && (
+							<Button
+								ref={cancelRef.current}
+								isDisabled={isLoading}
+								onClick={onClose}
+							>
+								Batal
+							</Button>
+						)}
 						<Button
 							isLoading={isLoading}
 							colorScheme={alertMessage?.confirmButtonColor || 'blue'}

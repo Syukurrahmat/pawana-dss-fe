@@ -25,7 +25,6 @@ export default function Dashboard() {
 
 	if (isLoading || !data) return <LoadingComponent />;
 
- 
 	return (
 		<VStack spacing="4" align="stretch">
 			<DashboardInfo data={data} />
@@ -38,7 +37,7 @@ export default function Dashboard() {
 			/>
 
 			{roleIsNot('regular') && (
-				<Flex w="full" gap="4">
+				<Flex flexDir={{ base: 'column', lg: 'row' }} w="full" gap="4">
 					<CurrentEventsCard flex="1 1 0 " data={data.currentEventLogs} />
 					<NearReport flex="1 1 0 " data={data.nearReports} />
 				</Flex>

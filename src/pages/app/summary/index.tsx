@@ -1,7 +1,7 @@
 import { SelectUserOrCompanyView } from '@/components/common/AdminInforCard';
 import useUser from '@/hooks/useUser';
 import { fetcher } from '@/utils/fetcher';
-import { Box, Card, CardBody, CardHeader, CardProps, Center, HStack, Heading, Icon, Select, Spinner, StackDivider, Text, VStack, } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Card, CardBody, CardHeader, CardProps, Center, Flex, HStack, Heading, Icon, Select, Spinner, StackDivider, Text, VStack, } from '@chakra-ui/react'; //prettier-ignore
 import { IconAirBalloon, IconAirConditioning, IconClipboardText, IconDatabaseOff, IconSpeakerphone } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -59,7 +59,7 @@ export default function Summary() {
 
 	return (
 		<Box>
-			<HStack align="start" justify="space-between">
+			<Flex gap='4' flexWrap='wrap' align='stretch' justify="space-between">
 				<Box>
 					<Heading size="lg">
 						Laporan {label} {moment(date).format(format)}
@@ -70,7 +70,7 @@ export default function Summary() {
 							: 'Mengambil Data ...'}
 					</Text>
 				</Box>
-				<HStack spacing="4">
+				<HStack flexWrap='wrap' spacing="4" justify='space-between' >
 					<Box>
 						<Text mb="1" fontSize="sm">
 							Navigasi ke {label.toLowerCase()} lain
@@ -97,10 +97,10 @@ export default function Summary() {
 						</Select>
 					</Box>
 				</HStack>
-			</HStack>
+			</Flex>
 
 			{!!data && preApiUrl == apiUrl ? (
-				<VStack align="stretch" spacing="4" mt="4">
+				<VStack align="stretch" spacing="4" mt="6">
 					{/* ==== Kualitas Udara (ISPU) ==== */}
 
 					<TitleSection

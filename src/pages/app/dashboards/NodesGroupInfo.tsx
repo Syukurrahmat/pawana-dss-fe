@@ -2,7 +2,7 @@ import opssImage from '@/assets/opss.png';
 
 import NodeSubscription from '@/components/common/AddNodeSubscription';
 import useUser from '@/hooks/useUser';
-import { Box, Button, Card, CardBody, CardHeader, Center, HStack, Heading, Icon, Image, Stack, StackDivider, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { Box, Button, Card, CardBody, CardHeader, Center, Flex, HStack, Heading, Icon, Image, Stack, StackDivider, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconBuilding, IconCircleDot, IconCirclePlus, IconCircleX, IconTrees, IconZzz } from '@tabler/icons-react'; // prettier-ignore
 import MultiNodeGRK from './GRK/MultiNodeGRK';
 import SingleNodeGRK from './GRK/SingleNodeGRK';
@@ -139,7 +139,7 @@ function NoDataDisplay({ data, type }: ISPUCard) {
 	const nonActiveCount = all - active;
 
 	return (
-		<HStack justify="center" px="3" py="6">
+		<Flex align="center" flexWrap="wrap" justify="center" px="3" py="6">
 			<Image src={opssImage} h="140px" />
 			<VStack align="start" spacing="1">
 				{!all ? (
@@ -208,6 +208,6 @@ function NoDataDisplay({ data, type }: ISPUCard) {
 					</>
 				)}
 			</VStack>
-		</HStack>
+		</Flex>
 	);
 }

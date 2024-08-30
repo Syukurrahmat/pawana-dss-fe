@@ -1,7 +1,7 @@
 import MyISPUChart from '@/components/Chart/ISPUChart';
 import MyLineChart from '@/components/Chart/MyLineChart';
 import MyButtonRadio from '@/components/common/ButtonRadio';
-import { Button, Card, CardBody, CardHeader, Center, Divider, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
+import { Button, ButtonGroup, Card, CardBody, CardHeader, Center, Divider, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
 import { useState } from 'react';
 import { AirParamList } from './airParamList';
 
@@ -27,27 +27,31 @@ export function TrenCard({ title, tren, paramList }: TrenCard) {
 				<>
 					<CardBody pt="0">
 						<Tabs isLazy variant="unstyled" colorScheme="teal" size="sm">
-							<TabList gap="2">
-								{paramList.map((e, i) => (
-									<Tab
-										rounded="md"
-										as={Button}
-										size="sm"
-										colorScheme="teal"
-										border="1px solid"
-										borderColor="teal.500"
-										_selected={{
-											bg: 'teal.500',
-											color: 'white',
-											_hover: {
-												bg: 'teal.600',
-											},
-										}}
-										variant="outline"
-										children={e.name}
-										key={i}
-									/>
-								))}
+							<TabList gap="4" flexWrap="wrap">
+								<ButtonGroup
+									size="sm"
+									rowGap='2'
+									isAttached
+									flexWrap="wrap"
+									colorScheme="teal"
+									variant="outline"
+								>
+									{paramList.map((e, i) => (
+										<Tab
+											as={Button}
+											borderColor="teal.400"
+											_selected={{
+												bg: 'teal.500',
+												color: 'white',
+												_hover: {
+													bg: 'teal.600',
+												},
+											}}
+											children={e.name}
+											key={i}
+										/>
+									))}
+								</ButtonGroup>
 								<Spacer />
 								<MyButtonRadio
 									options={[INDOOR, OUTDOOR, BOTH]}

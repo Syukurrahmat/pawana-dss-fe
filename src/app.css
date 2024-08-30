@@ -5,6 +5,7 @@
 }
 
 
+
 * {
     box-sizing: border-box;
     padding: 0;
@@ -34,12 +35,14 @@ body {
     height: var(--header-length);
     z-index: 1100;
     background: #F4F5F9 !important;
+}
 
+#container .hamburger {
+    display: none;
 }
 
 #container #content {
     min-height: calc(100vh - var(--header-length));
-
 }
 
 #container #content>* {
@@ -47,12 +50,36 @@ body {
     min-height: 100%;
 }
 
+
 #container #sidebar {
     position: fixed;
     top: 0;
     left: 0;
     width: var(--sidebar-length);
     height: 100vh;
+}
+
+
+@media screen and (max-width: 48em) {
+
+    #container {
+        padding: 0 0 0 0 !important;
+
+    }
+
+    #container #sidebar {
+        transform: translateX(calc(var(--sidebar-length)*-1));
+        z-index: 2000;
+        max-width: calc(100vw - 30px);
+        transition: all 200ms;
+    }
+    #container #sidebar.open {
+        transform: none;
+    }
+
+    #container .hamburger {
+        display: flex !important;
+    }
 }
 
 
@@ -139,12 +166,12 @@ body {
 
 .fc-scroller::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar {
-    width: 12px;
+    width: 10px;
 }
 
 .fc-scroller::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-track {
-    background-color: var(--chakra-colors-gray-100);
+    /* background-color: var(--chakra-colors-gray-100); */
 }
 
 .fc-scroller::-webkit-scrollbar-thumb,
@@ -189,4 +216,9 @@ body {
 
 .info-page p strong {
     color: var(--chakra-colors-blue-700)
+}
+
+.chakra-modal__content-container{
+    padding-left: 12px;
+    padding-right: 12px;
 }

@@ -17,9 +17,10 @@ declare module "*.jpg" {
 type ConfirmMessage = {
     title: string,
     message: any,
-    onConfirm: () => Promise<void> | null,
+    onConfirm: () => Promise<void> | void |  null,
     confirmButtonColor?: string,
     confirmText?: string,
+    withoutCancelButton?: boolean,
 } | null
 
 

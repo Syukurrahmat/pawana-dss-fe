@@ -7,7 +7,7 @@ import TagWithIcon from '@/components/common/TagWithIcon';
 import useUser from '@/hooks/useUser';
 import { getISPUProperties } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
-import { Alert, Box, Button, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { Alert, Box, Button, ButtonGroup, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconCalendar, IconCircleDot } from '@tabler/icons-react'; // prettier-ignore
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -117,10 +117,15 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 
 	return (
 		<Card size="sm" w="full">
-			<CardBody as={Flex} gap="5">
+			<CardBody
+				as={Flex}
+				flexDir={{ base: 'column', lg: 'row' }}
+				gap={{ base: '2', lg: '5' }}
+			>
 				<MyMap
-					w="60%"
+					minH="275px"
 					h="275px"
+					flex="3 1 0"
 					companiesData={companyId ? [companyData] : []}
 					marker={
 						selectedParam === null
@@ -130,7 +135,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 					data={displayedData || []}
 				/>
 
-				<VStack align="start" p="1" flexGrow="1">
+				<VStack align="start" p="1" flex="2 1 0">
 					<HStack mt="6">
 						<CompanyIcon type={type} />
 						<Heading
@@ -139,7 +144,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 							children={dashboardName}
 						/>
 					</HStack>
-					<HStack mt="2">
+					<HStack flexWrap="wrap" mt="2">
 						{!!createdAt && (
 							<>
 								<TagWithIcon
@@ -160,33 +165,47 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 					{countNodes > 0 ? (
 						<Box>
 							<Text>Tampilkan nilai dari parameter : </Text>
-							<Flex flexWrap="wrap" gap="3" mt="1">
+							<ButtonGroup
+								colorScheme="teal"
+								isAttached
+								size="sm"
+								variant="outline"
+								flexWrap="wrap"
+								mt="1"
+								rowGap="2"
+							>
 								{airParamsData().map((e, i) => (
 									<Button
 										key={i}
-										size="sm"
-										colorScheme="teal"
 										border="1px solid"
-										borderColor="teal.500"
-										variant={selectedParam == i ? 'solid' : 'outline'}
+										borderColor="teal.400"
+										sx={
+											selectedParam == i
+												? {
+														bg: 'teal.500',
+														color: 'white',
+														_hover: { bg: 'teal.600' },
+												  }
+												: {}
+										}
 										onClick={() =>
 											setSelectedParam((e) => (e != i ? i : null))
 										}
 										children={e.name}
 									/>
 								))}
-							</Flex>
+							</ButtonGroup>
 						</Box>
 					) : (
 						<Alert fontSize="md" status="warning" rounded="md">
-							<Text >
-								Tidak ada node yang dapat dianalisis. 
-								<br/>Tambahkan node
-								untuk memulai memantau kualitas udara
+							<Text>
+								Tidak ada node yang dapat dianalisis.
+								<br />
+								Tambahkan node untuk memulai memantau kualitas udara
 							</Text>
 						</Alert>
 					)}
-					<HStack justify="end" w="full" mt="4">
+					<HStack justify="end" flexWrap='wrap-reverse' w="full" mt="4">
 						{roleIsNot('regular') && (
 							<ChangeActiveDashboard
 								colorScheme="blue"
