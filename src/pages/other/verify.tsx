@@ -1,4 +1,4 @@
-import logo from '@/assets/icon.svg';
+import logo from '@/assets/logo/icon.svg';
 import { HOST_URL } from '@/constants/config';
 import { Box, Card, CardBody, CardHeader, Center, Container, Divider, Heading, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import {
@@ -63,7 +63,7 @@ export default function VerifyPage() {
 		}
 
 		axios
-			.post(HOST_URL + '/auth/verify', { token })
+			.post(HOST_URL + '/auth/verify', { token }, {withCredentials : true})
 			.then(() => setState('success'))
 			.catch(({ response }) => {
 				response.status === 409

@@ -1,8 +1,10 @@
 import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconFileReport, IconInfoSquareRounded, IconNotebook, IconSpeakerphone, IconUser } from '@tabler/icons-react'; // prettier-ignore
 import { lazy } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../layout';
 import ErrorPage from '@/pages/other/page404';
+import { MODE } from '@/constants/config';
+import useUser from '@/hooks/useUser';
 
 const ReportsPage = lazy(() => import('@/pages/app/Reports'));
 const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
@@ -27,6 +29,7 @@ const routers = [
 	{
 		path: '/account',
 		label: 'Akun',
+		Icon: IconUser,
 		element: <DetailUser />,
 		role: ['all'],
 	},
@@ -164,7 +167,13 @@ const routers = [
 	},
 ];
 
-const generateAppRouter = (role: string) => {
+
+export const RouterProviderRoleBase = () => {
+	const { user } = useUser();
+	return <RouterProvider router={generateAppRouter(user.role)} />;
+};
+
+export const generateAppRouter = (role: string) => {
 	const routerList = routers.filter(
 		(e) => e.role.includes(role) || e.role.includes('all')
 	);
@@ -178,9 +187,9 @@ const generateAppRouter = (role: string) => {
 			path: '/',
 			element: <App navbarList={navlist} />,
 			children: routerList,
-			errorElement: <ErrorPage />,
+			errorElement: MODE == 'production' ? <ErrorPage /> : undefined,
 		},
 	]);
 };
 
-export default generateAppRouter;
+
