@@ -1,6 +1,6 @@
 :root {
-    --header-length: 55px;
     --sidebar-length: 215px;
+    --header-length: 55px;
     --font-size: 16px;
 }
 
@@ -19,66 +19,23 @@ body {
     color: #45474B !important;
 }
 
-body {
-    overflow-y: scroll;
-}
 
-#container {
-    padding: 0 0 0 var(--sidebar-length);
-    position: relative;
-}
 
-#container #header {
-    position: sticky;
-    top: 0;
-    left: var(--sidebar-length);
-    height: var(--header-length);
-    z-index: 1100;
-    background: #F4F5F9 !important;
-}
-
-#container .hamburger {
+button.only-mobile {
     display: none;
 }
 
-#container #content {
-    min-height: calc(100vh - var(--header-length));
-}
-
-#container #content>* {
-    width: 100%;
-    min-height: 100%;
-}
-
-
-#container #sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--sidebar-length);
-    height: 100vh;
-}
-
-
 @media screen and (max-width: 48em) {
-
-    #container {
-        padding: 0 0 0 0 !important;
-
-    }
-
-    #container #sidebar {
-        transform: translateX(calc(var(--sidebar-length)*-1));
+    .sidebar {
+        position: fixed;
+        transform: translateX(-100%);
         z-index: 2000;
-        max-width: calc(100vw - 30px);
-        transition: all 200ms;
-    }
-    #container #sidebar.open {
-        transform: none;
+        max-width: 80%;
+        box-shadow: var(--chakra-shadows-md);
     }
 
-    #container .hamburger {
-        display: flex !important;
+    .only-mobile {
+        display: initial !important;
     }
 }
 
@@ -206,6 +163,10 @@ body {
     width: fit-content;
 }
 
+.myStepper [role="separator"] {
+    max-height: calc(100% - var(--stepper-indicator-size)) !important
+}
+
 
 .info-page p {
 
@@ -218,7 +179,7 @@ body {
     color: var(--chakra-colors-blue-700)
 }
 
-.chakra-modal__content-container{
+.chakra-modal__content-container {
     padding-left: 12px;
     padding-right: 12px;
 }
