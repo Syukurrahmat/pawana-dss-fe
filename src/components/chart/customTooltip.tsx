@@ -71,7 +71,7 @@ export function MultipleTrenTooltip({
 							: 'gray';
 
 						return (
-							<HStack px="1">
+							<HStack px="1" key={i}>
 								<Box bg="blue.600" boxSize="5px" rounded="md" />
 								<Text>{e.name}</Text>
 								<Spacer />
