@@ -17,7 +17,7 @@
 }
 
 .map-marker-centered {
-    background-image: url("@/assets/mapMarker-red.svg");
+    background-image: url("@/assets/marker/mapMarker-red.svg");
     background-size: contain;
     background-repeat: no-repeat;
     width: 40px;

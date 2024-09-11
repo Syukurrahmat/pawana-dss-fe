@@ -1,21 +1,21 @@
-import redMarkerIconSvg from '@/assets/mapMarker-red.svg';
-import yellowMarkerIconSvg from '@/assets/mapMarker-yellow.svg';
+import redMarkerIconSvg from '@/assets/marker/mapMarker-red.svg';
+import yellowMarkerIconSvg from '@/assets/marker/mapMarker-yellow.svg';
 
-import moodEmpty from '@/assets/mood-empty.svg';
-import moodHeart from '@/assets/mood-heart.svg';
-import moodSad from '@/assets/mood-sad.svg';
-import moodSmile from '@/assets/mood-smile.svg';
-import moodWrrr from '@/assets/mood-wrrr.svg';
+import moodEmpty from '@/assets/emoji/mood-empty.svg';
+import moodHeart from '@/assets/emoji/mood-heart.svg';
+import moodSad from '@/assets/emoji/mood-sad.svg';
+import moodSmile from '@/assets/emoji/mood-smile.svg';
+import moodWrrr from '@/assets/emoji/mood-wrrr.svg';
 
-import agricultureCompanyMarker from '@/assets/company-marker-agriculture.svg';
-import otherCompanyMarker from '@/assets/company-marker-other.svg';
-import restaurantCompanyMarker from '@/assets/company-marker-restaurant.svg';
-import retailStoreCompanyMarker from '@/assets/company-marker-retailstore.svg';
-import serviceCompanyMarker from '@/assets/company-marker-service.svg';
-import tofuCompanyMarker from '@/assets/company-marker-tofufactory.svg';
+import agricultureCompanyMarker from '@/assets/marker/company-marker-agriculture.svg';
+import otherCompanyMarker from '@/assets/marker/company-marker-other.svg';
+import restaurantCompanyMarker from '@/assets/marker/company-marker-restaurant.svg';
+import retailStoreCompanyMarker from '@/assets/marker/company-marker-retailstore.svg';
+import serviceCompanyMarker from '@/assets/marker/company-marker-service.svg';
+import tofuCompanyMarker from '@/assets/marker/company-marker-tofufactory.svg';
 
-import checkMarkerOrange from '@/assets/check-marker-orange.svg';
-import checkMarkerRed from '@/assets/check-marker.svg';
+import checkMarkerOrange from '@/assets/marker/check-marker-orange.svg';
+import checkMarkerRed from '@/assets/marker/check-marker.svg';
 
 import L, { BaseIconOptions, DivIcon } from 'leaflet';
 
