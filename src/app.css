@@ -1,185 +1,178 @@
-:root {
-    --sidebar-length: 215px;
-    --header-length: 55px;
-    --font-size: 16px;
-}
-
-
-
 * {
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
 }
 
 html,
 body {
-    font-size: 14px;
-    background: #F4F5F9 !important;
-    color: #45474B !important;
+	font-size: 14px;
+	background: #F5F7F8 !important;
 }
 
-
-
-button.only-mobile {
-    display: none;
+.chakra-alert {
+	font-size: 16px;
 }
 
 @media screen and (max-width: 48em) {
-    .sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        z-index: 2000;
-        max-width: 80%;
-        box-shadow: var(--chakra-shadows-md);
-    }
+	.sidebar {
+		position: fixed;
+		transform: translateX(-100%);
+		z-index: 2000;
+		max-width: 75% !important;
+		width: 75%;
+		box-shadow: var(--chakra-shadows-md);
+	}
 
-    .only-mobile {
-        display: initial !important;
-    }
+	button.is-mobile {
+		display: inherit !important;
+	}
 }
 
-
-.chakra-alert {
-    font-size: 16px;
+.sidebar {
+	height: 100vh;
+	min-height: 100vh;
+	max-height: 100vh;
+	max-width: 225px;
+	min-width: 225px;
+	width: 225px;
+	top: 0;
+	transition: all 200ms
 }
 
-
-
+button.is-mobile {
+	display: none;
+}
 
 .chakra-table td {
-    padding: 1em;
+	padding: 1em;
 }
 
 .chakra-table th {
-    white-space: wrap;
+	white-space: wrap;
 }
 
 .chakra-table__container.fixTableHead {
-    overflow-y: auto;
+	overflow-y: auto;
 }
 
 .chakra-table__container.fixTableHead thead th {
-    font-size: var(--chakra-fontSizes-sm);
-    box-shadow: var(--chakra-shadows-xs);
-    position: sticky;
-    background: var(--chakra-colors-gray-100);
-    z-index: 1;
-    top: 0;
+	font-size: var(--chakra-fontSizes-sm);
+	box-shadow: var(--chakra-shadows-xs);
+	position: sticky;
+	background: var(--chakra-colors-gray-100);
+	z-index: 1;
+	top: 0;
 }
 
 .my-form input,
 .my-form textarea {
-    background: white;
+	background: white;
 
 }
 
-
-
 .date-picker {
-    width: 100%;
+	width: 100%;
 
 }
 
 .date-picker * {
-    font-size: 14px;
-    font-weight: 500;
+	font-size: 14px;
+	font-weight: 500;
 }
 
 .date-picker .rdrDateDisplay .rdrDateInput {
-    border-width: 1px;
+	border-width: 1px;
 }
 
 .date-picker .rdrDateDisplay .rdrDateInput input {
-    color: #45474B
+	color: #45474B
 }
 
 .date-picker .rdrMonth {
-    width: 100%;
+	width: 100%;
 }
 
 
 
 .chakra-checkbox__control {
-    background-color: white;
+	background-color: white;
 }
 
 .color-white {
-    fill: white !important;
+	fill: white !important;
 }
 
 
 
 .event-item {
-    border: 0px;
-    border-radius: 6px;
-    overflow: hidden;
-    margin: 3px;
+	border: 0px;
+	border-radius: 6px;
+	overflow: hidden;
+	margin: 3px;
 }
 
 .fc-col-header {
-    background-color: var(--chakra-colors-gray-100);
+	background-color: var(--chakra-colors-gray-100);
 }
 
 .fc-scroller::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar {
-    width: 10px;
+	width: 10px;
 }
 
 .fc-scroller::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-track {
-    /* background-color: var(--chakra-colors-gray-100); */
+	/* background-color: var(--chakra-colors-gray-100); */
 }
 
 .fc-scroller::-webkit-scrollbar-thumb,
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--chakra-colors-gray-300);
-    border-radius: 100px;
+	background-color: var(--chakra-colors-gray-300);
+	border-radius: 100px;
 }
 
 .fc-scroller::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: var(--chakra-colors-gray-400);
+	background-color: var(--chakra-colors-gray-400);
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background-color: var(--chakra-colors-gray-500);
+	background-color: var(--chakra-colors-gray-500);
 }
 
 .myStepper>* {
-    width: 100%;
-    /* border: 1px solid salmon; */
+	width: 100%;
 }
 
 .myStepper .myStepper-item {
-    flex-grow: 1;
+	flex-grow: 1;
 }
 
 .myStepper .myStepper-item>* {
-    width: 100%;
+	width: 100%;
 }
 
 .myStepper .myStepper-item>button[type="submit"] {
-    width: fit-content;
+	width: fit-content;
 }
 
 .myStepper [role="separator"] {
-    max-height: calc(100% - var(--stepper-indicator-size)) !important
+	max-height: calc(100% - var(--stepper-indicator-size)) !important
 }
 
 
 .info-page p {
-
-    font-size: 15px;
-    line-height: 1.75em;
-    text-align: justify;
+	font-size: 15px;
+	line-height: 1.75em;
+	text-align: justify;
 }
 
 .info-page p strong {
-    color: var(--chakra-colors-blue-700)
+	color: var(--chakra-colors-blue-700)
 }
 
 .chakra-modal__content-container {
-    padding-left: 12px;
-    padding-right: 12px;
+	padding-left: 12px;
+	padding-right: 12px;
 }
