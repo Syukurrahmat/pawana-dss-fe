@@ -1,7 +1,7 @@
 import SectionTitle from '@/components/common/SectionTitle';
 import { Alert, AlertDescription, AlertIcon, Box, Center, Container, Grid, Heading, HStack, Image, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import airQualityImage from '@/assets/info-kualitas-udara-image.jpg';
-import grkImage from '@/assets/info-grk-image.jpg';
+import airQualityImage from '@/assets/images/info-kualitas-udara-image.jpg';
+import grkImage from '@/assets/images/info-grk-image.jpg';
 
 export default function Info() {
 	const ISPUCategories = [
@@ -38,11 +38,11 @@ export default function Info() {
 	];
 
 	return (
-		<Container className="info-page" maxW="container.md">
-			<Heading mx="auto" mt="4" size="lg">
+		<Container className="info-page" maxW="container.md" px='0'>
+			<Heading mx="auto" mt="4" textAlign='center' size="lg">
 				Kualitas Udara dan Emisi Gas Rumah Kaca
 			</Heading>
-			<SectionTitle fontSize="2xl">Kualitas udara ?</SectionTitle>
+			<SectionTitle fontSize="2xl">Kualitas udara</SectionTitle>
 			<Image
 				h="180px"
 				rounded="lg"
