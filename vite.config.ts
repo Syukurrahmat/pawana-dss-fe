@@ -84,27 +84,6 @@ export default defineConfig({
 				login: '/index.login.html',
 				verify: '/index.verify.html',
 			},
-			// plugins: [
-			// 	{
-			// 		name: 'custom-html-paths',
-			// 		generateBundle(_, bundle) {
-			// 			const htmlFileMapping: Record<string, string> = {
-			// 				'src/index.app.html': 'index.html',
-			// 				'src/index.login.html': 'login/index.html',
-			// 				'src/index.verify.html': 'verify/index.html',
-			// 			};
-
-			// 			console.log(_)
-			// 			console.log(bundle)
-			// 			// for (const [fileName, outputItem] of Object.entries(bundle)) {
-			// 			// 	const gg = 
-			// 			// 	if (htmlFileMapping[fileName]) {
-			// 			// 		outputItem.fileName = htmlFileMapping[fileName];
-			// 			// 	}
-			// 			// }
-			// 		},
-			// 	}
-			// ]
 		}
 	},
 	resolve: {
