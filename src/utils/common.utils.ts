@@ -158,3 +158,16 @@ export const getCO2Properties = (category?: string) => {
 }
 
 
+export const getUserRoleName = (role: UserRole) => {
+    const roleMap: Record<UserRole, string> = {
+        admin: 'Administrator',
+        gov: 'Pemerintah',
+        manager: 'Pemilik Usaha',
+        regular: 'Masyarakat Umum',
+    };
+
+    return roleMap[role]
+}
+
+
+export const responsiveCardSize = {base : 'sm', md : 'md'}
