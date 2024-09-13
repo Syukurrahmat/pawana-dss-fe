@@ -1,20 +1,20 @@
 import DataTable from '@/components/DataTable';
 import InputSearch from '@/components/Form/inputSearch';
-import LoadingComponent from '@/components/Loading/LoadingComponent';
 import MyMap from '@/components/Maps';
 import { TagCompanyType } from '@/components/Tags/index.tags';
 import CompanyIcon from '@/components/common/CompanyIcon';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
+import LoadingComponent from '@/components/common/LoadingComponent';
 import { StatWithIcon } from '@/components/common/StatWithIcon';
 import { companyTypeAttr } from '@/constants/enumVariable';
 import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { fetcher } from '@/utils/fetcher';
-import { Avatar, Button, Flex, Grid, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
-import { IconBuildingFactory2, IconExternalLink, IconPlus, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
+import { Avatar, Button, Flex, Grid, HStack, Skeleton, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconBuildingFactory2, IconExternalLink, IconPlus } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
-import { Link as RLink } from 'react-router-dom';
+import { Link as RLink, useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
 
 const columnHelper = createColumnHelper<CompanyData>();
@@ -85,65 +85,62 @@ export default function CompaniesManagement() {
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(['list', 'map']);
 	const { roleIs } = useUser();
 	const { data } = useSWR<CompaniesSummary>('/companies/overview', fetcher);
+	const navigate = useNavigate();
 
 	if (!data) return <LoadingComponent />;
 
 	return (
 		<Flex gap="2" flexDir="column">
-			<HStack w="full" spacing="4" align="start">
-				<HeadingWithIcon Icon={<IconUsersGroup />} text="Daftar Perusahaan" />
-				<Spacer />
-				<InputSearch
-					_onSubmit={null}
-					w="200px"
-					bg="white"
-					placeholder="Cari .."
+			<HStack w="full" spacing="4" align="start" wrap="wrap">
+				<HeadingWithIcon
+					Icon={<IconBuildingFactory2 />}
+					text="Daftar Perusahaan"
 				/>
-				{roleIs('admin') && (
-					<RLink to="./create">
+				<Spacer flexGrow="999" />
+				<HStack wrap="wrap" justify="end" flexBasis="450px" flexGrow="1">
+					<InputSearch
+						w="225px"
+						flex="1 0 "
+						bg="white"
+						placeholder="Cari .."
+						_onSubmit={null}
+					/>
+					{roleIs('admin') && (
 						<Button
 							leftIcon={<IconPlus size="20px" />}
 							colorScheme="green"
 							children="Tambah Perusahaan"
+							onClick={() => navigate('./create')}
 						/>
-					</RLink>
-				)}
+					)}
+				</HStack>
 			</HStack>
-			<Flex
-				gap="3"
-				direction={['column', 'row']}
-				justify="space-between"
-				flexWrap="wrap"
+
+			<Grid
+				mt="2"
+				gap="2"
+				gridTemplateColumns="repeat(auto-fit, minmax(140px, 1fr))"
 			>
 				<StatWithIcon
-					flex="1 0 180px"
 					icon={IconBuildingFactory2}
 					count={data.all}
 					label="Total Perusahaan"
 					variant="solid"
 				/>
-
-				<Grid
-					gap="3"
-					flex="20 0 0px"
-					gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
-				>
-					{data.type.map((e, i) => {
-						const { color, name, icon } = companyTypeAttr[e.value];
-
-						return (
-							<StatWithIcon
-								key={i}
-								flex="1 0 180px"
-								icon={icon}
-								count={e.count}
-								label={name}
-								color={color}
-							/>
-						);
-					})}
-				</Grid>
-			</Flex>
+				{data.type.map((e, i) => {
+					const { color, name, icon } = companyTypeAttr[e.value];
+					return (
+						<StatWithIcon
+							key={i}
+							h="100%"
+							icon={icon}
+							count={e.count}
+							label={name}
+							color={color}
+						/>
+					);
+				})}
+			</Grid>
 			<Tabs
 				display="flex"
 				flexDir="column"
@@ -152,7 +149,7 @@ export default function CompaniesManagement() {
 				onChange={handleTabsChange}
 				isLazy
 			>
-				<TabList>
+				<TabList flexWrap="wrap" rowGap="4px">
 					<Tab>Daftar Perusahaan</Tab>
 					<Tab>Lihat Dalam Maps</Tab>
 				</TabList>
@@ -164,7 +161,7 @@ export default function CompaniesManagement() {
 							columns={columns}
 						/>
 					</TabPanel>
-					<TabPanel px="0" h="100%">
+					<TabPanel px="0"  pb='0' flexGrow="1">
 						<NodesMapView />
 					</TabPanel>
 				</TabPanels>
@@ -174,8 +171,12 @@ export default function CompaniesManagement() {
 }
 
 function NodesMapView() {
-	const { data } = useSWR<Paginated<CompanyData>>('/companies?all=true', fetcher);
-	if (!data) return 'loading slurr';
-
-	return <MyMap h="100%" minH="350px" scrollWheelZoom={false} data={data.rows} />;
+	const { data } = useSWR<Paginated<CompanyData>>(
+		'/companies?all=true',
+		fetcher
+	);
+	const mapHeight = '450px'
+	
+	if (!data) return  <Skeleton h={mapHeight} rounded='md'/>
+	return <MyMap h={mapHeight} scrollWheelZoom={false} data={data.rows} />;
 }

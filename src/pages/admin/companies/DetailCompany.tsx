@@ -1,7 +1,7 @@
-import LoadingComponent from '@/components/Loading/LoadingComponent';
 import { ButtonViewDashboard } from '@/components/common/ChangeActiveDashButton';
 import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 import HeadingWithIcon from '@/components/common/HeadingWithIcon';
+import LoadingComponent from '@/components/common/LoadingComponent';
 import SectionTitle from '@/components/common/SectionTitle';
 import TagWithIcon from '@/components/common/TagWithIcon';
 import UserCard from '@/components/managerCard';
@@ -10,7 +10,7 @@ import useUser from '@/hooks/useUser';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { fetcher } from '@/utils/fetcher';
 import { Box, Container, HStack, Heading, Spacer, Text } from '@chakra-ui/react'; //prettier-ignore
-import { IconAddressBook, IconCalendar, IconEdit, IconLock, IconTag, IconTextCaption, IconUserHeart } from '@tabler/icons-react'; //prettier-ignore
+import { IconAddressBook, IconBuildingFactory2, IconCalendar, IconEdit, IconLock, IconTag, IconTextCaption } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
@@ -25,14 +25,14 @@ export default function DetailCompany() {
 		fetcher
 	);
 
-	if(error) throw error
+	if (error) throw error;
 	if (!data) return <LoadingComponent />;
 
 	return (
 		<Box>
-			<HeadingWithIcon Icon={<IconUserHeart />} text="Detail Perusahaan" />
-			<Container mt="8" maxW="container.md">
-				<HStack justify="space-between">
+			<HeadingWithIcon Icon={<IconBuildingFactory2 />} text="Detail Perusahaan" />
+			<Container mt="6" px="0" maxW="container.md">
+				<HStack justify="space-between" wrap='wrap' spacing='6'>
 					<Box>
 						<Heading fontSize="3xl" children={data.name} />
 						<HStack mt="2">
@@ -49,27 +49,28 @@ export default function DetailCompany() {
 								textTransform="capitalize"
 								children={data.type}
 							/>
-							 
 						</HStack>
 						{['admin', 'gov'].includes(user.role) && (
 							<UserCard mt="3" data={data.manager} label="manager" />
 						)}
 					</Box>
 					<Spacer />
-					<ButtonViewDashboard
-						alignSelf="start"
-						companyId={data.companyId}
-					/>
-					{roleIs(['admin', 'manager']) && (
-						<EditGroupButton
-							data={data}
-							mutate={mutate}
-							colorScheme="blue"
+					<HStack>
+						<ButtonViewDashboard
 							alignSelf="start"
-							leftIcon={<IconEdit size="16" />}
-							children={'Sunting Perusahaan'}
+							companyId={data.companyId}
 						/>
-					)}
+						{roleIs(['admin', 'manager']) && (
+							<EditGroupButton
+								data={data}
+								mutate={mutate}
+								colorScheme="blue"
+								alignSelf="start"
+								leftIcon={<IconEdit size="16" />}
+								children={'Sunting Perusahaan'}
+							/>
+						)}
+					</HStack>
 				</HStack>
 
 				<SectionTitle IconEl={IconAddressBook}>Alamat</SectionTitle>
@@ -79,7 +80,7 @@ export default function DetailCompany() {
 					Deskripsi Perusahaan
 				</SectionTitle>
 				<Text>{data.description}</Text>
-				
+
 				<CompanySubscribedNodesList data={data} mutate={mutate} />
 
 				{roleIs(['admin', 'manager']) && (

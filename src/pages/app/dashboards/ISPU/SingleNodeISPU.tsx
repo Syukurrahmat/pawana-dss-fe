@@ -22,9 +22,9 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 				<>
 					<FinalISPUCard value={value[0]} />
 
-					<HStack justify="space-evenly" w="full">
+					<HStack justify="space-evenly" align='start' wrap="wrap" w="full">
 						{value.map((e, i) => (
-							<EachISPUCard value={e} key={i} />
+							<EachISPUCard flex='1 1 180px'  maxW='180px' value={e} key={i} />
 						))}
 					</HStack>
 				</>
@@ -80,10 +80,13 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 							</Text>
 							<MyLineChart
 								simple
-								gasType='PM2.5'
+								gasType="PM2.5"
 								data={tren}
 								dataKeyTypeAndFunc={{
-									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM25')
+									func: (e) =>
+										(e.value || []).find(
+											(e) => e.pollutant == 'PM25'
+										),
 								}}
 							/>
 						</Box>
@@ -93,10 +96,13 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 							</Text>
 							<MyLineChart
 								simple
-								gasType='PM10'
+								gasType="PM10"
 								data={tren}
 								dataKeyTypeAndFunc={{
-									func: (e) => (e.value || []).find((e) => e.pollutant == 'PM100')
+									func: (e) =>
+										(e.value || []).find(
+											(e) => e.pollutant == 'PM100'
+										),
 								}}
 							/>
 						</Box>
@@ -140,7 +146,7 @@ function EachISPUCard({ value, ...r }: StackProps & { value: ISPUValueItem }) {
 					fontWeight="600"
 					children={ispu <= 300 ? ispu : '300+'}
 				/>
-				<Text fontSize="sm">
+				<Text fontSize="sm" mt='-1' noOfLines={1}>
 					{pollutantValue.toFixed(2)} {UNIT_PM}
 				</Text>
 			</Box>
@@ -167,29 +173,30 @@ export function FinalISPUCard({
 			<VStack
 				rounded="3"
 				align="start"
-				boxSize="95px"
+				boxSize={{ base: '80px', md: '95px' }}
 				p="2"
 				spacing="0"
 				bg={colorScheme + '.200'}
 			>
 				<Text fontStyle="italic" children="ISPU" />
 				<Spacer />
-				<Text textAlign="center" w="full" fontSize="4xl" fontWeight="700">
+				<Text textAlign="center" w="full" fontSize="4xl" fontWeight="600">
 					{ispu <= 300 ? ispu : '300+'}
 				</Text>
 			</VStack>
 
-			<VStack align="start" spacing="2">
+			<VStack align="start" spacing="2" flex="1 0 0">
 				<Heading as="p" size="lg">
 					{category}
 				</Heading>
 				<Tag colorScheme={colorScheme} variant="outline">
-					Polutan Utama : {pollutant}
+					<Text lineHeight="1.5em">
+						Polutan Utama : <Text fontWeight='600' as='span'> {pollutant}</Text>
+					</Text>
 				</Tag>
 			</VStack>
-			<Spacer />
 			<Icon
-				boxSize="90px"
+				boxSize={{ base: '70px', md: '90px' }}
 				strokeWidth="1.5px"
 				color={colorScheme + '.400'}
 				as={icon}

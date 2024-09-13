@@ -69,11 +69,11 @@ export default function CreateCompany() {
 	return (
 		<Box>
 			<Heading size="lg">Buat Perusahaan</Heading>
-			<Text>
+			<Text color='dimmed'>
 				Buat Perusahaan dan dapatkan dukungan keputusan untuk perusahaan Anda
 			</Text>
 
-			<Container maxW="container.sm" mt="6">
+			<Container px='0' maxW="container.sm" mt="6">
 				{createdStatus === undefined ? (
 					<form onSubmit={handleSubmit} className="my-form">
 						<VStack mx="auto" spacing="2">

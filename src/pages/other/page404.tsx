@@ -1,4 +1,4 @@
-import logo from '@/assets/icon-white.svg';
+import logo from '@/assets/logo/logo-white.svg';
 import {
 	Button,
 	Card,

@@ -1,5 +1,5 @@
 import { SelectUserOrCompanyView } from '@/components/common/AdminInforCard';
-import LoadingComponent from '@/components/Loading/LoadingComponent';
+import LoadingComponent from '@/components/common/LoadingComponent';
 import useUser, { User } from '@/hooks/useUser';
 import { fetcher } from '@/utils/fetcher';
 import { Flex, VStack } from '@chakra-ui/react'; // prettier-ignore

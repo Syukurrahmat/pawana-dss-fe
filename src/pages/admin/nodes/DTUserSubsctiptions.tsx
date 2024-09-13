@@ -7,7 +7,7 @@ import useConfirmDialog from '@/hooks/useConfirmDialog';
 import { useMyToasts } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { myAxios } from '@/utils/fetcher';
-import { Button, HStack, IconButton, Link, Spacer, Tag } from '@chakra-ui/react'; //prettier-ignore
+import { Button, HStack, IconButton, Link, Tag } from '@chakra-ui/react'; //prettier-ignore
 import { IconExternalLink, IconTrash, IconUsersGroup } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
@@ -48,25 +48,7 @@ export default function UserSubsctiptionsList({
 					}),
 		});
 	};
-	const handleDeleteAllSubs = () => {
-		confirmDialog({
-			title: 'Hapus Semua Pengguna',
-			message:
-				'Hapus Semua pengguna dari daftar pelanggan node ' + data.name,
-			confirmButtonColor: 'red',
-			onConfirm: async () =>
-				myAxios
-					.delete(`${apiURL}`)
-					.then(() => {
-						mutate((e) => typeof e == 'string' && e.startsWith(apiURL));
-						dataPageMutate();
-						toast.success('Berhasil menghapus subscription pengguna');
-					})
-					.catch(() => {
-						toast.error('Gagal menghapus subscription pengguna');
-					}),
-		});
-	};
+	 
 
 	const columns = useMemo(
 		() => [
@@ -125,15 +107,10 @@ export default function UserSubsctiptionsList({
 			</SectionTitle>
 
 			{!!countUserSubscription && (
-				<HStack mt="4" justify="space-between">
-					<Button
-						colorScheme="red"
-						leftIcon={<IconTrash size="18" />}
-						onClick={handleDeleteAllSubs}
-						children="Hapus Semua Pengguna"
-					/>
-					<Spacer />
+				<HStack mt="4" justify='end' >
 					<InputSearch
+						w="300px"
+						flex="1 0 300px"
 						rounded="md"
 						bg="white"
 						placeholder="Cari Pengguna"

@@ -1,4 +1,4 @@
-import opssImage from '@/assets/opss.png';
+import opssImage from '@/assets/images/opss.png';
 
 import NodeSubscription from '@/components/common/AddNodeSubscription';
 import useUser from '@/hooks/useUser';
@@ -9,6 +9,7 @@ import SingleNodeGRK from './GRK/SingleNodeGRK';
 import MultiNodeISPU from './ISPU/MultiNodeISPU';
 import SingleNodeISPU from './ISPU/SingleNodeISPU';
 import RecomendationSection from './RecomendationSection';
+import { responsiveCardSize } from '@/utils/common.utils';
 
 export type SingleISPU = SingleNodeAnalysisItem<ISPUValue>;
 export type MutiISPU = NodeStat<ISPUValue>;
@@ -21,33 +22,35 @@ interface ISPUCard {
 	type: NodeGroupType;
 }
 
-const iconAndTitle = {
-	indoor: {
-		icon: IconBuilding,
-		color: 'blue',
-		title: 'Kualitas udara di perusahaan',
-	},
-	outdoor: {
-		icon: IconTrees,
-		color: 'green',
-		title: 'Kualitas udara di sekitar perusahaan',
-	},
-	arround: {
-		icon: IconTrees,
-		color: 'green',
-		title: 'Kualitas udara di sekitar',
-	},
-};
+
 
 export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 	const { data, countNodes, analiysisDataType } = dt;
+
+	const iconAndTitle = {
+		indoor: {
+			icon: IconBuilding,
+			color: 'blue',
+			title: 'Udara di perusahaan',
+		},
+		outdoor: {
+			icon: IconTrees,
+			color: 'green',
+			title: 'Udara di sekitar perusahaan',
+		},
+		arround: {
+			icon: IconTrees,
+			color: 'green',
+			title: 'Udara di sekitar',
+		},
+	};
 
 	const isSingleNode = analiysisDataType == 'single';
 	const countNonActiveNode = countNodes.all - countNodes.active;
 	const { icon, color, title } = iconAndTitle[type];
 
 	return (
-		<Card>
+		<Card size={responsiveCardSize}>
 			<CardHeader pb="1">
 				<HStack>
 					<Center
@@ -60,10 +63,10 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 						children={<Icon as={icon} boxSize="28px" />}
 					/>
 					<Box>
-						<Heading size="md" children={title} />
+						<Heading size="md" fontWeight='600' children={title} />
 						{!!data && (
-							<HStack spacing="4">
-								<HStack>
+							<HStack rowGap='1' color='dimmed'  columnGap='4' wrap='wrap'>
+								<HStack >
 									<Icon as={IconCircleDot} />
 									<Text>
 										{isSingleNode
@@ -72,7 +75,7 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 									</Text>
 								</HStack>
 								{!!countNonActiveNode && (
-									<HStack>
+									<HStack  >
 										<Icon as={IconCircleX} />
 										<Text>{countNonActiveNode} Node Tidak Aktif</Text>
 									</HStack>
@@ -88,8 +91,8 @@ export default function NodesGroupInfo({ data: dt, type }: ISPUCard) {
 					<>
 						<Stack
 							divider={<StackDivider borderColor="gray.200" />}
-							direction="row"
-							spacing="5"
+							direction={{ base: 'column', lg: 'row' }}
+							spacing='4'
 						>
 							{/* ISPU  */}
 

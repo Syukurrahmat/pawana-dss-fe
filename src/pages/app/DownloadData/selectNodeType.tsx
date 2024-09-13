@@ -9,9 +9,9 @@ export default function SelectNodeType({
 	value: string;
 }) {
 	return (
-		<HStack shadow="xs" spacing="4" bg="gray.50" py="4" px="4" rounded="md">
+		<HStack  wrap='wrap' shadow="xs" spacing="4" bg="gray.50" py="4" px="4" rounded="md">
 			<Text fontWeight="600">Pilih Jenis Node :</Text>
-			<RadioGroup onChange={onChange} value={value} as={HStack}>
+			<RadioGroup wrap='wrap' onChange={onChange} value={value} as={HStack}>
 				{[
 					{ label: 'Node Publik', key: 'public' },
 					{ label: 'Node Private', key: 'private' },

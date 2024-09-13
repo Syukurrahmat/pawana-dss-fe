@@ -27,12 +27,12 @@ export default function FilterByDistance({
 	return (
 		<Box w="full">
 			<Collapse in={isOpen} animateOpacity>
-				<HStack spacing="3" mt="4">
+				<HStack spacing="2" mt="4" flexWrap="wrap">
 					<Box as="label" flexGrow="1">
 						<Text mb="1">Perusahaan</Text>
 
 						<SelectFromDataTable
-							w="200px"
+							w="full"
 							fontWeight="400"
 							itemName="Perusahaan"
 							hiddenTitleButton={true}
@@ -52,6 +52,7 @@ export default function FilterByDistance({
 					<Box as="label" flexGrow="1">
 						<Text mb="1">Jarak</Text>
 						<Select
+							w="full"
 							value={filter.distance}
 							onChange={(e) => {
 								setFilter((f) => ({

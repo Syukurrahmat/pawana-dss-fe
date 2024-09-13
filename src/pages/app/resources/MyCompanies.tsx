@@ -12,7 +12,7 @@ export default function MyCompanies() {
 			<HStack flexWrap='wrap' justify="space-between">
 				<Box>
 					<Heading size="lg">Perusahaan saya</Heading>
-					<Text>Daftar perusahaan yang Anda Buat</Text>
+					<Text color='dimmed'>Daftar perusahaan yang Anda Buat</Text>
 				</Box>
 				<Link to={'/companies/create'}>
 					<Button

@@ -2,7 +2,9 @@ import {
 	eventLogStatusAttr,
 	eventLogsTypeAttr,
 } from '@/constants/enumVariable';
-import { Alert, Box, Card, CardBody, Center, Flex, Grid, HStack, Icon, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import useUser from '@/hooks/useUser';
+import { responsiveCardSize } from '@/utils/common.utils';
+import { Alert, Box, Card, CardBody, Center, Flex, Grid, HStack, Icon, Spacer, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import idLocale from '@fullcalendar/core/locales/id';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
@@ -23,23 +25,20 @@ export function EventLogSummaryCard({
 	periode,
 	dateRange,
 }: EventLogSummaryCard) {
+	const { screenType } = useUser();
 	const { eventLogs, count : {countStatus, countType, all : countAll}, eventIdLongestEvent: longestEventId,} = data; //prettier-ignore
 
 	const production = countType.find((e) => e.type == 'production');
 
 	return (
-		<Card size="sm" shadow="xs" p="1">
-			<CardBody gap="4" as={Flex}>
+		<Card size={responsiveCardSize} shadow="xs">
+			<CardBody>
 				{countAll ? (
-					<>
-						<Box flex="1 1 0" minH="350px" overflow="hidden">
-							<Calendar
-								periode={periode}
-								data={data}
-								dateRange={dateRange}
-							/>
-						</Box>
-						<VStack flex="1 1 0" align="stretch">
+					<Flex
+						direction={screenType == 'desktop' ?  'row-reverse' : 'column'}
+						gap="4"
+					>
+						<VStack flex="1 0 0" align="stretch">
 							<Alert
 								variant="top-accent"
 								bg="blue.100"
@@ -48,6 +47,8 @@ export function EventLogSummaryCard({
 								roundedBottom="md"
 								fontSize="md"
 								justifyContent="space-between"
+								flexWrap="wrap"
+								gap="6"
 							>
 								<HStack align="end">
 									<Center
@@ -56,7 +57,7 @@ export function EventLogSummaryCard({
 										bg="blue.200"
 										boxSize="50px"
 										fontSize="3xl"
-										fontWeight="700"
+										fontWeight="600"
 										children={countAll}
 									/>
 									<Box>
@@ -86,7 +87,7 @@ export function EventLogSummaryCard({
 								</VStack>
 							</Alert>
 							<Text fontWeight="600">Kegiatan Produksi</Text>
-							<HStack px="3" justify="space-evenly">
+							<HStack px="3" justify="space-evenly" wrap="wrap">
 								<HStack>
 									<Center
 										p="3"
@@ -100,7 +101,7 @@ export function EventLogSummaryCard({
 										</Center>
 										<Text
 											fontSize="3xl"
-											fontWeight="700"
+											fontWeight="600"
 											children={production?.count || 0}
 										/>
 										<Text
@@ -123,54 +124,64 @@ export function EventLogSummaryCard({
 
 										<Text
 											fontSize="3xl"
-											fontWeight="700"
+											fontWeight="600"
 											children={production?.days || 0}
 										/>
 										<Text fontWeight="600" children="Hari produksi" />
 									</Center>
 								</HStack>
 							</HStack>
-							<Text fontWeight="600">
-								Jumlah Aktivitas berdasarkan jenis aktivitas
-							</Text>
+							{countType.filter(
+								(e) => e.count && e.type !== 'production'
+							).length > 0 && (
+								<>
+									<Text fontWeight="600">
+										Jumlah Aktivitas berdasarkan jenis aktivitas
+									</Text>
 
-							<Grid
-								justifyContent="center"
-								templateColumns="repeat(auto-fit, minmax(160px, 120px))"
-								gap="2"
-							>
-								{countType
-									.filter((e) => e.count && e.type !== 'production')
-									.map((e) => {
-										const { color, icon, name } =
-											eventLogsTypeAttr[e.type];
+									<Grid
+										justifyContent="center"
+										templateColumns="repeat(auto-fit, minmax(160px, 120px))"
+										gap="2"
+									>
+										{countType
+											.filter(
+												(e) => e.count && e.type !== 'production'
+											)
+											.map((e) => {
+												const { color, icon, name } =
+													eventLogsTypeAttr[e.type];
 
-										return (
-											<Box
-												p="2"
-												bg={color + '.100'}
-												rounded="md"
-												key={e.type}
-											>
-												<HStack justify="center" spacing="1">
-													<Text
-														fontSize="2xl"
-														fontWeight="600"
-														children={e.count}
-													/>
-													<Icon
-														as={icon}
-														color={color + '.500'}
-														boxSize="23px"
-													/>
-												</HStack>
-												<Text textAlign="center">
-													{e.days} Hari {name.toLowerCase()}
-												</Text>
-											</Box>
-										);
-									})}
-							</Grid>
+												return (
+													<Box
+														p="2"
+														bg={color + '.100'}
+														rounded="md"
+														key={e.type}
+													>
+														<HStack justify="center" spacing="1">
+															<Text
+																fontSize="2xl"
+																fontWeight="600"
+																children={e.count}
+															/>
+															<Icon
+																as={icon}
+																color={color + '.500'}
+																boxSize="23px"
+															/>
+														</HStack>
+														<Text textAlign="center">
+															{e.days} Hari {name.toLowerCase()}
+														</Text>
+													</Box>
+												);
+											})}
+									</Grid>
+								</>
+							)}
+
+							<Spacer />
 
 							{!!longestEventId && (
 								<>
@@ -185,9 +196,33 @@ export function EventLogSummaryCard({
 								</>
 							)}
 						</VStack>
-					</>
+
+						{screenType !== 'desktop' && (
+							<Text fontWeight="600">Kegiatan Dalam Kalender</Text>
+						)}
+
+						<Box
+							rounded="lg"
+							flex="1 0 0"
+							h="auto"
+							minH="400px"
+							overflow="hidden"
+						>
+							<Calendar
+								periode={periode}
+								data={data}
+								dateRange={dateRange}
+							/>
+						</Box>
+					</Flex>
 				) : (
-					<HStack justify="center" w='full' py="10" spacing="3" color="gray.500">
+					<HStack
+						justify="center"
+						w="full"
+						py="10"
+						spacing="3"
+						color="gray.500"
+					>
 						<Icon as={IconClipboardOff} boxSize="45px" />
 						<Text fontSize="xl" fontWeight="500">
 							Tidak Ada Catatan Aktivitas
@@ -207,7 +242,7 @@ function Calendar({ dateRange, periode, data }: EventLogSummaryCard) {
 		.isSame(moment().startOf(periode as any));
 
 	return (
-		<Box h="full">
+		<>
 			<FullCalendar
 				firstDay={0}
 				ref={calendarRef}
@@ -216,6 +251,7 @@ function Calendar({ dateRange, periode, data }: EventLogSummaryCard) {
 				initialDate={endDate}
 				plugins={[dayGridPlugin]}
 				initialView="dayGridYear"
+				height="100%"
 				monthStartFormat={{
 					month: 'short',
 					day: 'numeric',
@@ -242,6 +278,6 @@ function Calendar({ dateRange, periode, data }: EventLogSummaryCard) {
 				}
 				`}
 			</style>
-		</Box>
+		</>
 	);
 }

@@ -1,6 +1,6 @@
 import DataTable from '@/components/DataTable';
 import InputSearch from '@/components/Form/inputSearch';
-import LoadingComponent from '@/components/Loading/LoadingComponent';
+import LoadingComponent from '@/components/common/LoadingComponent';
 import MyMap from '@/components/Maps';
 import { TagNodeStatus } from '@/components/Tags/index.tags';
 import CompanyIcon from '@/components/common/CompanyIcon';
@@ -12,14 +12,13 @@ import { useHashBasedTabsIndex } from '@/hooks/useHashBasedTabsIndex';
 import useUser from '@/hooks/useUser';
 import { toFormatedDatetime } from '@/utils/dateFormating';
 import { fetcher } from '@/utils/fetcher';
-import { Box, Button, Flex, Grid, HStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Button, Flex, Grid, HStack, Skeleton, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconCircleDot, IconExternalLink, IconPlus } from '@tabler/icons-react'; //prettier-ignore
 import { createColumnHelper } from '@tanstack/react-table'; //prettier-ignore
-import { Link as RLink } from 'react-router-dom';
+import { Link as RLink, useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
 
 const columnHelper = createColumnHelper<NodeData>();
-
 const columnsPublicNodeTable = [
 	columnHelper.accessor('name', {
 		header: 'Nama',
@@ -61,7 +60,6 @@ const columnsPublicNodeTable = [
 		),
 	}),
 ];
-
 export const columPrivateNodeTable = [
 	...columnsPublicNodeTable.slice(0, 2),
 
@@ -79,113 +77,113 @@ export const columPrivateNodeTable = [
 	...columnsPublicNodeTable.slice(4),
 ];
 
-const tabsList = [
-	{ label: 'Daftar Node Publik', key: 'public' },
-	{ label: 'Daftar Node Privat', key: 'private' },
-	{ label: 'Lihat Dalam Maps', key: 'map' },
-];
-
 export default function NodeManagement() {
 	const { roleIs } = useUser();
+	const navigate = useNavigate();
+
+	const tabsList = [
+		{ label: 'Daftar Node Publik', key: 'public' },
+		{ label: 'Daftar Node Privat', key: 'private' },
+		{ label: 'Lihat Dalam Maps', key: 'map' },
+	];
+
 	const tabs = roleIs('manager') ? [tabsList[1]] : tabsList;
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(
 		tabs.map((e) => e.key)
 	);
 
 	const { data } = useSWR<NodesSummary>('/nodes/overview', fetcher);
-
 	if (!data) return <LoadingComponent />;
 
 	const summaryList = [
 		{
 			label: 'Status Node',
 			data: data.status,
-			flex: '1 0 30px',
+			flex: '1 0 100px',
+		},
+		{
+			label: 'Kepemilikan Node',
+			data: data.ownership,
+			flex: '1 0 100px',
 		},
 	];
 
-	if (!roleIs('manager'))
-		summaryList.unshift({
-			label: 'Kepemilikan Node',
-			data: data.ownership,
-			flex: '1 0 30px',
-		});
-
 	return (
 		<Flex gap="2" flexDir="column">
-			<HStack w="full" spacing="4" align="start">
+			<HStack w="full" spacing="4" align="start" wrap="wrap">
 				<HeadingWithIcon Icon={<IconCircleDot />} text="Daftar Node" />
-				<Spacer />
-				<InputSearch
-					w="200px"
-					bg="white"
-					placeholder="Cari .."
-					_onSubmit={null}
-				/>
-				{roleIs(['admin', 'manager']) && (
-					<RLink to="./create">
+
+				<Spacer flexGrow="999" />
+				<HStack wrap="wrap" justify="end" flexBasis="450px" flexGrow="1">
+					<InputSearch
+						w="225px"
+						flex="1 0 "
+						bg="white"
+						placeholder="Cari .."
+						_onSubmit={null}
+					/>
+					{roleIs('admin') && (
 						<Button
 							leftIcon={<IconPlus size="20px" />}
 							colorScheme="green"
 							children="Tambah Node"
+							onClick={() => navigate('./create')}
 						/>
-					</RLink>
-				)}
+					)}
+				</HStack>
 			</HStack>
+
 			<Flex
-				gap="3"
+				mt="2"
+				gap="2"
 				direction={['column', 'row']}
 				justify="space-between"
-				flexWrap="wrap"
+				align="stretch"
 			>
 				<StatWithIcon
-					flex="0 0 180px"
+					height="initial"
+					flexBasis={['100px', '150px', null, '200px']}
 					icon={IconCircleDot}
 					count={data.all}
 					label="Total Node"
-					h="full"
 					variant="solid"
 					bg="blue.400"
 				/>
 
-				<Flex flex="1 1 0" gap="3">
-					{summaryList.map(({ label, data, flex }) => (
-						<Box
-							flex={flex}
-							maxW="600px"
-							key={label}
-							pb="2"
-							rounded="md"
-							px="3"
-							border="1px solid"
-							borderColor="gray.300"
+				{summaryList.map(({ label, data, flex }) => (
+					<Box
+						flex={flex}
+						key={label}
+						p="2"
+						rounded="md"
+						border="1px solid"
+						borderColor="gray.300"
+					>
+						<Text fontWeight="600" mb="1" children={label} />
+						<Grid
+							gap="3"
+							gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
 						>
-							<Text fontWeight="600" py="1" children={label} />
-							<Grid
-								gap="3"
-								gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
-							>
-								{data.map((e, i) => {
-									const { color, name, icon } = {
-										...nodeStatusAttr,
-										...nodeTypeAttr,
-									}[e.value];
+							{data.map((e, i) => {
+								const { color, name, icon } = {
+									...nodeStatusAttr,
+									...nodeTypeAttr,
+								}[e.value];
 
-									return (
-										<StatWithIcon
-											key={i}
-											flex="1 0 180px"
-											icon={icon}
-											color={color}
-											count={e.count}
-											label={name}
-										/>
-									);
-								})}
-							</Grid>
-						</Box>
-					))}
-				</Flex>
+								return (
+									<StatWithIcon
+										key={i}
+										flex="1 0 180px"
+										icon={icon}
+										color={color}
+										count={e.count}
+										label={name}
+									/>
+								);
+							})}
+						</Grid>
+					</Box>
+				))}
 			</Flex>
 
 			<Tabs
@@ -196,7 +194,7 @@ export default function NodeManagement() {
 				onChange={handleTabsChange}
 				isLazy
 			>
-				<TabList>
+				<TabList flexWrap="wrap" rowGap="4px">
 					{tabs.map((e) => (
 						<Tab key={e.key}>{e.label}</Tab>
 					))}
@@ -216,7 +214,7 @@ export default function NodeManagement() {
 							columns={columPrivateNodeTable}
 						/>
 					</TabPanel>
-					<TabPanel px="0" h="100%">
+					<TabPanel px="0" pb='0' flexGrow='1' >
 						<NodesMapView />
 					</TabPanel>
 				</TabPanels>
@@ -227,8 +225,10 @@ export default function NodeManagement() {
 
 function NodesMapView() {
 	const { data } = useSWR<Paginated<NodeData>>('/nodes?all=true', fetcher);
-	if (!data) return 'loading slurr';
+	const mapHeight = '450px'
 
+	if (!data) return  <Skeleton h={mapHeight} rounded='md'/>
+	
 	const indoorNodeInCompanies = Object.values(
 		data.rows
 			.filter((e) => e.companyId && e.owner)
@@ -252,8 +252,7 @@ function NodesMapView() {
 
 	return (
 		<MyMap
-			h="100%"
-			minH="350px"
+			h={mapHeight}
 			companiesData={indoorNodeInCompanies}
 			data={data.rows.filter((e) => !e.companyId)}
 		/>

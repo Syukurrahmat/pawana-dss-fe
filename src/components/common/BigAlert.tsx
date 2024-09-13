@@ -1,5 +1,17 @@
-import { Alert, AlertDescription, AlertIcon, AlertProps, AlertTitle, Button, HStack } from '@chakra-ui/react';
-import { IconChevronLeft, IconCirclePlus, IconLayoutNavbarExpand } from '@tabler/icons-react';
+import {
+	Alert,
+	AlertDescription,
+	AlertIcon,
+	AlertProps,
+	AlertTitle,
+	Button,
+	HStack,
+} from '@chakra-ui/react';
+import {
+	IconChevronLeft,
+	IconCirclePlus,
+	IconLayoutNavbarExpand,
+} from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export interface BigAlert extends AlertProps {
@@ -10,7 +22,12 @@ export interface BigAlert extends AlertProps {
 	itemName?: string;
 }
 export const BigAlert = ({
-	title, description, detailPageURL, onCreateAgain, itemName, ...rest
+	title,
+	description,
+	detailPageURL,
+	onCreateAgain,
+	itemName,
+	...rest
 }: BigAlert) => {
 	const navigate = useNavigate();
 
@@ -30,26 +47,34 @@ export const BigAlert = ({
 		>
 			<AlertIcon boxSize="50px" mr={0} />
 			<AlertTitle fontSize="xl" children={title} />
-			<AlertDescription maxW="lg" whiteSpace='pre-line' children={description} />
-			<HStack mt="4">
+			<AlertDescription
+				maxW="lg"
+				whiteSpace="pre-line"
+				children={description}
+			/>
+			<HStack mt="4" wrap="wrap" justify="center">
 				<Button
 					leftIcon={<IconChevronLeft size="20" />}
 					colorScheme="blue"
 					variant="outline"
 					children="Kembali"
-					onClick={() => navigate(-1)} />
+					onClick={() => navigate(-1)}
+				/>
 				<Button
 					leftIcon={<IconCirclePlus size="20" />}
 					colorScheme="blue"
 					children="Buat lagi"
-					onClick={onCreateAgain} />
+					onClick={onCreateAgain}
+				/>
+
 				{!!detailPageURL && !!itemName && rest.status === 'success' && (
 					<Link to={detailPageURL}>
 						<Button
 							leftIcon={<IconLayoutNavbarExpand size="20" />}
 							colorScheme="blue"
 							children={'Lihat ' + itemName}
-							onClick={onCreateAgain} />
+							onClick={onCreateAgain}
+						/>
 					</Link>
 				)}
 			</HStack>

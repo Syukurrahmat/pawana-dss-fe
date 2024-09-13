@@ -1,8 +1,8 @@
-import logo from '@/assets/icon-white.svg';
 import InputPassword from '@/components/Form/inputPassword';
-import { HOST_URL } from '@/constants/config';
+import { SERVER_URL } from '@/constants/config';
 import { Box, BoxProps, Button, Card, CardBody, CardHeader, Center, Container, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Image, Input, Text, VStack, useToast } from '@chakra-ui/react'; // prettier-ignore
 import axios from 'axios';
+import logo from '@/assets/logo/logo-white.svg';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -26,7 +26,7 @@ export default function LoginPage() {
 		}),
 		onSubmit: async (values) => {
 			return axios
-				.post(HOST_URL + '/auth/login', values)
+				.post(SERVER_URL + '/auth/login', values, { withCredentials: true })
 				.then(() => {
 					window.location.href = '/';
 				})
@@ -45,7 +45,7 @@ export default function LoginPage() {
 
 	const SupportedBy = (p: BoxProps) => (
 		<Box color="gray.50" {...p}>
-			<Text fontWeight="600">Supported by :</Text>
+			<Text fontWeight="700">Supported by :</Text>
 			<Text>
 				Yanmar Environmental Sustainability Support Association (YESSA),
 				Jepang
@@ -60,9 +60,10 @@ export default function LoginPage() {
 			minH="100vh"
 			as={Center}
 			alignItems="start"
+			py="4"
 			flexDirection="column"
 		>
-			<Container maxW="container.lg">
+			<Container maxW="container.lg" px="0">
 				<HStack
 					flexDirection={{ base: 'column', lg: 'row' }}
 					align={{ base: 'strech', lg: 'center' }}
@@ -78,7 +79,7 @@ export default function LoginPage() {
 					>
 						<Box>
 							<Image src={logo} h="60px" />
-							<Text fontSize="lg" mt="4">
+							<Text fontSize={{ base: 'md', lg: 'lg' }} mt="4">
 								Solusi pemantauan dan pendukung keputusan tentang
 								kualitas udara dan emisi gas rumah kaca. Berdayakan
 								bisnis, pemerintah, dan komunitas untuk memastikan
@@ -96,7 +97,7 @@ export default function LoginPage() {
 					>
 						<CardHeader pb="0" textAlign="center">
 							<Heading size="lg">Login</Heading>
-							<Text>Masukan informasi autentikasi di bawah ini</Text>
+							<Text color='dimmed'>Masukan informasi autentikasi di bawah ini</Text>
 						</CardHeader>
 						<CardBody>
 							<form onSubmit={handleSubmit} onReset={handleReset}>

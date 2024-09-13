@@ -121,7 +121,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 
 			<VStack align="start" spacing="6" mt="6">
 				<Box w="full">
-					<HStack justify="space-between" mb="4" align="start" w="full">
+					<HStack wrap='wrap' justify="space-between" mb="4" align="start" w="full">
 						<Box>
 							<HStack mb="1">
 								<Icon as={IconBuilding} boxSize="20px" />
@@ -161,7 +161,7 @@ export default function CompanySubscribedNodesList(props: CompSubscribedNodes) {
 					/>
 				</Box>
 				<Box w="full">
-					<HStack justify="space-between" mb="4" align="start" w="full">
+					<HStack wrap='wrap' justify="space-between" mb="4" align="start" w="full">
 						<Box>
 							<HStack mb="1">
 								<Icon as={IconTrees} boxSize="20px" />

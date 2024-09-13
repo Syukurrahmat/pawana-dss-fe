@@ -4,7 +4,7 @@ import {
 	getCO2Properties,
 	getISPUProperties,
 } from '@/utils/common.utils';
-import { Box, Center, Flex, HStack, Icon, Tag, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Center, Flex, HStack, IconButton, Tag, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconInfoSquareRounded } from '@tabler/icons-react';
 import GaugeChart from 'react-gauge-chart';
 import { CardSection } from '.';
@@ -72,7 +72,7 @@ export function ISPUAverageSection({ indoor, outdoor }: AverageSection) {
 									>
 										<Text
 											fontSize="xl"
-											fontWeight="700"
+											fontWeight="600"
 											children={
 												data.ispu <= 300 ? data.ispu : '300+'
 											}
@@ -114,7 +114,7 @@ export function ISPUAverageSection({ indoor, outdoor }: AverageSection) {
 										>
 											<Text
 												fontSize="xl"
-												fontWeight="700"
+												fontWeight="600"
 												children={data.toFixed(2)}
 											/>
 											<Text
@@ -165,7 +165,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 	return (
 		<Flex align="stretch" flexDir={{ base: 'column', lg: 'row' }} gap="4">
 			{gassEmissionList.map(({ label, data, unit, threshold, max, key }) => (
-				<CardSection title={label}>
+				<CardSection key={key} title={label}>
 					{data.map(({ label, data }, i) => {
 						const { colorScheme } =
 							key == 'co2'
@@ -182,7 +182,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 								/>
 
 								{data ? (
-									<HStack justify="center">
+									<HStack justify="center" wrap="wrap-reverse">
 										<VStack spacing="1" align="stretch">
 											<Center
 												alignContent="baseline"
@@ -191,7 +191,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 												bg={colorScheme + '.200'}
 											>
 												<Text
-													fontSize="2xl"
+													fontSize="xl"
 													fontWeight="700"
 													children={data.value.toFixed(2)}
 												/>
@@ -211,7 +211,7 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 										</VStack>
 
 										<GaugeChart
-											style={{ width: '130px' }}
+											style={{ width: '120px' }}
 											arcsLength={threshold}
 											colors={GAUGE_CHART_COLORS}
 											percent={
@@ -235,12 +235,17 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 
 function InsufficientData() {
 	return (
-		<HStack color="gray.400" spacing="1" align="end">
-			<Text fontWeight="600" size="sm" textAlign="center">
+		<HStack py='8px' justify='center' align='center' color="gray.400" spacing="1" >
+			<Text fontWeight="600" w='max-content' size="sm" textAlign="center">
 				Data tidak lengkap
 			</Text>
 			<Tooltip label="Rerata parameter udara tidak dapat dihitung karena data yang ada tidak mencukupi">
-				<Icon boxSize="17px" as={IconInfoSquareRounded} />
+				<IconButton
+					aria-label="info"
+					size="xs"
+					variant='transparant'
+					icon={<IconInfoSquareRounded size="18" />}
+				/>
 			</Tooltip>
 		</HStack>
 	);

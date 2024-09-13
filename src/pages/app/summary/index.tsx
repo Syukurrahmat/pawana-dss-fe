@@ -1,7 +1,9 @@
 import { SelectUserOrCompanyView } from '@/components/common/AdminInforCard';
+import LoadingComponent from '@/components/common/LoadingComponent';
 import useUser from '@/hooks/useUser';
+import { responsiveCardSize } from '@/utils/common.utils';
 import { fetcher } from '@/utils/fetcher';
-import { Box, Card, CardBody, CardHeader, CardProps, Center, Flex, HStack, Heading, Icon, Select, Spinner, StackDivider, Text, VStack, } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Card, CardBody, CardHeader, CardProps, Center, Flex, HStack, Heading, Icon, Select, Stack, StackDivider, StackProps, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconAirBalloon, IconAirConditioning, IconClipboardText, IconDatabaseOff, IconSpeakerphone } from '@tabler/icons-react'; //prettier-ignore
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -59,28 +61,18 @@ export default function Summary() {
 
 	return (
 		<Box>
-			<Flex gap='4' flexWrap='wrap' align='stretch' justify="space-between">
+			<Flex gap="4" flexWrap="wrap" align="stretch" justify="space-between">
 				<Box>
 					<Heading size="lg">
 						Laporan {label} {moment(date).format(format)}
 					</Heading>
-					<Text>
+					<Text color='dimmed'>
 						{data
 							? `${moment(data.meta.startDate).format('DD MMMM YYYY')} s/d ${moment(data.meta.endDate).format('DD MMMM YYYY')}` //prettier-ignore
 							: 'Mengambil Data ...'}
 					</Text>
 				</Box>
-				<HStack flexWrap='wrap' spacing="4" justify='space-between' >
-					<Box>
-						<Text mb="1" fontSize="sm">
-							Navigasi ke {label.toLowerCase()} lain
-						</Text>
-						<SummaryPagination
-							state={[date, setDate]}
-							type={periodeType}
-							format={inputFormat}
-						/>
-					</Box>
+				<HStack flexWrap="wrap" spacing="2" justify="space-between">
 					<Box>
 						<Text mb="1" fontSize="sm">
 							Pilih Jenis Laporan
@@ -95,6 +87,16 @@ export default function Summary() {
 							<option value="month">Laporan Bulanan</option>
 							<option value="week">Laporan Mingguan</option>
 						</Select>
+					</Box>
+					<Box>
+						<Text mb="1" fontSize="sm">
+							Navigasi ke {label.toLowerCase()} lain
+						</Text>
+						<SummaryPagination
+							state={[date, setDate]}
+							type={periodeType}
+							format={inputFormat}
+						/>
 					</Box>
 				</HStack>
 			</Flex>
@@ -188,17 +190,8 @@ export default function Summary() {
 					/>
 				</VStack>
 			) : (
-				<HStack mx="auto" py="20" spacing="5" justify="center">
-					<Spinner
-						thickness="4px"
-						speed="0.65s"
-						emptyColor="gray.200"
-						color="blue.500"
-						boxSize="50px"
-					/>
-					<Text fontSize="xl" color="gray.500" fontWeight="600">
-						Mengambil Data
-					</Text>
+				<HStack py="20" justify="center">
+					<LoadingComponent />
 				</HStack>
 			)}
 		</Box>
@@ -236,22 +229,26 @@ function TitleSection({ title, icon, colorScheme }: TitleSection) {
 export function CardSection({
 	title,
 	...rest
-}: { title?: string } & CardProps) {
+}: { title?: string } & StackProps) {
 	return (
-		<Card size="sm" p="1" shadow="xs" flexGrow="1">
+		<Card size={responsiveCardSize} shadow="xs" flexGrow="1">
 			{title && (
 				<CardHeader fontWeight="600" fontSize="lg" children={title} />
 			)}
-			<CardBody pt="0" as={HStack} divider={<StackDivider />}>
-				{rest.children}
-			</CardBody>
+			<CardBody
+				pt="0"
+				as={Stack}
+				direction="row"
+				divider={<StackDivider />}
+				{...rest}
+			/>
 		</Card>
 	);
 }
 
 export function NoData({ icon, ...rest }: { icon?: any } & CardProps) {
 	return (
-		<Card size="sm" p="1" shadow="xs" flexGrow="1">
+		<Card size={responsiveCardSize} shadow="xs" flexGrow="1">
 			<CardBody
 				as={HStack}
 				justify="center"

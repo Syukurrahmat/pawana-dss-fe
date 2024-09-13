@@ -1,8 +1,5 @@
-import { Box, Divider, Grid, HStack, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
-import {
-	IconBuildingFactory2,
-	IconTrees
-} from '@tabler/icons-react';
+import { Box, Divider, Grid, HStack, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, TagLeftIcon, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { IconBuildingFactory2, IconTrees } from '@tabler/icons-react';
 import RecomendationCard from './RecomendationCard';
 
 interface AverageSection {
@@ -32,34 +29,12 @@ export function ISPURecomendationSection({ indoor, outdoor }: AverageSection) {
 				{list
 					.filter((e) => e.data)
 					.map(({ label, key, data: recomendation }) => (
-						<Box key={key} as={VStack} align="start">
-							<HStack
-								px="3"
-								py="1.5"
-								rounded="md"
-								border="1px solid"
-								borderColor="blue.200"
-							>
-								<Icon
-									as={
-										key == 'indoor' ? IconBuildingFactory2 : IconTrees
-									}
-									boxSize="18px"
-								/>
-								<Text fontSize="md" fontWeight="600">
-									{label}
-								</Text>
-							</HStack>
-							<Text textAlign="justify">{recomendation?.info}</Text>
-							<Text textAlign="justify">
-								<Text as="span" fontWeight={600}>
-									Saran :{' '}
-								</Text>
-								{key == 'indoor'
-									? recomendation?.company
-									: recomendation?.public}
-							</Text>
-						</Box>
+						<RecomendationContent
+							key={key}
+							type={key}
+							label={label}
+							recomendation={recomendation!}
+						/>
 					))}
 			</Grid>
 		</RecomendationCard>
@@ -102,7 +77,7 @@ export function GRKRecomendationSection({ indoor, outdoor }: AverageSection) {
 						</Tab>
 					))}
 				</TabList>
-				<Divider my="2" borderColor="gray.300" />
+				<Divider my="3" borderColor="gray.200" />
 
 				<TabPanels pb="2">
 					{list.map(({ key, data }) => (
@@ -113,44 +88,13 @@ export function GRKRecomendationSection({ indoor, outdoor }: AverageSection) {
 							>
 								{data
 									.filter((e) => e.recomendation)
-									.map(({ label, recomendation }, i) => (
-										<Box key={i} as={VStack} align="start">
-											<HStack
-												px="3"
-												py="1.5"
-												rounded="md"
-												border="1px solid"
-												borderColor="blue.200"
-											>
-												<Icon
-													as={
-														key == 'indoor'
-															? IconBuildingFactory2
-															: IconTrees
-													}
-													boxSize="18px"
-												/>
-												<Text fontSize="md" fontWeight="600">
-													{label}
-												</Text>
-											</HStack>
-
-											<Text fontSize="md" textAlign="justify">
-												{recomendation?.info}
-											</Text>
-											<Text fontSize="md" textAlign="justify">
-												<span
-													style={{
-														fontWeight: 600,
-													}}
-												>
-													Saran :{' '}
-												</span>
-												{key == 'indoor'
-													? recomendation?.company
-													: recomendation?.public}
-											</Text>
-										</Box>
+									.map(({ label, recomendation, key }) => (
+										<RecomendationContent
+											key={key}
+											type={key}
+											label={label}
+											recomendation={recomendation}
+										/>
 									))}
 							</Grid>
 						</TabPanel>
@@ -158,5 +102,45 @@ export function GRKRecomendationSection({ indoor, outdoor }: AverageSection) {
 				</TabPanels>
 			</Tabs>
 		</RecomendationCard>
+	);
+}
+
+interface RecomendationContent {
+	type: 'indoor' | 'outdoor' | string;
+	label: string;
+	recomendation: Recomendation;
+}
+
+function RecomendationContent({
+	type,
+	label,
+	recomendation,
+}: RecomendationContent) {
+	return (
+		<Box as={VStack} align="start">
+			<Tag
+				colorScheme={type == 'indoor' ? 'blue' : 'green'}
+				size="lg"
+				p="3"
+				alignItems="center"
+			>
+				<TagLeftIcon
+					boxSize="18px"
+					as={type == 'indoor' ? IconBuildingFactory2 : IconTrees}
+				/>
+				{label}
+			</Tag>
+			<Box mt="1">
+				<Text textAlign="justify">{recomendation?.info}</Text>
+				<Text textAlign="justify" mt="1">
+					<Text as="span" fontWeight={600}>
+						Saran :{' '}
+					</Text>
+					{type == 'indoor'
+						? recomendation?.company
+						: recomendation?.public}
+				</Text>
+			</Box>
+		</Box>
 	);
 }

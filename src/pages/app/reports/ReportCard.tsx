@@ -1,24 +1,38 @@
+import { responsiveCardSize } from '@/utils/common.utils';
 import { toFormatedDatetime } from '@/utils/dateFormating';
-import { Avatar, Box, Button, Card, CardBody, CardFooter, CardHeader, CardProps, HStack, Icon, Image, ResponsiveValue, Spacer, Tag, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
+import { Avatar, Box, Button, Card, CardBody, CardFooter, CardHeader, CardProps, HStack, Icon, Image, ResponsiveValue, StackProps, Tag, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconMapPin, IconMoodEmpty, IconMoodHeart, IconMoodSad, IconMoodSmile, IconMoodWrrr, IconStarFilled } from '@tabler/icons-react'; //prettier-ignore
 
 interface IReportCard extends CardProps {
 	data: ReportData;
 	map?: any;
+	showSeeInMap?: boolean;
 }
 
-export default function ReportCard({ data, map, ...rest }: IReportCard) {
+export default function ReportCard({
+	data,
+	map,
+	...rest
+}: IReportCard) {
 	return (
-		<Card w="full" shadow="xs" {...rest}>
-			<CardHeader spacing="4" as={HStack}>
-				<Avatar name={data.creator.name} />
-				<Box>
-					<Text fontSize="lg" fontWeight="500">
-						{data.creator.name}
-					</Text>
-					<Text fontSize="sm">{toFormatedDatetime(data.createdAt)} </Text>
-				</Box>
-				<Spacer />
+		<Card w="full" shadow="xs" size={responsiveCardSize} {...rest}>
+			<CardHeader
+				spacing="4"
+				as={HStack}
+				flexWrap="wrap"
+				justify="space-between"
+			>
+				<HStack spacing="4" flexGrow="1">
+					<Avatar name={data.creator.name} />
+					<Box>
+						<Text fontSize="lg" fontWeight="500">
+							{data.creator.name}
+						</Text>
+						<Text fontSize="sm">
+							{toFormatedDatetime(data.createdAt)}{' '}
+						</Text>
+					</Box>
+				</HStack>
 				<RatingIcons rating={data.rating} />
 			</CardHeader>
 			<CardBody py="0">
@@ -26,15 +40,18 @@ export default function ReportCard({ data, map, ...rest }: IReportCard) {
 
 				{!!data.images.length && <ReportImageGalery images={data.images} />}
 			</CardBody>
+
 			<CardFooter as={VStack} align="end">
-				<Button
-					leftIcon={<IconMapPin size="18" />}
-					colorScheme="blue"
-					size="sm"
-					onClick={() => (map ? map.flyTo(data.coordinate, 17) : null)}
-				>
-					Lihat di map
-				</Button>
+				{!!map && (
+					<Button
+						leftIcon={<IconMapPin size="18" />}
+						colorScheme="blue"
+						size="sm"
+						onClick={() => (map ? map.flyTo(data.coordinate, 17) : null)}
+					>
+						Lihat di map
+					</Button>
+				)}
 			</CardFooter>
 		</Card>
 	);
@@ -51,12 +68,13 @@ export const RatingIconList = [
 export function RatingIcons({
 	rating,
 	size = 'sm',
+	...p
 }: {
 	rating: number;
 	size?: ResponsiveValue<string>;
-}) {
+} & StackProps) {
 	return (
-		<HStack>
+		<HStack {...p}>
 			<Icon
 				as={RatingIconList[rating - 1].icon}
 				color={RatingIconList[rating - 1].color}

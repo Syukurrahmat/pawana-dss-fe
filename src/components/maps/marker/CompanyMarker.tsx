@@ -18,8 +18,8 @@ export default function CompanyMarker({ properties, ...rest }: any) {
 							<Divider />
 							<VStack>
 								{indoorNodeValue.map((e: any, i: number) => (
-									<VStack key={i} align='stretch' w='full' spacing="1">
-										<HStack>
+									<VStack key={i} align="start" w="full" spacing="1">
+										<HStack w='full'>
 											<Text
 												fontWeight="600"
 												fontSize="md"
@@ -44,12 +44,12 @@ export default function CompanyMarker({ properties, ...rest }: any) {
 						</>
 					) : indoorNodes ? (
 						<>
-							<Divider />
+							<Divider my="2px" />
 
-							<VStack>
+							<VStack align="stretch">
 								{indoorNodes.map((e: any, i: number) => (
-									<VStack key={i} spacing="1">
-										<HStack>
+									<VStack key={i} spacing="1" align="start">
+										<HStack w="full">
 											<Text
 												fontWeight="600"
 												fontSize="md"
@@ -61,10 +61,16 @@ export default function CompanyMarker({ properties, ...rest }: any) {
 												size="sm"
 											/>
 										</HStack>
-										<Text>
-											Diperbarui pada{' '}
-											{toFormatedDatetime(e.lastDataSent)}
-										</Text>
+
+										<Text
+											children={
+												e.lastDataSent
+													? `Diperbarui pada ${toFormatedDatetime(
+															e.lastDataSent
+													  )}`
+													: 'Belum pernah mengirim data'
+											}
+										/>
 									</VStack>
 								))}
 							</VStack>

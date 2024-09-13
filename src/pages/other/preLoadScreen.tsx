@@ -1,4 +1,4 @@
-import logo from '@/assets/icon-white.svg';
+import logo from '@/assets/logo/logo-white.svg';
 import {
 	Center,
 	Container,
@@ -23,6 +23,7 @@ export default function PreLoadScreen() {
 				outline="3px solid"
 				outlineColor="gray.100"
 				w="300px"
+				size='sm'
 				isIndeterminate
 				rounded="md"
 			/>

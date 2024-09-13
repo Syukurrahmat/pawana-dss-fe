@@ -4,6 +4,7 @@ import MyButtonRadio from '@/components/common/ButtonRadio';
 import { Button, ButtonGroup, Card, CardBody, CardHeader, Center, Divider, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'; //prettier-ignore
 import { useState } from 'react';
 import { AirParamList } from './airParamList';
+import { responsiveCardSize } from '@/utils/common.utils';
 
 interface TrenCard {
 	title: string;
@@ -11,8 +12,8 @@ interface TrenCard {
 	paramList: AirParamList[];
 }
 
-const INDOOR = 'Di dalam perusahaan';
-const OUTDOOR = 'Di sekitar perusahaan';
+const INDOOR = 'Dalam perusahaan';
+const OUTDOOR = 'Sekitar perusahaan';
 const BOTH = 'Keduanya';
 
 export function TrenCard({ title, tren, paramList }: TrenCard) {
@@ -21,7 +22,7 @@ export function TrenCard({ title, tren, paramList }: TrenCard) {
 	const mappedViews = views.map((e) => (e == INDOOR ? 'indoor' : 'outdoor'));
 
 	return (
-		<Card size="sm" shadow="xs" p="1">
+		<Card size={responsiveCardSize} shadow="xs" >
 			<CardHeader fontWeight="600" fontSize="lg" children={title} />
 			{tren.length ? (
 				<>
@@ -39,6 +40,7 @@ export function TrenCard({ title, tren, paramList }: TrenCard) {
 									{paramList.map((e, i) => (
 										<Tab
 											as={Button}
+											px='3'
 											borderColor="teal.400"
 											_selected={{
 												bg: 'teal.500',
@@ -69,9 +71,9 @@ export function TrenCard({ title, tren, paramList }: TrenCard) {
 								/>
 							</TabList>
 							<Divider mt="4" />
-							<TabPanels>
+							<TabPanels >
 								{paramList.map((param, i) => (
-									<TabPanel key={i} h="440px">
+									<TabPanel key={i} h="440px" p='0'>
 										{param.type == 'bar' ? (
 											<MyISPUChart
 												data={tren || []}

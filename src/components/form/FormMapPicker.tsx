@@ -46,7 +46,7 @@ export default function FormMapPicker({
 				</Box>
 			</HStack>
 			<FormHelperText>
-				Geser peta dan paskan penanda ke titik yang dimaksud
+				Atau geser peta dan paskan penanda ke titik yang dimaksud
 			</FormHelperText>
 			<MyMap
 				mt="3"

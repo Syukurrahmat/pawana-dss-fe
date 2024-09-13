@@ -1,16 +1,18 @@
 import PreLoadScreen from '@/pages/other/preLoadScreen';
 import { fetcher } from '@/utils/fetcher';
-import { createContext, useContext, useEffect } from 'react'; //prettier-ignore
+import { useBreakpointValue } from '@chakra-ui/react';
+import { createContext, useContext } from 'react'; //prettier-ignore
 import useSWR, { KeyedMutator } from 'swr';
-import useConfirmDialog from './useConfirmDialog';
 
 type CheckRole = (role: UserRole | UserRole[]) => boolean;
+type ScreenType = 'mobile' | 'tablet' | 'desktop' 
 
 type UserContext = {
 	user: User;
 	mutateUser: KeyedMutator<User>;
 	roleIs: CheckRole;
 	roleIsNot: CheckRole;
+	screenType: ScreenType;
 };
 
 export type User = {
@@ -47,6 +49,7 @@ const UserContext = createContext<UserContext>({
 	mutateUser: async () => undefined,
 	roleIs: () => false,
 	roleIsNot: () => false,
+	screenType: 'desktop',
 });
 
 export default function useUser() {
@@ -55,34 +58,23 @@ export default function useUser() {
 
 export function UserContextProvider(props: any) {
 	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	const confirmDialog = useConfirmDialog();
-	const { data: user, mutate: mutateUser } = useSWR<User>(
+	const screenType = useBreakpointValue<ScreenType>({ base: 'mobile', md : 'tablet',  lg: 'desktop' })
+	const { data: user, mutate } = useSWR<User>(
 		`/app?timezone=${timezone}`,
 		fetcher
 	);
 
-	useEffect(() => {
-		const sudah = window.localStorage.getItem('mobile-compatible-warn');
-		if (!sudah && window.screen.availWidth <= 768) {
-			confirmDialog({
-				title: 'Peringatan',
-				message:
-					'Sistem belum sepenuhnya kompatible dengan perangkat mobile,\n Gunakan komputer atau laptop untuk pengalaman yang lebih optimal',
-				onConfirm() {
-					window.localStorage.setItem('mobile-compatible-warn', '1');
-				},
-				withoutCancelButton: true,
-			});
-		}
-	}, []);
-
-	const roleIs: CheckRole = (role) => role.includes(user!.role);
-	const roleIsNot: CheckRole = (role) => !roleIs(role);
-	if (!user) return <PreLoadScreen />;
+	if (!user || !screenType) return <PreLoadScreen />;
 
 	return (
 		<UserContext.Provider
-			value={{ user, mutateUser, roleIs, roleIsNot }}
+			value={{
+				user,
+				mutateUser: mutate,
+				roleIs: (role) => role.includes(user!.role),
+				roleIsNot: (role) => !role.includes(user!.role),
+				screenType, 
+			}}
 			children={props.children}
 		/>
 	);

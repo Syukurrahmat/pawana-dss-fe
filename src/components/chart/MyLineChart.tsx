@@ -98,7 +98,7 @@ export default function MyLineChart<T extends { datetime: string }>({
 						tickCount={30}
 						minTickGap={10}
 					/>
-					<YAxis width={30} />
+					<YAxis  width={gasType == 'PM10' || gasType == 'PM2.5' ? 36 : 44}/>
 					<CartesianGrid strokeDasharray="3 3" />
 
 					<Tooltip
@@ -144,9 +144,8 @@ export default function MyLineChart<T extends { datetime: string }>({
 					{!simple && (
 						<Legend
 							verticalAlign="top"
-							height={36}
 							align="right"
-							wrapperStyle={{ height: '28px' }}
+							wrapperStyle={{ height: 'max-content', padding : '12px 0 ' }}
 						/>
 					)}
 

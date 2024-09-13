@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Grid, HStack, Icon, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { Alert, AlertTitle, Divider, Grid, HStack, Icon, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconBulb } from '@tabler/icons-react'; // prettier-ignore
 import { MutiGRK, MutiISPU, NodeGroupType, SingleGRK, SingleISPU } from './NodesGroupInfo'; // prettier-ignore
 
@@ -27,7 +27,7 @@ export default function RecomendationSection({
 
 	const contents = [
 		{ label: 'Kualitas Udara', recomendation: recomendationIspu },
-		{ label: 'Emisi Karbondioksida', recomendation: recomendationCO2 },
+		{ label: 'Emisi Karbon dioksida', recomendation: recomendationCO2 },
 		{ label: 'Emisi Metana', recomendation: recomendationCH4 },
 	].filter((e) => e.recomendation);
 
@@ -43,22 +43,25 @@ export default function RecomendationSection({
 			<Icon as={IconBulb} boxSize="7" color="blue.600" mt="1" />
 
 			<Tabs ml="3" variant="soft-rounded" colorScheme="blue">
-				<TabList as={HStack}>
+				<TabList as={HStack} wrap="wrap" >
 					<AlertTitle fontWeight="600">Rekomendasi</AlertTitle>
 					<Spacer />
-					{contents.map((e, i) => (
-						<Tab rounded="lg" py="1" key={i}>
-							{e.label}
-						</Tab>
-					))}
+					<HStack wrap="wrap" >
+						{contents.map((e, i) => (
+							<Tab rounded="lg" py="1" key={i}>
+								{e.label}
+							</Tab>
+						))}
+					</HStack>
 				</TabList>
+				<Divider borderColor='blue.200' mt='2'/>
 
 				<TabPanels pb="2">
 					{contents.map(({ recomendation }, i) => (
 						<TabPanel px="0" py="2" key={i} as={VStack} align="start">
 							<Grid
 								gap="6"
-								templateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+								templateColumns="repeat(auto-fit, minmax(250px, 1fr))"
 							>
 								<Text
 									textIndent="2em"

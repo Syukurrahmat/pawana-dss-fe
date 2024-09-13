@@ -38,7 +38,7 @@ export default function UserCard({ data, label, ...rest }: IManagerCard) {
 					py="0.5"
 					bg="gray.100"
 					fontSize="sm"
-					fontWeight="700"
+					fontWeight="600"
 					roundedBottomStart="md"
 					textTransform="uppercase"
 					children={label}
@@ -85,7 +85,7 @@ export function CompanyCard({
 					py="0.5"
 					bg="gray.100"
 					fontSize="sm"
-					fontWeight="700"
+					fontWeight="600"
 					roundedBottomStart="md"
 					textTransform="uppercase"
 					children="Pemilik"

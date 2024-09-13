@@ -37,7 +37,7 @@ const privateNodeValidationSchema = Yup.object().shape({
 export default function CreateNode() {
 	const { roleIs } = useUser();
 	const location = useLocation();
-	const toast = useMyToasts()
+	const toast = useMyToasts();
 
 	const isOnSpesificNode = !useMatch('/nodes/create');
 	const showChooseNodeOwnship = !isOnSpesificNode && roleIs('admin');
@@ -133,8 +133,8 @@ export default function CreateNode() {
 	return (
 		<Box>
 			<Heading size="lg">Buat Node</Heading>
-			<Text>Buat node untuk menambah akurasi sistem</Text>
-			<Container maxW="container.md" mt="4">
+			<Text color='dimmed'>Buat node untuk menambah akurasi sistem</Text>
+			<Container maxW="container.md" mt="4" px="0">
 				{createdStatus === undefined && showChooseNodeOwnship && (
 					<Tabs
 						index={isPrivateForm}
@@ -153,8 +153,14 @@ export default function CreateNode() {
 						<Divider mt="2" border="1px solid" borderColor="gray.400" />
 						<TabPanels>
 							{tabsListInfo.map(({ note }, i) => (
-								<TabPanel px="0" as={HStack} key={i} spacing="1">
-									<IconInfoCircle size="20" />
+								<TabPanel
+									px="0"
+									as={HStack}
+									key={i}
+									align="start"
+									spacing="1"
+								>
+									<Icon as={IconInfoCircle} boxSize="20px" mt="2px" />
 									<Text ml="2">{note}</Text>
 								</TabPanel>
 							))}
@@ -163,7 +169,7 @@ export default function CreateNode() {
 				)}
 
 				{createdStatus === undefined ? (
-					<Container maxW="container.sm">
+					<Container maxW="container.sm" px="0">
 						<form onSubmit={handleSubmit} className="my-form">
 							<VStack mx="auto" spacing="2" maxW="container.sm">
 								{isPrivateForm &&

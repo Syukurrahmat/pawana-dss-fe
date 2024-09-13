@@ -14,7 +14,7 @@ export function SelectUserOrCompanyView({
 	return (
 		<Box as={withCard ? InformationCard : undefined}>
 			<Text>
-				Pilih perusahaan {selectCompanyOnly ? 'atau Pengguna publik' : ''}{' '}
+				Pilih perusahaan {!selectCompanyOnly ? 'atau Pengguna publik' : ''}{' '}
 				yang ingin Anda Lihat
 			</Text>
 			<ChangeActiveDashboard mt="4" selectCompanyOnly={selectCompanyOnly}>

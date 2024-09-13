@@ -1,4 +1,5 @@
-import LoadingComponent from '@/components/Loading/LoadingComponent';
+import DeleteResourceButton from '@/components/common/DeleteReourceButton';
+import LoadingComponent from '@/components/common/LoadingComponent';
 import SectionTitle from '@/components/common/SectionTitle';
 import TagWithIcon from '@/components/common/TagWithIcon';
 import { CompanyCard } from '@/components/managerCard';
@@ -6,16 +7,15 @@ import { nodeStatusAttr, nodeTypeAttr } from '@/constants/enumVariable';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate, toFormatedDatetime } from '@/utils/dateFormating';
 import { fetcher } from '@/utils/fetcher';
-import { Box, Center, Container, Divider, Flex, HStack, Heading, Icon, Stat, StatLabel, StatNumber, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
+import { Box, Center, Container, Divider, HStack, Heading, Icon, Stat, StatLabel, StatNumber, Tag, Text } from '@chakra-ui/react'; //prettier-ignore
 import { IconAddressBook, IconCalendar, IconChartBubble, IconCircleDot, IconEdit, IconInfoCircle, IconLock, IconTextCaption } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import CompanySubsctiptionsList from './DTCompanySubsctiptions';
-import DTLastDataSent from './DTLastDataSent';
+import LastDataSentSection from './DTLastDataSent';
 import UserSubsctiptionsList from './DTUserSubsctiptions';
 import EditNodeProfileButton from './EditNodeProfile';
 import NodePosisionInMap from './NodeCoordinate';
-import DeleteResourceButton from '@/components/common/DeleteReourceButton';
 
 export default function DetailNode() {
 	const { id } = useParams();
@@ -55,8 +55,8 @@ export default function DetailNode() {
 					</Heading>
 				</HStack>
 			</HStack>
-			<Container mt="8" maxW="container.md">
-				<HStack spacing="4" justify="space-between">
+			<Container mt="6" maxW="container.md" px='0'>
+				<HStack spacing="4" justify="space-between" wrap='wrap'>
 					<Box>
 						<Heading fontSize="3xl" children={data.name} />
 						<HStack mt="2">
@@ -96,9 +96,9 @@ export default function DetailNode() {
 				)}
 
 				<SectionTitle IconEl={IconChartBubble}>Status</SectionTitle>
-				<Flex mt="3" gap="4" flexWrap="wrap">
+				<HStack mt="3" spacing="4" wrap="wrap">
 					<Stat
-						flex="1 0 100px"
+						flex="1 0 250px"
 						bg={statusAtt.color + '.50'}
 						p="4"
 						rounded="md"
@@ -127,7 +127,7 @@ export default function DetailNode() {
 					</Stat>
 
 					<Stat
-						flex="1 0 100px"
+						flex="1 0 250px"
 						bg={ownshipAtt.color + '.50'}
 						p="4"
 						rounded="md"
@@ -156,7 +156,7 @@ export default function DetailNode() {
 							</Tag>
 						</HStack>
 					</Stat>
-				</Flex>
+				</HStack>
 
 				{!isPrivateNodePage && (
 					<NodePosisionInMap canEdit={canEdit} data={data} mutate={mutate} />
@@ -169,7 +169,7 @@ export default function DetailNode() {
 					</>
 				)}
 
-				<DTLastDataSent
+				<LastDataSentSection
 					data={data.dataLogs}
 					lastDataSent={data.lastDataSent}
 					mutate={mutate}

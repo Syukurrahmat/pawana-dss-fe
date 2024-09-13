@@ -10,13 +10,20 @@ import { toFormatedDate } from '@/utils/dateFormating';
 import { Alert, Box, Button, ButtonGroup, Card, CardBody, Flex, HStack, Heading, Spacer, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import { IconCalendar, IconCircleDot } from '@tabler/icons-react'; // prettier-ignore
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
+export const baseLgStyle = (base: any, lg: any) => ({
+	base,
+	lg,
+});
 
 export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 	const { dashboardInfo, nodes } = data;
 	const { name, type, coordinate, countNodes, companyId, userId, createdAt } = dashboardInfo; //prettier-ignore
 	const [selectedParam, setSelectedParam] = useState<null | number>(null);
 	const { roleIsNot, roleIs, user } = useUser();
+	const navigate = useNavigate();
 
 	const airParamsData = (x: 'indoor' | 'outdoor' = 'outdoor') => [
 		{
@@ -115,17 +122,15 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 		? name
 		: 'Dasbor ' + (roleIs(['admin', 'gov']) ? user.view?.user?.name : 'Anda');
 
+	
+
 	return (
-		<Card size="sm" w="full">
-			<CardBody
-				as={Flex}
-				flexDir={{ base: 'column', lg: 'row' }}
-				gap={{ base: '2', lg: '5' }}
-			>
+		<Card size="sm" w="full" rounded='md'>
+			<CardBody as={Flex} flexDir={baseLgStyle('column', 'row')} gap={2}>
 				<MyMap
 					minH="275px"
 					h="275px"
-					flex="3 1 0"
+					flex="4 1 0"
 					companiesData={companyId ? [companyData] : []}
 					marker={
 						selectedParam === null
@@ -135,8 +140,8 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 					data={displayedData || []}
 				/>
 
-				<VStack align="start" p="1" flex="2 1 0">
-					<HStack mt="6">
+				<VStack flex="3 1 0" align="start" p={baseLgStyle('xs', '2')} mt={baseLgStyle('4', '0')}>
+					<HStack>
 						<CompanyIcon type={type} />
 						<Heading
 							size="md"
@@ -160,8 +165,8 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 							children={countNodes + ' Node'}
 						/>
 					</HStack>
-
 					<Spacer />
+
 					{countNodes > 0 ? (
 						<Box>
 							<Text>Tampilkan nilai dari parameter : </Text>
@@ -205,29 +210,38 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 							</Text>
 						</Alert>
 					)}
-					<HStack justify="end" flexWrap='wrap-reverse' w="full" mt="4">
+
+					<HStack justify="end" flexWrap="wrap-reverse" w="full" mt="2">
 						{roleIsNot('regular') && (
 							<ChangeActiveDashboard
 								colorScheme="blue"
+								flex='0 0 175px'
+								// w={{base : "full", sm : 'auto'}}
 								selectCompanyOnly={roleIsNot(['admin', 'gov'])}
-							>
-								Ganti Dashboard
-							</ChangeActiveDashboard>
+								children="Ganti Dashboard"
+							/>
 						)}
+
 						{roleIs(['admin', 'gov']) && type == 'regular' && (
-							<Link to={`/users/${userId}`}>
-								<Button colorScheme="blue" ml="2">
-									Detail Pengguna
-								</Button>
-							</Link>
+							<Button
+								colorScheme="blue"
+								flex='0 0 175px'
+
+								// w={{base : "full", sm : 'auto'}}
+								onClick={() => navigate(`/users/${userId}`)}
+							>
+								Detail Pengguna
+							</Button>
 						)}
 
 						{!!companyId && (
-							<Link to={`/companies/${companyId}`}>
-								<Button colorScheme="blue" ml="2">
-									Detail Perusahaan
-								</Button>
-							</Link>
+							<Button
+								colorScheme="blue"
+								// w={{base : "full", sm : 'auto'}}
+								onClick={() => navigate(`/companies/${companyId}`)}
+							>
+								Detail Perusahaan
+							</Button>
 						)}
 					</HStack>
 				</VStack>

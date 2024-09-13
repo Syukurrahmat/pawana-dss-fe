@@ -106,9 +106,8 @@ export default function MyISPUChart<T extends { datetime: string }>({
 								moment.duration(0.5, offsetDomain).asMilliseconds(),
 						]}
 					/>
-					<YAxis width={30} />
+					<YAxis width={36} />
 					<CartesianGrid strokeDasharray="3 3" />
-
 					<Tooltip
 						content={
 							simple ? (
@@ -154,8 +153,8 @@ export default function MyISPUChart<T extends { datetime: string }>({
 							dataKey={(e) => func(e)?.ispu || null}
 							name={
 								envType == 'indoor'
-									? 'Di dalam perusahaan'
-									: 'Di sekitar perusahaan'
+									? 'Dalam perusahaan'
+									: 'Sekitar perusahaan'
 							}
 						>
 							{data
@@ -185,12 +184,11 @@ export default function MyISPUChart<T extends { datetime: string }>({
 					{!simple && (
 						<Legend
 							verticalAlign="top"
-							height={36}
 							align="right"
-							wrapperStyle={{ height: '28px' }}
+							wrapperStyle={{ height: 'max-content', padding : '12px 0 ' }}
 							content={({ payload }) => {
 								return (
-									<HStack spacing="3" justify="end">
+									<HStack spacing="3" justify="end" wrap='wrap'>
 										{payload?.map((entry, i) => (
 											<HStack key={i}>
 												<Box

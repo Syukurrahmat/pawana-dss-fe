@@ -21,8 +21,8 @@ export function StatWithIcon({
 		<VStack
 			p="2"
 			justify='center'
+			border='1px solid red'
 			rounded="md"
-			h='fit-content'
 			spacing="0"
 			sx={
 				variant == 'outline'
@@ -47,7 +47,7 @@ export function StatWithIcon({
 					as={icon}
 					boxSize="28px"
 				/>
-				<Text fontWeight="600">{count}</Text>
+				<Text fontWeight="600" textAlign='center'>{count}</Text>
 			</HStack>
 			<Text>{label}</Text>
 		</VStack>

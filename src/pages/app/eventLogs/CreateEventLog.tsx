@@ -116,7 +116,7 @@ export default function CreateEventLog() {
 						</ModalHeader>
 						<ModalCloseButton />
 						<ModalBody>
-							<VStack mx="auto" spacing="2" maxW="container.sm" my="4">
+							<VStack mx="auto" spacing="2" maxW="container.sm" my="4" >
 								<FormControl
 									isInvalid={Boolean(errors.name) && touched.name}
 								>

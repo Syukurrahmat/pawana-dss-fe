@@ -2,7 +2,7 @@ import InputSearch from '@/components/Form/inputSearch';
 import MyMap from '@/components/Maps';
 import { useMyToasts } from '@/utils/common.utils';
 import { fetcher, myAxios } from '@/utils/fetcher';
-import { Box, BoxProps, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Skeleton, Tag, TagCloseButton, TagLabel, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
+import { Box, BoxProps, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Skeleton, Stack, Tag, TagCloseButton, TagLabel, Text, VStack, useDisclosure } from '@chakra-ui/react'; //prettier-ignore
 import qs from 'qs';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
@@ -113,20 +113,31 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 							<>
 								{limit ? (
 									<>
-										<HStack mb="3" alignItems="start">
+										<Stack
+											mb="3"
+											direction={{
+												base: 'column-reverse',
+												md: 'row',
+											}}
+											align="stretch"
+										>
 											<HStack
-												wrap="wrap"
 												minH="35px"
 												py="1"
 												px="2"
-												flexGrow="1"
+												flex="1 0 0"
+												wrap="wrap"
 												rounded="md"
 												border="1px solid"
 												borderColor="gray.200"
 											>
 												{selectedNodes.length ? (
 													selectedNodes.map(({ nodeId, name }) => (
-														<Tag key={nodeId} colorScheme="blue">
+														<Tag
+															key={nodeId}
+															colorScheme="blue"
+															w="fit-content"
+														>
 															<TagLabel children={name} />
 															<TagCloseButton
 																onClick={() =>
@@ -142,16 +153,19 @@ export default function NodeSubscription({ subsInfo, ...rest }: NodeSubs) {
 													))
 												) : (
 													<Text color="gray.500">
-														Belum ada yang dipilih
+														Belum ada Node yang dipilih
 													</Text>
 												)}
 											</HStack>
 											<InputSearch
-												minW="230px"
+												width={{
+													base: 'full',
+													md: '250px',
+												}}
 												_onSubmit={null}
 												placeholder="Cari node"
 											/>
-										</HStack>
+										</Stack>
 
 										<FindInMapElement
 											selectedNodes={selectedNodes}

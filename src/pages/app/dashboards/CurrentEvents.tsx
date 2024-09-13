@@ -2,6 +2,7 @@ import { Box, Card, CardBody, CardHeader, CardProps, Center, HStack, Heading, Ic
 import { IconNotebook, IconNotebookOff } from '@tabler/icons-react';
 
 import { CardEventLog } from '../EventLogs/CardEventLog';
+import { responsiveCardSize } from '@/utils/common.utils';
 
 interface CurrentEventsCard extends CardProps {
 	data: EventLogs[];
@@ -10,7 +11,7 @@ interface CurrentEventsCard extends CardProps {
 export function CurrentEventsCard({ data, ...rest }: CurrentEventsCard) {
 	
 	return (
-		<Card {...rest}>
+		<Card size={responsiveCardSize} {...rest}>
 			<CardHeader pb="0" as={HStack}>
 				<Center
 					border="2px solid"

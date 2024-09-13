@@ -66,11 +66,11 @@ export default function CreateUser() {
 	return (
 		<Box>
 			<Heading size="lg">Buat akun Pengguna</Heading>
-			<Text>
+			<Text color='dimmed'>
 				Buat Akun pengguna untuk memberikan akses orang lain ke sistem
 			</Text>
 
-			<Container maxW="container.sm" mt="6">
+			<Container maxW="container.sm" mt="6" px='0'>
 				{status !== undefined ? (
 					status.created ? (
 						<BigAlert

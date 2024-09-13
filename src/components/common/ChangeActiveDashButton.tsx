@@ -2,20 +2,8 @@ import CompanyIcon from '@/components/common/CompanyIcon';
 import SelectFromDataTable from '@/components/SelectFromDataTable/SelectFromDataTable';
 import useUser, { User } from '@/hooks/useUser';
 import { myAxios } from '@/utils/fetcher';
-import {
-	Button,
-	ButtonProps,
-	HStack,
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuList,
-	Text,
-} from '@chakra-ui/react';
-import {
-	IconChartBar,
-	IconChevronDown
-} from '@tabler/icons-react';
+import { Button, ButtonProps, HStack, Icon, Menu, MenuButton, MenuItem, MenuList, Text } from '@chakra-ui/react'; //prettier-ignore
+import { IconBuildingFactory2, IconChartBar, IconChevronDown, IconUser } from '@tabler/icons-react'; //prettier-ignore
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KeyedMutator } from 'swr';
@@ -82,7 +70,10 @@ export function ChangeActiveDashboard({
 	...props
 }: ChangeActiveDashboard) {
 	const { user, roleIs, mutateUser } = useUser();
-	const companiesApiUrl = roleIs(['admin', 'gov'])
+
+	const isAdmin = roleIs(['admin', 'gov']);
+
+	const companiesApiUrl = isAdmin
 		? `/companies?view=simple`
 		: `/users/${user.userId}/companies?view=simple`;
 
@@ -92,8 +83,10 @@ export function ChangeActiveDashboard({
 		w: 'full',
 		rightIcon: undefined,
 		rounded: '0',
-		color: 'gray.800',
-		fontWeight: '400',
+		iconSpacing: '3',
+		py: '6',
+		colorScheme: 'gray',
+		fontWeight: '500',
 	};
 
 	const SelectCompany = (props: any) => (
@@ -106,7 +99,7 @@ export function ChangeActiveDashboard({
 			_onChange={(e: any) =>
 				changeDashboard(mutateUser, { companyId: e.companyId })
 			}
-			hiddenSearchInput={true}
+			hiddenSearchInput={!isAdmin}
 			displayRow={(e) => (
 				<HStack>
 					<CompanyIcon bg="white" type={e.type} />
@@ -127,7 +120,7 @@ export function ChangeActiveDashboard({
 			_onChange={(e: any) => {
 				changeDashboard(mutateUser, { userId: e.userId });
 			}}
-			hiddenSearchInput={true}
+			hiddenSearchInput={!isAdmin}
 			displayRow={(e) => <NameWithAvatar name={e.name} />}
 			{...props}
 		/>
@@ -145,17 +138,33 @@ export function ChangeActiveDashboard({
 							colorScheme="blue"
 							rightIcon={<IconChevronDown />}
 							{...props}
-						></MenuButton>
+						/>
 						<MenuList>
 							<MenuItem p="0">
-								<SelectPublicUser {...propsWhenInMenu}>
-									Dashboard Pengguna Publik
-								</SelectPublicUser>
+								<SelectCompany
+									leftIcon={
+										<Icon
+											as={IconBuildingFactory2}
+											boxSize="22px"
+											color="blue.600"
+										/>
+									}
+									{...propsWhenInMenu}
+									children="Dashboard Perusahaan"
+								/>
 							</MenuItem>
 							<MenuItem p="0">
-								<SelectCompany {...propsWhenInMenu}>
-									Dashboard Perusahaan
-								</SelectCompany>
+								<SelectPublicUser
+									leftIcon={
+										<Icon
+											as={IconUser}
+											boxSize="22px"
+											color="green.600"
+										/>
+									}
+									{...propsWhenInMenu}
+									children="Dashboard Pengguna Publik"
+								/>
 							</MenuItem>
 						</MenuList>
 					</>

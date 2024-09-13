@@ -1,36 +1,9 @@
-import { HOST_URL } from '@/constants/config';
-import { Box, BoxProps, Button, Divider, Image, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconLogout, IconUser } from '@tabler/icons-react'; // prettier-ignore
-import axios from 'axios';
-import { useState } from 'react';
+import logo from '@/assets/logo/logo.svg';
+import useUser from '@/hooks/useUser';
+import { Box, BoxProps, Button, Divider, HStack, IconButton, Image, Portal, Spacer, VStack } from '@chakra-ui/react'; // prettier-ignore
+import { IconX } from '@tabler/icons-react'; // prettier-ignore
+import { useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import logo from '@/assets/icon.svg';
-
-const LogoutButton = () => {
-	const [isLoading, setIsLoading] = useState(false);
-
-	const onClickHandle = async () => {
-		setIsLoading(true);
-		const res = await axios.delete(HOST_URL + '/auth/logout');
-		setIsLoading(false);
-		if (res.statusText == 'OK') {
-			window.location.href = '/login';
-		}
-	};
-
-	return (
-		<Button
-			isLoading={isLoading}
-			p="3"
-			loadingText="Logout"
-			color={'gray.600'}
-			justifyContent="left"
-			leftIcon={<IconLogout />}
-			children={'Logout'}
-			onClick={onClickHandle}
-		/>
-	);
-};
 
 interface SidebarProps extends BoxProps {
 	navbarList: {
@@ -38,59 +11,111 @@ interface SidebarProps extends BoxProps {
 		label: string;
 		path: string;
 	}[];
-
 	setActiveNav: (v: any) => any;
+	sidebarIsColapseState: StateOf<boolean>;
 }
 
 export default function Sidebar({
 	navbarList,
 	setActiveNav,
+	sidebarIsColapseState,
 	...props
 }: SidebarProps) {
-	return (
-		<VStack p="5" align="stretch" minH="100vh" bg="gray.100" {...props}>
-			<Box as={Link} to="/" mb="4" ml="2">
-				<Image src={logo} h="40px" />
-			</Box>
+	const { screenType } = useUser();
+	const [sidebarIsCollapse, setSidebarIsColapse] = sidebarIsColapseState;
+	const ref = useRef<any>();
 
-			<VStack as="nav" align="stretch">
-				{navbarList
-					.filter((e) => e.Icon)
-					.map((e, i) => (
-						<NavLink to={e.path} key={i}>
-							{({ isActive }) => (
-								<Button
-									w="full"
-									p="3"
-									color={isActive ? 'gray.900' : 'gray.600'}
-									isActive={isActive}
-									leftIcon={<e.Icon />}
-									justifyContent="left"
-									children={e.label}
-									onClick={() => setActiveNav(e)}
-								/>
-							)}
-						</NavLink>
-					))}
+	const topNavlist = navbarList.filter(
+		(e) => !['/info', '/account'].includes(e.path) && e.Icon
+	);
+	const bottomNavlist = navbarList.filter(
+		(e) => ['/info', '/account'].includes(e.path) && e.Icon
+	);
+
+	const MyNavLink = ({ data }: { data: any }) => (
+		<NavLink to={data.path}>
+			{({ isActive }) => (
+				<Button
+					w="full"
+					p="2"
+					overflow="hidden"
+					color={isActive ? 'inherit' : 'gray.600'}
+					isActive={isActive}
+					fontWeight="600"
+					leftIcon={<data.Icon />}
+					justifyContent="left"
+					children={data.label}
+					onClick={() => {
+						if (screenType === 'mobile') setSidebarIsColapse(true);
+						setActiveNav(data);
+					}}
+				/>
+			)}
+		</NavLink>
+	);
+
+	return (
+		<VStack
+			className="sidebar"
+			transform={!sidebarIsCollapse ? 'translateX(0px)' : undefined}
+			py="4"
+			align="stretch"
+			bg="gray.100"
+			ref={ref}
+			{...props}
+		>
+			<HStack justify="space-between" mb="4" px="4" maxH="52px">
+				<Link to="/">
+					<Image h="40px" pl="2" src={logo} />
+				</Link>
+				<IconButton
+					className="is-mobile"
+					colorScheme="gray"
+					icon={<IconX />}
+					variant="ghost"
+					color="gray.600"
+					aria-label="Tutup Menu"
+					onClick={() => {
+						setSidebarIsColapse(true);
+					}}
+				/>
+			</HStack>
+
+			<VStack
+				px="4"
+				overflowY="auto"
+				scrollMarginX="10px"
+				className="custom-scrollbar"
+				as="nav"
+				align="stretch"
+				flexGrow="1"
+			>
+				{topNavlist.map((e, i) => (
+					<MyNavLink data={e} key={i} />
+				))}
+				<Spacer />
+				<Divider borderColor="gray.300" />
+				{bottomNavlist.map((e, i) => (
+					<MyNavLink data={e} key={i} />
+				))}
 			</VStack>
-			<Spacer />
-			<Divider />
-			<VStack align="stretch">
-				<NavLink to="/account">
-					{({ isActive }) => (
-						<Button
-							w="full"
-							p="3"
-							color={isActive ? 'gray.900' : 'gray.600'}
-							isActive={isActive}
-							justifyContent="left"
-							leftIcon={<IconUser />}
-							children={'Akun'}
-						/>
-					)}
-				</NavLink>
-				<LogoutButton />
-			</VStack>
+
+			{screenType == 'mobile' && !sidebarIsCollapse && (
+				<Portal>
+					<Box
+						onClick={() => setSidebarIsColapse(true)}
+						sx={{
+							position: 'fixed',
+							left: '0px',
+							top: '0px',
+							width: '100vw',
+							height: '100vh',
+							background: 'var(--chakra-colors-blackAlpha-600)',
+							zIndex: 'var(--chakra-zIndices-modal)',
+						}}
+					></Box>
+				</Portal>
+			)}
 		</VStack>
 	);
 }

@@ -1,5 +1,7 @@
 import MyMap from '@/components/Maps';
 import MyMarker from '@/components/Maps/marker';
+import useUser from '@/hooks/useUser';
+import { responsiveCardSize } from '@/utils/common.utils';
 import { Alert, Card, CardBody, Flex, Grid, HStack, Icon, Select, Text, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconSpeakerphone, IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -11,16 +13,17 @@ interface ReportSummaryCard {
 }
 
 export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
+	const { screenType } = useUser();
 	const [filter, setFilter] = useState(0);
 	const { average, countPerStar, count, reports } = data;
 
 	const ratingIcon = RatingIconList[Math.round(average) - 1];
 
 	return (
-		<Card size="sm" shadow="xs" p="1">
+		<Card size={responsiveCardSize} shadow="xs">
 			<CardBody>
 				{count ? (
-					<Flex gap="4">
+					<Flex gap="4" direction={screenType == 'desktop' ? 'row' : 'column'  }>
 						<VStack flex="1 1 0" align="stretch">
 							<Alert
 								colorScheme={ratingIcon.color.slice(0, -4)}
@@ -44,7 +47,7 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 										boxSize="50px"
 									/>
 									<HStack align="baseline" spacing="1">
-										<Text fontWeight="700" fontSize="3xl">
+										<Text fontWeight="600" fontSize="3xl">
 											{average.toFixed(2)}
 										</Text>
 										<Text>/5.00</Text>
@@ -97,7 +100,8 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 										</VStack>
 									))}
 							</Grid>
-							<HStack justify="space-between">
+
+							<HStack justify="space-between" mt="3">
 								<Text fontWeight="600">Filter aduan di peta</Text>
 								<Select
 									value={filter.toString()}
@@ -115,8 +119,10 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 								</Select>
 							</HStack>
 						</VStack>
+
 						<MyMap
 							flex="2 1 0"
+							minH="300px"
 							marker={MyMarker.RatingMarker}
 							scrollWheelZoom={false}
 							companiesData={[company]}
@@ -126,13 +132,7 @@ export function ReportSummaryCard({ data, company }: ReportSummaryCard) {
 						/>
 					</Flex>
 				) : (
-					<HStack
-						
-						justify="center"
-						py="10"
-						spacing="3"
-						color="gray.500"
-					>
+					<HStack justify="center" py="10" spacing="3" color="gray.500">
 						<Icon as={IconSpeakerphone} boxSize="45px" />
 						<Text fontSize="xl" fontWeight="500">
 							Tidak Ada Aduan

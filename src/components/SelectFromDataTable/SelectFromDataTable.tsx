@@ -51,6 +51,7 @@ const SelectFromDataTable = ({
 	);
 
 	const title = `Pilih ${itemName}`;
+	const rightIconSize = leftIcon ? '20px' : '15px';
 
 	const submitHandler = async () => {
 		const value = rowSelection2Object(rowSelection);
@@ -96,13 +97,22 @@ const SelectFromDataTable = ({
 				variant="outline"
 				bg="gray.50"
 				justifyContent="start"
-				rightIcon={<IconChevronDown size={leftIcon ? '20' : '15'} />}
+				rightIcon={<IconChevronDown size={rightIconSize} />}
 				onClick={onOpen}
 				leftIcon={leftIcon}
 				{...rest}
 			>
-				{children || (
-					<Box flexGrow="1" textTransform="capitalize" textAlign="left">
+				{children ? (
+					<Box flex="1 0 0" textAlign="left">
+						{children}
+					</Box>
+				) : (
+					<Box
+						flex="1 0 0"
+						maxW={`calc(100% - ${rightIconSize})`}
+						textTransform="capitalize"
+						textAlign="left"
+					>
 						{!hiddenTitleButton && (
 							<Text mb="1" fontSize="sm" children={itemName} />
 						)}
@@ -135,7 +145,7 @@ const SelectFromDataTable = ({
 								placeholder={'Cari Nama ' + itemName}
 								name="search"
 								w="100%"
-								mb="5"
+								mb="2"
 								_onSubmit={setSearchValue}
 							/>
 						)}

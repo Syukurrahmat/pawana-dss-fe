@@ -15,7 +15,7 @@ export function CardEventLog({ event }: CardEventLog) {
 		<Alert variant="left-accent" colorScheme={color} rounded="sm">
 			<HStack justify="space-between" w="full">
 				<VStack spacing='1' align='start'>
-					<AlertTitle fontWeight="600" children={event.name} />
+					<AlertTitle fontWeight="500" children={event.name} />
 
 					<HStack fontSize="sm" >
 						<Icon as={IconCalendar} boxSize="16px" />

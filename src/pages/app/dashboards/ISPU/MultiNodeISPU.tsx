@@ -16,7 +16,8 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 
 	const { value, datetime } = average.data;
 
-	if (!value || !highestIspuData || !lowestIspuData) return <ISPUCannotAnalize/>;
+	if (!value || !highestIspuData || !lowestIspuData)
+		return <ISPUCannotAnalize />;
 
 	const minMaxValues = [
 		{ nodeName: highest.name, ispuData: highestIspuData },
@@ -28,8 +29,10 @@ export default function MultiNodeISPU({ data }: MultiNodeISPU) {
 			<FinalISPUCard value={value[0]} />
 
 			<Stack
+				wrap="wrap"
 				direction="row"
 				spacing="4"
+				align="stretch"
 				w="full"
 				justifyContent="space-evenly"
 			>

@@ -24,7 +24,7 @@ export default function LoadingComponent() {
 				boxSize="58px"
 			/>
 			<VStack spacing='0' align={{base : 'center', sm : 'start'}} color="gray.500" >
-				<Heading size="lg">Mengambil Data</Heading>
+				<Heading size="lg" fontWeight='600'>Mengambil Data</Heading>
 				<Text>Harap tunggu sebentar </Text>
 			</VStack>
 		</Stack>

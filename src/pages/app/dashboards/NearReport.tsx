@@ -1,5 +1,6 @@
+import { responsiveCardSize } from '@/utils/common.utils';
 import { Box, Card, CardBody, CardHeader, CardProps, Center, HStack, Heading, Icon, Tag, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
-import { IconNotebookOff, IconSpeakerphone } from '@tabler/icons-react';
+import { IconSpeakerphone } from '@tabler/icons-react';
 import ReportCard from '../Reports/ReportCard';
 
 interface NearReport extends CardProps {
@@ -8,7 +9,7 @@ interface NearReport extends CardProps {
 
 export function NearReport({ data, ...rest }: NearReport) {
 	return (
-		<Card {...rest}>
+		<Card size={responsiveCardSize}  {...rest}>
 			<CardHeader pb="0" as={HStack}>
 				<Center
 					border="2px solid"
@@ -31,10 +32,10 @@ export function NearReport({ data, ...rest }: NearReport) {
 				</Text>
 				<VStack align="stretch">
 					{data.length ? (
-						data.map((e) => <ReportCard border='1px solid' rounded='lg' borderColor='gray.200' size='sm'  data={e} key={e.reportId} />)
+						data.map((e) => <ReportCard showSeeInMap={false} border='1px solid' rounded='lg' borderColor='gray.200' size='sm'  data={e} key={e.reportId} />)
 					) : (
 						<HStack justify="center" color="gray.500" py="3">
-							<IconNotebookOff stroke="1.2" size="40" />
+							<IconSpeakerphone stroke="1.2" size="40" />
 							<Text fontWeight="500" fontSize="lg">
 								Tidak ada Aduan di sekitar
 							</Text>

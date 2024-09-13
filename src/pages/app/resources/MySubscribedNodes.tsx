@@ -12,7 +12,7 @@ export default function MySubscribedNodes() {
 			<HStack justify="space-between">
 				<Box>
 					<Heading size="lg">Node Saya</Heading>
-					<Text>Daftar node yang Anda ikuti</Text>
+					<Text color='dimmed'>Daftar node yang Anda ikuti</Text>
 				</Box>
 				<NodeSubscription
 					subsInfo={{
@@ -27,7 +27,7 @@ export default function MySubscribedNodes() {
 					/>
 				</NodeSubscription>
 			</HStack>
-			<Container maxW="container.md" mt="6">
+			<Container maxW="container.md" px='0' mt="6">
 				<UserSubscribedNodesList data={user} />
 			</Container>
 		</Box>

@@ -1,9 +1,7 @@
-import { Avatar, Box, HStack, Text, Button, Spacer, ModalOverlay, Modal, useDisclosure, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, VStack, ModalCloseButton } from '@chakra-ui/react';
+import { Avatar, Box, Button, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spacer, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { IconEdit, IconInfoCircle, IconTrash } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import AvatarEditor from 'react-avatar-editor';
-import axios from 'axios';
-import { API_URL } from '@/constants/config';
 
 export function ProfilePicture({ name, src }: { name: string; src?: string; }) {
 	const inputRef = useRef<HTMLInputElement>();
@@ -14,12 +12,12 @@ export function ProfilePicture({ name, src }: { name: string; src?: string; }) {
 
 	const saveHandle = async () => {
 		if (avatarEditorRef.current) {
-			const img = avatarEditorRef.current.getImage().toDataURL(); // @ts-ignore
+			// const img = avatarEditorRef.current.getImage().toDataURL(); // @ts-ignore
 
-			axios
-				.post(API_URL + '/upload', {
-					images: [img],
-				})
+			// axios
+			// 	.post(API_URL + '/upload', {
+			// 		images: [img],
+			// 	})
 			// let img = await fetch(canvas)
 			// 	.then((res) => res.blob())
 			// 	.then((blob) => window.URL.createObjectURL(blob));

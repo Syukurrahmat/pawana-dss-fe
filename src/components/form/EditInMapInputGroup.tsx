@@ -23,9 +23,9 @@ export default function EditInMapInputGroup({
 	const [editedCoordinate, setEditedCoordinate] = editedCoordinateState;
 
 	return (
-		<HStack align="start">
-			{!isEditing && (
-				<>
+		<HStack align="start" wrap="wrap-reverse">
+			{!isEditing ? (
+				<HStack justify='space-between' w='full' wrap="wrap">
 					<GMapsButton size="md" coordinate={coordinate}>
 						Buka lokasi Perusahaan di Gmaps
 					</GMapsButton>
@@ -39,12 +39,10 @@ export default function EditInMapInputGroup({
 							onClick={() => setIsEditing(true)}
 						/>
 					)}
-				</>
-			)}
-
-			{isEditing && (
+				</HStack>
+			) : (
 				<>
-					<VStack align="start">
+					<VStack align="start" >
 						<HStack w="full">
 							<Box w="full">
 								<Text fontSize="sm">Masukkan Latitude</Text>
@@ -82,24 +80,28 @@ export default function EditInMapInputGroup({
 							dimaksud
 						</Text>
 					</VStack>
+					
 					<Spacer />
-					<Button
-						colorScheme="red"
-						leftIcon={<IconMapCancel size="18" />}
-						children="Batal"
-						onClick={() => {
-							setEditedCoordinate(coordinate);
-							setIsEditing(false);
-						}}
-						isDisabled={isSubmiting}
-					/>
-					<Button
-						colorScheme="blue"
-						leftIcon={<IconDeviceFloppy size="18" />}
-						children="Simpan"
-						isLoading={isSubmiting}
-						onClick={handleSubmitEditedCoordinate}
-					/>
+
+					<HStack mt='1' justify='end' w='full'>
+						<Button
+							colorScheme="red"
+							leftIcon={<IconMapCancel size="18" />}
+							children="Batal Sunting"
+							onClick={() => {
+								setEditedCoordinate(coordinate);
+								setIsEditing(false);
+							}}
+							isDisabled={isSubmiting}
+						/>
+						<Button
+							colorScheme="blue"
+							leftIcon={<IconDeviceFloppy size="18" />}
+							children="Simpan"
+							isLoading={isSubmiting}
+							onClick={handleSubmitEditedCoordinate}
+						/>
+					</HStack>
 				</>
 			)}
 		</HStack>

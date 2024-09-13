@@ -1,5 +1,6 @@
-import logo from '@/assets/logo/icon.svg';
-import { HOST_URL } from '@/constants/config';
+import logo from '@/assets/logo/logo.svg';
+import { SERVER_URL } from '@/constants/config';
+import { responsiveCardSize } from '@/utils/common.utils';
 import { Box, Card, CardBody, CardHeader, Center, Container, Divider, Heading, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react'; // prettier-ignore
 import {
 	IconAlertTriangle,
@@ -63,7 +64,7 @@ export default function VerifyPage() {
 		}
 
 		axios
-			.post(HOST_URL + '/auth/verify', { token }, {withCredentials : true})
+			.post(SERVER_URL + '/auth/verify', { token }, {withCredentials : true})
 			.then(() => setState('success'))
 			.catch(({ response }) => {
 				response.status === 409
@@ -84,7 +85,7 @@ export default function VerifyPage() {
 			justify="center"
 		>
 			<Container maxW="container.sm" pb="15">
-				<Card shadow="xl">
+				<Card shadow="xl" size={responsiveCardSize}>
 					<CardHeader py="2" textAlign="center">
 						<Image src={logo} h="40px" />
 					</CardHeader>

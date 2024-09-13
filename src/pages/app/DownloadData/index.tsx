@@ -4,11 +4,7 @@ import qs from 'qs';
 import { useState } from 'react';
 import useSWR from 'swr';
 import DisplayData from './displayData';
-import {
-	FormSelectNodeForAdmin,
-	FormSelectNodeForManager,
-} from './FormSelectNode';
-import useUser from '@/hooks/useUser';
+import { FormSelectNode } from './FormSelectNode';
 
 export type NodeWithDateRange = {
 	nodeId: number;
@@ -17,7 +13,6 @@ export type NodeWithDateRange = {
 };
 
 export default function DownloadData() {
-	const { roleIs } = useUser();
 	const [nodeWithDateRange, setNodeWithDateRange] =
 		useState<NodeWithDateRange>({
 			nodeId: NaN,
@@ -35,18 +30,12 @@ export default function DownloadData() {
 	return (
 		<Box>
 			<Heading size="lg">Akses data yang dikirim dari node</Heading>
-			<Text>Pilih node dan unduh data untuk analisis secara mandiri</Text>
+			<Text color='dimmed'>Pilih node dan unduh data untuk analisis secara mandiri</Text>
 
-			<Container maxW="container.md" as={VStack} mt="8" p="0">
-				{roleIs(['admin', 'gov']) ? (
-					<FormSelectNodeForAdmin
-						selectedDataState={[nodeWithDateRange, setNodeWithDateRange]}
-					/>
-				) : (
-					<FormSelectNodeForManager
-						selectedDataState={[nodeWithDateRange, setNodeWithDateRange]}
-					/>
-				)}
+			<Container maxW="container.md" as={VStack} spacing="4" mt="6" p="0">
+				<FormSelectNode
+					selectedDataState={[nodeWithDateRange, setNodeWithDateRange]}
+				/>
 				<DisplayData data={data} isLoading={isLoading} />
 			</Container>
 		</Box>

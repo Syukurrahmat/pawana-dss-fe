@@ -8,9 +8,17 @@ interface IPagination extends BoxProps {
 }
 
 export const Pagination = ({ table, sizes, ...rest }: IPagination) => (
-	<HStack {...rest} w="full" justify="space-between">
+	<HStack
+		{...rest}
+		wrap="wrap"
+		rowGap="3"
+		px='0'
+		spacing='0'
+		w="full"
+		justify="space-between"
+	>
 		{table.getRowCount() > sizes[0] && (
-			<HStack>
+			<HStack flexBasis='200px' >
 				<Text>Tampikan</Text>
 				<Select
 					size="sm"
@@ -29,7 +37,7 @@ export const Pagination = ({ table, sizes, ...rest }: IPagination) => (
 		{!(
 			table.getState().pagination.pageIndex == 0 && table.getPageCount() <= 1
 		) && (
-			<HStack>
+			<HStack px='0'  flex='1' justify="end">
 				<IconButton
 					aria-label="Sebelumnya"
 					icon={<IconChevronsLeft size="20" />}
@@ -49,7 +57,7 @@ export const Pagination = ({ table, sizes, ...rest }: IPagination) => (
 					onClick={table.previousPage}
 				/>
 
-				<Text>
+				<Text flexShrink='0'>
 					{table.getState().pagination.pageIndex + 1} dari{' '}
 					{table.getPageCount()}
 				</Text>

@@ -59,14 +59,14 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 						return (
 							<VStack spacing="1" key={i}>
 								<HStack color="gray.600" fontSize="lg">
-									<Text fontWeight="700">
+									<Text fontWeight="600">
 										{symbol.slice(0, 2)}
 										<sub>{symbol[2]}</sub>
 									</Text>
 									<Text fontWeight="500">{name}</Text>
 								</HStack>
 								<GaugeChart
-									style={{ width: '125px' }}
+									style={{ maxWidth: '125px', width : '100%' }}
 									arcsLength={threshold}
 									colors={GAUGE_CHART_COLORS}
 									percent={value > max ? 1 : value / max}

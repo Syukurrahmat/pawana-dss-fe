@@ -3,7 +3,7 @@ import {
 	Input,
 	InputGroup,
 	InputProps,
-	InputRightElement
+	InputRightElement,
 } from '@chakra-ui/react';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -16,15 +16,15 @@ export default function InputSearch({ _onSubmit, ...rest }: IInputSearch) {
 	const [searchValue, setSearchValue] = useState('');
 
 	return (
-		<InputGroup size={rest.size || 'md'} w={rest.w || 'fit-content'}>
+		<InputGroup {...rest} rounded="md">
 			<Input
 				value={searchValue}
 				onChange={(e) => setSearchValue(e.target.value)}
 				size={rest.size || 'md'}
-				{...rest}
-				onKeyPress={(e) => {
-					if (e.key === 'Enter') _onSubmit(searchValue); 
+				onKeyDown={(e) => {
+					if (e.key === 'Enter') _onSubmit(searchValue);
 				}}
+				{...rest}
 			/>
 			<InputRightElement py="2">
 				<IconButton

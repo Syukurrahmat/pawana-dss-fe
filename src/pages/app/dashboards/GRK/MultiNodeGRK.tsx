@@ -40,6 +40,9 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 				border="1px solid"
 				borderColor="gray.300"
 				rounded="5"
+				spacing='6'
+				wrap='wrap'
+				justifyItems='start'
 			>
 				{grkEmissionList.map(
 					({ symbol, name, threshold, data, max }, i) => {
@@ -50,11 +53,11 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 								: getCH4Properties(category);
 
 						return (
-							<VStack spacing="1" key={i} h="86px">
+							<VStack spacing="1" key={i}  >
 								<HStack
 									color="gray.600"
 									alignSelf="start"
-									fontSize="lg"
+									fontSize="xl"
 									spacing="1"
 								>
 									<Text fontWeight="600">
@@ -63,7 +66,7 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 									</Text>
 									<Text fontWeight="600">{name}</Text>
 								</HStack>
-								<HStack>
+								<HStack spacing={{base : '10', md : '4'}}>
 									<Box>
 										<Text
 											fontSize="xl"
@@ -93,7 +96,7 @@ export default function MultiNodeGRK({ CH4data, CO2data }: MultiNodeISPU) {
 				)}
 			</HStack>
 
-			<HStack w="full">
+			<HStack wrap='wrap' w="full" rowGap={4}>
 				{grkEmissionList.map(({ symbol, data }, i) => {
 					return (
 						<VStack
