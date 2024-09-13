@@ -1,10 +1,9 @@
+import useUser from '@/hooks/useUser';
+import ErrorPage from '@/pages/other/page404';
 import { IconBuildingFactory2, IconCircleDot, IconDashboard, IconDatabase, IconFileReport, IconInfoSquareRounded, IconNotebook, IconSpeakerphone, IconUser } from '@tabler/icons-react'; // prettier-ignore
 import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../layout';
-import ErrorPage from '@/pages/other/page404';
-import { MODE } from '@/constants/config';
-import useUser from '@/hooks/useUser';
 
 const ReportsPage = lazy(() => import('@/pages/app/Reports'));
 const DetailUser = lazy(() => import('@/pages/admin/Users/DetailUser'));
@@ -23,7 +22,7 @@ const MySubscribedNodes = lazy(() => import('@/pages/app/Resources/MySubscribedN
 const MyPrivateNode = lazy(() => import('@/pages/app/Resources/MyPrivateNode'));
 const Summary = lazy(() => import('@/pages/app/Summary'));
 const Data = lazy(() => import('@/pages/app/DownloadData'));
-const Info = lazy(() => import('@/pages/app/Info'));
+const InfoPage = lazy(() => import('@/pages/app/InfoPage'));
 
 const routers = [
 	{
@@ -162,16 +161,11 @@ const routers = [
 		path: '/info',
 		label: 'Info',
 		Icon: IconInfoSquareRounded,
-		element: <Info />,
+		element: <InfoPage />,
 		role: ['all'],
 	},
 ];
 
-
-export const RouterProviderRoleBase = () => {
-	const { user } = useUser();
-	return <RouterProvider router={generateAppRouter(user.role)} />;
-};
 
 export const generateAppRouter = (role: string) => {
 	const routerList = routers.filter(
@@ -187,9 +181,12 @@ export const generateAppRouter = (role: string) => {
 			path: '/',
 			element: <App navbarList={navlist} />,
 			children: routerList,
-			errorElement: MODE == 'production' ? <ErrorPage /> : undefined,
+			errorElement: (import.meta as any).env.PROD ? <ErrorPage /> : undefined,
 		},
 	]);
 };
 
-
+export const RouterProviderRoleBase = () => {
+	const { user } = useUser();
+	return <RouterProvider router={generateAppRouter(user.role)} />;
+};
