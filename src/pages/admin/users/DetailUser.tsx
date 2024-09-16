@@ -14,6 +14,7 @@ import UserSubscribedNodesList from './DTUserSubscribedNodes';
 import EditPasswordButton from './EditUserPass';
 import EditUserProfileButton from './EditUserProfile';
 import { ProfilePicture } from './ProfilePicture';
+import NodeSubscription from '@/components/common/AddNodeSubscription';
 
 export default function DetailUser() {
 	const location = useLocation();
@@ -42,8 +43,8 @@ export default function DetailUser() {
 				>
 					<ProfilePicture name={data.name} src={data.profilePicture} />
 
-					<Box flex='1 0 0' w='full'>
-						<TagUserRole  value={data.role} />
+					<Box flex="1 0 0" w="full">
+						<TagUserRole value={data.role} />
 						<Heading my="1" fontSize="2xl">
 							{data.name}
 						</Heading>
@@ -125,11 +126,18 @@ export default function DetailUser() {
 
 								{roleIs('admin') && (
 									<HStack>
-										<Button
-											colorScheme="blue"
-											leftIcon={<IconCirclePlus size="18" />}
-											children="Tambahkan Node"
-										/>
+										<NodeSubscription
+											subsInfo={{
+												type: 'user',
+												userId: data.userId,
+											}}
+										>
+											<Button
+												colorScheme="blue"
+												leftIcon={<IconCirclePlus size="18" />}
+												children="Tambahkan Node"
+											/>
+										</NodeSubscription>
 									</HStack>
 								)}
 
@@ -152,7 +160,7 @@ export default function DetailUser() {
 								</EditPasswordButton>
 							)}
 							<DeleteResourceButton
-								resource="Pengguna"
+								resource={isProfilePage ? 'Akun' : 'Pengguna'}
 								name={data.name}
 								colorScheme="red"
 								deleteApiUrl={'/users/' + data.userId}
