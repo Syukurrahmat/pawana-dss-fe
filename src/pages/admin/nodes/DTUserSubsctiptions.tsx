@@ -109,8 +109,7 @@ export default function UserSubsctiptionsList({
 			{!!countUserSubscription && (
 				<HStack mt="4" justify='end' >
 					<InputSearch
-						w="300px"
-						flex="1 0 300px"
+						w="350px"
 						rounded="md"
 						bg="white"
 						placeholder="Cari Pengguna"
