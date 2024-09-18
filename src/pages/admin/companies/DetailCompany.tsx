@@ -32,7 +32,7 @@ export default function DetailCompany() {
 		<Box>
 			<HeadingWithIcon Icon={<IconBuildingFactory2 />} text="Detail Perusahaan" />
 			<Container mt="6" px="0" maxW="container.md">
-				<HStack justify="space-between" wrap='wrap' spacing='6'>
+				<HStack justify="space-between" align='start' wrap='wrap' spacing='6'>
 					<Box>
 						<Heading fontSize="3xl" children={data.name} />
 						<HStack mt="2">
