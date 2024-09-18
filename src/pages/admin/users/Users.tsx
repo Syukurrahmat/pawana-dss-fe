@@ -72,7 +72,7 @@ const columns = [
 const columnWithOutRole = columns.filter((e) => e.accessorKey !== 'role');
 
 export default function UserManagement() {
-	const hashTabs = ['all', 'regular', 'manager', 'admin', 'gov', 'unverified'];
+	const hashTabs = ['all', 'public', 'industry', 'admin', 'gov', 'unverified'];
 	const [tabIndex, handleTabsChange] = useHashBasedTabsIndex(hashTabs);
 	const { roleIs } = useUser();
 	const { data } = useSWR<UsersSummary>('/users/overview', fetcher);
@@ -134,8 +134,8 @@ export default function UserManagement() {
 			<Tabs isLazy mt="2" index={tabIndex} onChange={handleTabsChange}>
 				<TabList flexWrap="wrap" rowGap="4px">
 					<Tab>Semua</Tab>
-					<Tab>Regular</Tab>
-					<Tab>Manager</Tab>
+					<Tab>Masyarakat Umum</Tab>
+					<Tab>Pemilik Usaha</Tab>
 					<Tab>Admin</Tab>
 					<Tab>Pemerintah</Tab>
 					<Tab>Belum diverifikasi</Tab>

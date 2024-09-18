@@ -101,9 +101,9 @@ export const nodeStatusAttr: (attributes) = {
 }
 
 export const userRoleAttr: attributes = {
-    regular: { icon: IconUser, color: 'green', name: 'Reguler' },
-    manager: { icon: IconUserBolt, color: 'blue', name: 'Manajer' },
-    admin: { icon: IconUserCog, color: 'orange', name: 'Admin' },
+    regular: { icon: IconUser, color: 'green', name: 'Masyarakat Umum' },
+    manager: { icon: IconUserBolt, color: 'blue', name: 'Pemilik Usaha' },
+    admin: { icon: IconUserCog, color: 'orange', name: 'Administrator' },
     gov: { icon: IconUserShield, color: 'yellow', name: 'Pemerintah' },
     unverified: { icon: IconUserCancel, color: 'gray', name: 'Belum diverifikasi' },
 }
