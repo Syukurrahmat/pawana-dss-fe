@@ -5,12 +5,12 @@ import LoadingComponent from '@/components/common/LoadingComponent';
 import SectionTitle from '@/components/common/SectionTitle';
 import TagWithIcon from '@/components/common/TagWithIcon';
 import UserCard from '@/components/managerCard';
-import { companyTypeAttr } from '@/constants/enumVariable';
+import { TagCompanyType } from '@/components/Tags/index.tags';
 import useUser from '@/hooks/useUser';
 import { toFormatedDate } from '@/utils/dateFormating';
 import { fetcher } from '@/utils/fetcher';
 import { Box, Container, HStack, Heading, Spacer, Text } from '@chakra-ui/react'; //prettier-ignore
-import { IconAddressBook, IconBuildingFactory2, IconCalendar, IconEdit, IconLock, IconTag, IconTextCaption } from '@tabler/icons-react'; //prettier-ignore
+import { IconAddressBook, IconBuildingFactory2, IconCalendar, IconEdit, IconLock, IconTextCaption } from '@tabler/icons-react'; //prettier-ignore
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import CompanySubscribedNodesList from './DTCompanySubscribedNodes';
@@ -30,9 +30,17 @@ export default function DetailCompany() {
 
 	return (
 		<Box>
-			<HeadingWithIcon Icon={<IconBuildingFactory2 />} text="Detail Perusahaan" />
+			<HeadingWithIcon
+				Icon={<IconBuildingFactory2 />}
+				text="Detail Perusahaan"
+			/>
 			<Container mt="6" px="0" maxW="container.md">
-				<HStack justify="space-between" align='start' wrap='wrap' spacing='6'>
+				<HStack
+					justify="space-between"
+					align="start"
+					wrap="wrap"
+					spacing="6"
+				>
 					<Box>
 						<Heading fontSize="3xl" children={data.name} />
 						<HStack mt="2">
@@ -43,12 +51,7 @@ export default function DetailCompany() {
 									data.createdAt
 								)}`}
 							/>
-							<TagWithIcon
-								icon={IconTag}
-								colorScheme={companyTypeAttr[data.type].color}
-								textTransform="capitalize"
-								children={data.type}
-							/>
+							<TagCompanyType value={data.type} />
 						</HStack>
 						{['admin', 'gov'].includes(user.role) && (
 							<UserCard mt="3" data={data.manager} label="manager" />
