@@ -126,6 +126,7 @@ export default function Summary() {
 							<TrenCard
 								title="Tren Kualitas Udara"
 								tren={data.tren}
+								eventLogs={data.eventLogs.eventLogs}
 								paramList={airQualityTrenList}
 							/>
 						</>
@@ -155,6 +156,7 @@ export default function Summary() {
 							<TrenCard
 								title="Tren Emisi Gas Rumah Kaca"
 								tren={data.tren}
+								eventLogs={data.eventLogs.eventLogs}
 								paramList={gassEmissionTrenList}
 							/>
 						</>

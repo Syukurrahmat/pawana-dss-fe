@@ -13,7 +13,7 @@ import { UNIT_CH4, UNIT_CO2, UNIT_PM } from '@/constants/data';
 interface LineChartData<T> {
 	data: T[];
 	withBrush?: boolean;
-	events?: DTEventLog[];
+	eventLogs?: DTEventLog[];
 	dataKeyTypeAndFunc?: DatakeyFunc<T> | DatakeyFunc<T>[];
 	tickFormat?: string;
 	simple?: boolean;
@@ -22,7 +22,7 @@ interface LineChartData<T> {
 
 export default function MyLineChart<T extends { datetime: string }>({
 	data,
-	events = [],
+	eventLogs = [],
 	dataKeyTypeAndFunc = [],
 	tickFormat = 'HH:MM',
 	simple,
@@ -60,6 +60,8 @@ export default function MyLineChart<T extends { datetime: string }>({
 
 	return (
 		<>
+			<pre>{JSON.stringify(eventLogs)}</pre>
+
 			<ResponsiveContainer width="100%" height="100%">
 				<AreaChart
 					data={data.sort(
@@ -98,7 +100,9 @@ export default function MyLineChart<T extends { datetime: string }>({
 						tickCount={30}
 						minTickGap={10}
 					/>
-					<YAxis  width={gasType == 'PM10' || gasType == 'PM2.5' ? 36 : 44}/>
+					<YAxis
+						width={gasType == 'PM10' || gasType == 'PM2.5' ? 36 : 44}
+					/>
 					<CartesianGrid strokeDasharray="3 3" />
 
 					<Tooltip
@@ -120,19 +124,20 @@ export default function MyLineChart<T extends { datetime: string }>({
 									tooltipLabel={tooltipLabel}
 									getPropertiesFunc={tooltipGetPropertiesFunc}
 									unit={unit}
+									eventLogs={eventLogs}
 								/>
 							)
 						}
 					/>
 
-					{!!events.length &&
-						events.map((event) => (
+					{!!eventLogs.length &&
+						eventLogs.map((event) => (
 							<ReferenceArea
 								key={event.eventLogId}
 								x1={moment(event.startDate).startOf('d').valueOf()}
 								x2={
 									event.endDate
-										? moment(event.endDate).endOf('d').valueOf()
+										? moment(event.endDate).startOf('d').valueOf()
 										: undefined
 								}
 								ifOverflow="hidden"
@@ -145,7 +150,10 @@ export default function MyLineChart<T extends { datetime: string }>({
 						<Legend
 							verticalAlign="top"
 							align="right"
-							wrapperStyle={{ height: 'max-content', padding : '12px 0 ' }}
+							wrapperStyle={{
+								height: 'max-content',
+								padding: '12px 0 ',
+							}}
 						/>
 					)}
 

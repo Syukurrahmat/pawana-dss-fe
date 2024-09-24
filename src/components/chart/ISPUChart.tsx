@@ -16,7 +16,7 @@ interface MyISPUChart<T> {
 	dataKeyTypeAndFunc?: DatakeyFunc<T>[] | DatakeyFunc<T>;
 	indoorDatakeyFunc?: (e: T) => any;
 	outdoorDatakeyFunc?: (e: T) => any;
-	events?: DTEventLog[];
+	eventLogs?: DTEventLog[];
 	tickFormat?: string;
 	offsetDomain?: moment.unitOfTime.DurationConstructor;
 	simple?: boolean;
@@ -31,7 +31,7 @@ interface BrushStartEndIndex {
 export default function MyISPUChart<T extends { datetime: string }>({
 	data,
 	tooltipLabel,
-	events = [],
+	eventLogs = [],
 	simple,
 	dataKeyTypeAndFunc = [],
 	tickFormat = 'HH:mm',
@@ -98,7 +98,8 @@ export default function MyISPUChart<T extends { datetime: string }>({
 						tickFormatter={(e) => moment(e).format(tickFormat)}
 						type="number"
 						tickCount={data.length > 30 ? 30 : data.length + 2}
-						minTickGap={10}
+						minTickGap={15}
+						tickLine={false}
 						domain={[
 							'dataMin-' +
 								moment.duration(0.5, offsetDomain).asMilliseconds(),
@@ -121,6 +122,7 @@ export default function MyISPUChart<T extends { datetime: string }>({
 							) : (
 								// @ts-ignore
 								<MultipleTrenTooltip
+									eventLogs={eventLogs}
 									tickFormat={tickFormat}
 									dataKeyTypeAndFunc={dataKeyTypeAndFunc}
 									tooltipLabel={tooltipLabel}
@@ -130,19 +132,26 @@ export default function MyISPUChart<T extends { datetime: string }>({
 						}
 					/>
 
-					{!!events.length &&
-						events.map((event) => (
+					{!simple &&
+						!!eventLogs.length &&
+						eventLogs.map((event) => (
 							<ReferenceArea
 								key={event.eventLogId}
-								x1={moment(event.startDate).startOf('d').valueOf()}
+								x1={
+									moment(event.startDate).valueOf() -
+									moment.duration(0.5, offsetDomain).asMilliseconds()
+								}
 								x2={
 									event.endDate
-										? moment(event.endDate).endOf('d').valueOf()
+										? moment(event.endDate).valueOf() +
+										  moment
+												.duration(0.5, offsetDomain)
+												.asMilliseconds()
 										: undefined
 								}
 								ifOverflow="hidden"
 								fill={`var(--chakra-colors-${eventLogsTypeAttr[event.type]?.color || 'gray'}-500)`} //prettier-ignore
-								fillOpacity={0.1}
+								fillOpacity={0.2}
 							/>
 						))}
 
@@ -185,10 +194,13 @@ export default function MyISPUChart<T extends { datetime: string }>({
 						<Legend
 							verticalAlign="top"
 							align="right"
-							wrapperStyle={{ height: 'max-content', padding : '12px 0 ' }}
+							wrapperStyle={{
+								height: 'max-content',
+								padding: '12px 0 ',
+							}}
 							content={({ payload }) => {
 								return (
-									<HStack spacing="3" justify="end" wrap='wrap'>
+									<HStack spacing="3" justify="end" wrap="wrap">
 										{payload?.map((entry, i) => (
 											<HStack key={i}>
 												<Box
@@ -234,4 +246,3 @@ export default function MyISPUChart<T extends { datetime: string }>({
 		</>
 	);
 }
-
