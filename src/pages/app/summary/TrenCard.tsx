@@ -32,6 +32,7 @@ export function TrenCard({ title, tren, eventLogs, paramList }: TrenCard) {
 				<HStack as="label" userSelect="none">
 					<Text fontSize="sm">Tampilkan Kegiatan Perusahaan</Text>
 					<Switch
+						defaultChecked={showEventLog}
 						checked={showEventLog}
 						onChange={(e) => setShowEventLog(e.target.checked)}
 					/>
@@ -86,7 +87,7 @@ export function TrenCard({ title, tren, eventLogs, paramList }: TrenCard) {
 							<Divider mt="4" />
 							<TabPanels>
 								{paramList.map((param, i) => (
-									<TabPanel key={i} h="440px" p="0">
+									<TabPanel key={i} h="380px" p="0">
 										{param.type == 'bar' ? (
 											<MyISPUChart
 												data={tren || []}

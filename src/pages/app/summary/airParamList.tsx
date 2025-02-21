@@ -52,17 +52,17 @@ export const airQualityTrenList: AirParamList[] = [
 export const gassEmissionTrenList: AirParamList[] = [
 	{
 		type: 'line',
-		name: 'CH4',
+		name: 'CO2',
 		dataKeyTypeAndFunc: (envType) => ({
-			func: (e) => e[envType]?.ch4,
+			func: (e) => e[envType]?.co2,
 			envType,
 		}),
 	},
 	{
 		type: 'line',
-		name: 'CO2',
+		name: 'CH4',
 		dataKeyTypeAndFunc: (envType) => ({
-			func: (e) => e[envType]?.co2,
+			func: (e) => e[envType]?.ch4,
 			envType,
 		}),
 	},

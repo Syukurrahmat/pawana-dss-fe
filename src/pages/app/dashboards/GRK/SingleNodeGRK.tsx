@@ -20,18 +20,18 @@ interface SingleNodeISPU {
 export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 	const grkEmissionList = [
 		{
-			symbol: 'CH4',
-			name: 'Metana',
-			threshold: TRESHOLD_CH4,
-			max: MAX_CH4,
-			data: CH4data,
-		},
-		{
 			symbol: 'CO2',
 			name: 'Karbondioksida',
 			max: MAX_CO2,
 			threshold: TRESHOLD_CO2,
 			data: CO2data,
+		},
+		{
+			symbol: 'CH4',
+			name: 'Metana',
+			threshold: TRESHOLD_CH4,
+			max: MAX_CH4,
+			data: CH4data,
 		},
 	];
 
@@ -66,7 +66,7 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 									<Text fontWeight="500">{name}</Text>
 								</HStack>
 								<GaugeChart
-									style={{ maxWidth: '125px', width : '100%' }}
+									style={{ maxWidth: '125px', width: '100%' }}
 									arcsLength={threshold}
 									colors={GAUGE_CHART_COLORS}
 									percent={value > max ? 1 : value / max}
@@ -99,25 +99,25 @@ export default function SingleNodeGRK({ CO2data, CH4data }: SingleNodeISPU) {
 					<TabPanel>
 						<Box h="110px" w="full">
 							<Text fontWeight="600" mb="2">
-								Tren Gas Metana (CH4)
+								Tren Karbondioksida (CO2)
 							</Text>
 							<MyLineChart
 								simple
-								data={CH4data.tren}
-								gasType='CH4'
+								gasType="CO2"
+								data={CO2data.tren}
 								dataKeyTypeAndFunc={{
 									func: (e) => e.value,
 								}}
 							/>
 						</Box>
-						<Box mt="8" h="110px" w="full">
+						<Box  mt="8" h="110px" w="full">
 							<Text fontWeight="600" mb="2">
-								Tren Karbondioksida (CO2)
+								Tren Gas Metana (CH4)
 							</Text>
 							<MyLineChart
 								simple
-								gasType='CO2'
-								data={CO2data.tren}
+								data={CH4data.tren}
+								gasType="CH4"
 								dataKeyTypeAndFunc={{
 									func: (e) => e.value,
 								}}

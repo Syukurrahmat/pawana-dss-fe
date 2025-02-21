@@ -81,7 +81,7 @@ export function GRKRecomendationSection({ indoor, outdoor }: AverageSection) {
 
 				<TabPanels pb="2">
 					{list.map(({ key, data }) => (
-						<TabPanel px="0" py="1" key={key} as={VStack} align="start">
+						<TabPanel   px="0" py="1" key={key} as={VStack} align="start">
 							<Grid
 								templateColumns="repeat(auto-fit, minmax(200px, 1fr))"
 								gap={6}
@@ -117,7 +117,7 @@ function RecomendationContent({
 	recomendation,
 }: RecomendationContent) {
 	return (
-		<Box as={VStack} align="start">
+		<Box as={VStack} align="start" >
 			<Tag
 				colorScheme={type == 'indoor' ? 'blue' : 'green'}
 				size="lg"
@@ -130,8 +130,8 @@ function RecomendationContent({
 				/>
 				{label}
 			</Tag>
-			<Box mt="1">
-				<Text textAlign="justify">{recomendation?.info}</Text>
+			<Box mt="1" >
+				<Text textAlign="justify" >{recomendation?.info}</Text>
 				<Text textAlign="justify" mt="1">
 					<Text as="span" fontWeight={600}>
 						Saran :{' '}

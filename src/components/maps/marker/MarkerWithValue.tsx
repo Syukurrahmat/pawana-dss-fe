@@ -9,6 +9,7 @@ type ValueNodeMarker = NodeData & {
 		datetime: string;
 		color: string;
 		name: string;
+		unit: string;
 	};
 };
 
@@ -30,7 +31,13 @@ export default function ValueMarker(props: MyMarker<ValueNodeMarker>) {
 				<VStack spacing="1" align="end">
 					{data ? (
 						(() => {
-							const { value, datetime, name: dataName, color } = data;
+							const {
+								value,
+								datetime,
+								name: dataName,
+								color,
+								unit,
+							} = data;
 
 							return (
 								<>
@@ -46,7 +53,9 @@ export default function ValueMarker(props: MyMarker<ValueNodeMarker>) {
 												<Tag children={dataName} />
 												<Tag
 													colorScheme={color || 'gray'}
-													children={value}
+													children={
+														value + (unit ? ' ' + unit : '')
+													}
 												/>
 											</>
 										)}

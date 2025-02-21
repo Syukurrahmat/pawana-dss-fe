@@ -4,6 +4,7 @@ import { TagCompanyType } from '@/components/Tags/index.tags';
 import { ChangeActiveDashboard } from '@/components/common/ChangeActiveDashButton';
 import CompanyIcon from '@/components/common/CompanyIcon';
 import TagWithIcon from '@/components/common/TagWithIcon';
+import { UNIT_CH4, UNIT_CO2, UNIT_PM } from '@/constants/data';
 import useUser from '@/hooks/useUser';
 import { getISPUProperties } from '@/utils/common.utils';
 import { toFormatedDate } from '@/utils/dateFormating';
@@ -52,6 +53,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 				...e,
 				data: {
 					name: 'PM2.5',
+					unit : UNIT_PM,
 					...e.latestData?.pm25,
 				},
 			})),
@@ -62,6 +64,7 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 				...e,
 				data: {
 					name: 'PM10',
+					unit : UNIT_PM,
 					...e.latestData?.pm100,
 				},
 			})),
@@ -78,7 +81,8 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 						name: 'CH4',
 						datetime,
 						value: value.value,
-						color: '',
+						color: 'green',
+						unit : UNIT_CH4
 					},
 				};
 			}),
@@ -95,7 +99,8 @@ export default function DashboardInfo({ data }: { data: DashboardDataType }) {
 						name: 'CO2',
 						datetime,
 						value: value.value,
-						color: '',
+						color: 'green',
+						unit : UNIT_CO2
 					},
 				};
 			}),

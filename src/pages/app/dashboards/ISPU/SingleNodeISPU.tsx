@@ -22,10 +22,22 @@ export default function SingleNodeISPU({ data }: SingleNodeISPU) {
 				<>
 					<FinalISPUCard value={value[0]} />
 
-					<HStack justify="space-evenly" align='start' wrap="wrap" w="full">
+					<HStack
+						justify="space-evenly"
+						align="start"
+						wrap="wrap"
+						w="full"
+					>
+						<Spacer />
+
 						{value.map((e, i) => (
-							<EachISPUCard flex='1 1 180px'  maxW='180px' value={e} key={i} />
+							<EachISPUCard
+								flex="1 1 180px"
+								value={e}
+								key={i}
+							/>
 						))}
+						<Spacer />
 					</HStack>
 				</>
 			) : (
@@ -146,7 +158,7 @@ function EachISPUCard({ value, ...r }: StackProps & { value: ISPUValueItem }) {
 					fontWeight="600"
 					children={ispu <= 300 ? ispu : '300+'}
 				/>
-				<Text fontSize="sm" mt='-1' noOfLines={1}>
+				<Text fontSize="sm" mt="-1" noOfLines={1}>
 					{pollutantValue.toFixed(2)} {UNIT_PM}
 				</Text>
 			</Box>
@@ -191,7 +203,11 @@ export function FinalISPUCard({
 				</Heading>
 				<Tag colorScheme={colorScheme} variant="outline">
 					<Text lineHeight="1.5em">
-						Polutan Utama : <Text fontWeight='600' as='span'> {pollutant}</Text>
+						Polutan Utama :{' '}
+						<Text fontWeight="600" as="span">
+							{' '}
+							{pollutant}
+						</Text>
 					</Text>
 				</Tag>
 			</VStack>

@@ -103,6 +103,7 @@ export default function Summary() {
 
 			{!!data && preApiUrl == apiUrl ? (
 				<VStack align="stretch" spacing="4" mt="6">
+					
 					{/* ==== Kualitas Udara (ISPU) ==== */}
 
 					<TitleSection

@@ -60,8 +60,6 @@ export default function MyLineChart<T extends { datetime: string }>({
 
 	return (
 		<>
-			<pre>{JSON.stringify(eventLogs)}</pre>
-
 			<ResponsiveContainer width="100%" height="100%">
 				<AreaChart
 					data={data.sort(

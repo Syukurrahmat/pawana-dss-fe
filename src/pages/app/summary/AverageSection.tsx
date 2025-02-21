@@ -1,9 +1,5 @@
 import { GAUGE_CHART_COLORS, MAX_CH4, MAX_CO2, TRESHOLD_CH4, TRESHOLD_CO2, UNIT_PM } from '@/constants/data'; //prettier-ignore
-import {
-	getCH4Properties,
-	getCO2Properties,
-	getISPUProperties,
-} from '@/utils/common.utils';
+import { getCH4Properties, getCO2Properties, getISPUProperties } from '@/utils/common.utils'; //prettier-ignore
 import { Box, Center, Flex, HStack, IconButton, Tag, Text, Tooltip, VStack } from '@chakra-ui/react'; //prettier-ignore
 import { IconInfoSquareRounded } from '@tabler/icons-react';
 import GaugeChart from 'react-gauge-chart';
@@ -139,17 +135,6 @@ export function ISPUAverageSection({ indoor, outdoor }: AverageSection) {
 export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 	const gassEmissionList = [
 		{
-			key: 'ch4',
-			label: 'Emisi Gas Metana Rata-Rata',
-			data: [
-				{ key: 'indoor', label: 'Di dalam', data: indoor?.ch4 },
-				{ key: 'outdoor', label: 'Di luar', data: outdoor?.ch4 },
-			] as SubCardContent[],
-			threshold: TRESHOLD_CH4,
-			max: MAX_CH4,
-			unit: 'PPM',
-		},
-		{
 			key: 'co2',
 			label: 'Emisi Gas Karbonioksida Rata-Rata',
 			data: [
@@ -158,6 +143,18 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 			] as SubCardContent[],
 			threshold: TRESHOLD_CO2,
 			max: MAX_CO2,
+			unit: 'PPM',
+		},
+
+		{
+			key: 'ch4',
+			label: 'Emisi Gas Metana Rata-Rata',
+			data: [
+				{ key: 'indoor', label: 'Di dalam', data: indoor?.ch4 },
+				{ key: 'outdoor', label: 'Di luar', data: outdoor?.ch4 },
+			] as SubCardContent[],
+			threshold: TRESHOLD_CH4,
+			max: MAX_CH4,
 			unit: 'PPM',
 		},
 	];
@@ -235,15 +232,21 @@ export function GRKAverageSection({ indoor, outdoor }: AverageSection) {
 
 function InsufficientData() {
 	return (
-		<HStack py='8px' justify='center' align='center' color="gray.400" spacing="1" >
-			<Text fontWeight="600" w='max-content' size="sm" textAlign="center">
+		<HStack
+			py="8px"
+			justify="center"
+			align="center"
+			color="gray.400"
+			spacing="1"
+		>
+			<Text fontWeight="600" w="max-content" size="sm" textAlign="center">
 				Data tidak lengkap
 			</Text>
 			<Tooltip label="Rerata parameter udara tidak dapat dihitung karena data yang ada tidak mencukupi">
 				<IconButton
 					aria-label="info"
 					size="xs"
-					variant='transparant'
+					variant="transparant"
 					icon={<IconInfoSquareRounded size="18" />}
 				/>
 			</Tooltip>

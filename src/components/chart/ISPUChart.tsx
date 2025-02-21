@@ -151,7 +151,7 @@ export default function MyISPUChart<T extends { datetime: string }>({
 								}
 								ifOverflow="hidden"
 								fill={`var(--chakra-colors-${eventLogsTypeAttr[event.type]?.color || 'gray'}-500)`} //prettier-ignore
-								fillOpacity={0.2}
+								fillOpacity={0.1}
 							/>
 						))}
 

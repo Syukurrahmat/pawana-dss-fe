@@ -5,7 +5,7 @@ import qs from "qs";
 export const fetcher = async <T = any>(url: string, options?: RequestInit) => {
     try {
         const response = await fetch(API_URL + url, {
-            credentials: 'include',
+            // credentials: 'include',
             ...options
         });
         
@@ -36,7 +36,7 @@ export function UrlWithQuery(baseUrl: string, additionalParams: Record<string, a
 
 export const myAxios = axios.create({
     baseURL: API_URL,
-    withCredentials: true,
+    // withCredentials: true,
     transformResponse: (e) => {
         const response = JSON.parse(e)
         return response.statusCode == 200 ? response.data : response
